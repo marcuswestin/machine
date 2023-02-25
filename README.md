@@ -39,7 +39,9 @@ Last Updated for M1X MBP 11/11/2021
     then Settings > iMessage tab > check Enable Messages in iCloud
 
 - Settings: iCloud
-	- [?] iCloud > iCloud Drive > Options… > Desktop & Documents Folders
+	- [ ] iCloud > iCloud Drive > Options… >
+  	  	- [ ] Desktop & Documents Folders > Turn Off
+	  	- [ ] iCloud Mail > Turn Off
 
 - Settings: Trackpad
 	- [ ] Tap to Click ON
