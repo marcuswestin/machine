@@ -1,7 +1,9 @@
 # Machine setup
 
-SETUP NEW MAC
-=============
+TODO
+====
+
+- [ ] Fix whitespace
 
 SETUP NEW MAC
 =============
