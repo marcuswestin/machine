@@ -3,6 +3,9 @@
 SETUP NEW MAC
 =============
 
+SETUP NEW MAC
+=============
+
 Last Updated for M1X MBP 11/11/2021
 
 - Start long downloads:
@@ -11,15 +14,17 @@ Last Updated for M1X MBP 11/11/2021
 
 - Install Programs
     - [ ] VSCode: https://code.visualstudio.com
-	- [ ] iTerm 3: https://iterm2.com
-	- [ ] Brew (from https://brew.sh):
+    - [ ] iTerm 3: https://iterm2.com
+    - [ ] Brew (from https://brew.sh):
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/marcuswestin/.zprofile
         eval "$(/opt/homebrew/bin/brew shellenv)"
-	- [ ] Firefox: https://www.mozilla.org/en-US/firefox/new/
-	- [ ] Slack: https://slack.com/downloads/mac
+    - [ ] Firefox: https://www.mozilla.org/en-US/firefox/new/
+    - [ ] Slack: https://slack.com/downloads/mac
     - [ ] Notion: https://www.notion.so/desktop
-	- [ ] Spotify: https://www.spotify.com/us/download/mac/
+    - [ ] Spotify: https://www.spotify.com/us/download/mac/
+    - [ ] Dropbox: https://www.dropbox.com/install
+    
 
 - Create native web apps
     brew install node
