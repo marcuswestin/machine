@@ -65,6 +65,7 @@ Setup new MacOS machine
 	(Xcode?)
 
 
+
 - MEANWHILE: Settings
     - Dock
         - [ ] Remove ALL items (except Downloads next to Trash)
