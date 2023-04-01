@@ -1,6 +1,15 @@
 TODO:
     [ ] Albert App
     [ ] Rectangle App
+    [ ] Xcode?
+    [ ] Setup Dropbox?
+    [ ] Create native web apps?
+        brew install node
+        npm install -g nativefier
+        cd /tmp
+        export NAME='Gmail' && nativefier --name "${NAME}" gmail.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
+        export NAME='Aldyn Gcal' && nativefier --name "${NAME}" https://calendar.google.com/a/aldyn.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
+        export NAME='Aldyn Gmail' && nativefier --name "${NAME}" https://mail.google.com/a/aldyn.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
 
 Setup new MacOS machine
 =======================
@@ -52,11 +61,6 @@ Setup new MacOS machine
     cd ~/code/marcuswestin/git-star && make
 ```
 
-- Downloads
-	(Xcode?)
-
-
-
 - MEANWHILE: Settings
     - Dock
         - [ ] Remove ALL items (except Downloads next to Trash)
@@ -100,26 +104,6 @@ Setup new MacOS machine
 		- Disable Keyboard shortcuts for all (Mission Control, Application windows, Show Desktop)
 
 
-- [ ] Install dotfiles
-    mkdir -p ~/code && cd ~/code && git clone https://github.com/marcuswestin/dotfiles.git
-    cd ~/code/dotfiles
-    make
-
-- [ ] Install git-star
-    mkdir -p ~/code && cd ~/code && git clone https://github.com/marcuswestin/git-star.git
-    cd ~/code/git-star
-    sudo chown -R $(whoami) /usr/local/bin
-    ./install_local.sh
-
-- Create native web apps
-    brew install node
-    npm install -g nativefier
-    cd /tmp
-    export NAME='Gmail' && nativefier --name "${NAME}" gmail.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
-    export NAME='Aldyn Gcal' && nativefier --name "${NAME}" https://calendar.google.com/a/aldyn.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
-    export NAME='Aldyn Gmail' && nativefier --name "${NAME}" https://mail.google.com/a/aldyn.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
-
-- Setup Dropbox
 
 
 
