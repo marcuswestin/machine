@@ -43,9 +43,11 @@ Setup new MacOS machine
 
 ### APPS
 ```bash
-	brew install —cask spotify notion firefox slack visual-studio-code
-	open "Dropbox.app" "Notion.app" "Slack.app" "Firefox.app" "Spotify.app" "Visual Studio Code.app"
+	brew install spotify notion firefox slack visual-studio-code iterm2
+	cd /Applications && open "Dropbox.app" "Notion.app" "Slack.app" "Firefox.app" "Spotify.app" "Visual Studio Code.app" "iTerm.app"
 ```
+
+- iTerm Settings > General > Window > Native full screen window: Uncheck
 
 ### Deps
 ```bash
