@@ -20,25 +20,14 @@ Setup new MacOS machine
 
 ### git & Mackup
 ```bash
-	open https://github.com/settings/tokens 
-
-	# Create new token and enter when prompted:
-    git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
-
     git config --global user.name "Marcus Westin"
     git config --global user.email "marcus.westin@gmail.com"
     git config --global core.excludesfile ~/.gitignore
     git config --global push.default simple
 
-    brew install mackup
-    rm -f .mackup.cfg
-    echo "[storage]" >> .mackup.cfg
-    echo "engine = file_system" >> .mackup.cfg
-    echo "path = code/marcuswestin/mackup-library" >> .mackup.cfg
-    mackup restore --force
-
-    # # ???
-	# git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
+	# Create new token and enter when prompted:
+	open https://github.com/settings/tokens
+    git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
 ```
 
 
@@ -50,15 +39,17 @@ Setup new MacOS machine
 
 - iTerm Settings > General > Window > Native full screen window: Uncheck
 
-### Deps
-```bash
-    brew install node
-```
-
 ### Setup
 ```bash
 	code ~/code/marcuswestin
     # Then open `Setup-New-Machine.md`
+```
+
+### Dotfiles etc
+```bash
+    brew install node
+    cd ~/code/marcuswestin/dotfiles && make
+    cd ~/code/marcuswestin/git-star && make
 ```
 
 - Downloads
@@ -95,7 +86,7 @@ Setup new MacOS machine
     - "Customize Modifier keys"
         - Map: Caps Key -> Control
     - "Keyboard Shortcuts"
-        - App Shortcuts > "+" > All Applications > Name:"Zoom" > Cmd+Ctrl+M
+        - App Shortcuts > "+" > All Applications > Name:"Zoom" > Cmd+Shift+M
         - Spotligt > Show Finder Source: Toggle off
 	- "Hot Corner Shortcuts"
 		- Top: Desktop, Desktop
