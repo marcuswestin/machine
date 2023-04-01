@@ -1,5 +1,6 @@
 TODO:
-    [] ctrl-m zoom
+    [ ] Albert App
+    [ ] Rectangle App
 
 Setup new MacOS machine
 =======================
