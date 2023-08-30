@@ -14,10 +14,14 @@ TODO:
 Setup new MacOS machine
 =======================
 
+### XCode
+
+Install xcode from app store
+
 ### BREW
 ```bash
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/marcuswestin/.zprofile
+	(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> ~/.zprofile
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
@@ -35,6 +39,7 @@ Setup new MacOS machine
     git config --global push.default simple
 
 	# Create new token and enter when prompted:
+    brew install gh && gh auth login
 	open https://github.com/settings/tokens
     git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
 ```
@@ -44,6 +49,12 @@ Setup new MacOS machine
 ```bash
 	brew install spotify notion firefox slack visual-studio-code iterm2
 	cd /Applications && open "Dropbox.app" "Notion.app" "Slack.app" "Firefox.app" "Spotify.app" "Visual Studio Code.app" "iTerm.app"
+
+    npm install -g nativefier
+    cd /tmp
+    export NAME='Gmail' && nativefier --name "${NAME}" --honest https://mail.google.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications && open /Applications/${NAME}.app
+    export NAME='Gcal' && nativefier --name "${NAME}" --honest https://calendar.google.com/ && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications && open /Applications/${NAME}.app
+
 ```
 
 - iTerm Settings > General > Window > Native full screen window: Uncheck
@@ -89,7 +100,7 @@ Setup new MacOS machine
         - Keyboard navigation: Toggle on
     - "Customize Modifier keys"
         - Map: Caps Key -> Control
-    - "Keyboard Shortcuts"
+    - Search: "Keyboard Shortcuts"
         - App Shortcuts > "+" > All Applications > Name:"Zoom" > Cmd+Shift+M
         - Spotligt > Show Finder Source: Toggle off
 	- "Hot Corner Shortcuts"
