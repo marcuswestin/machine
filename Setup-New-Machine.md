@@ -5,7 +5,7 @@
     - [ ] Setup Dropbox?
     - [ ] Create native web apps?
         ```
-	brew install node
+        brew install node
         npm install -g nativefier
         cd /tmp
         export NAME='Gmail' && nativefier --name "${NAME}" gmail.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications
