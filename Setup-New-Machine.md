@@ -1,4 +1,4 @@
-TODO:
+- TODO:
     - [ ] Albert App
     - [ ] Rectangle App
     - [ ] Xcode?
