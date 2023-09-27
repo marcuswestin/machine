@@ -1,3 +1,5 @@
+# New Machine Setup
+
 - TODO:
     - [ ] Albert App
     - [ ] Rectangle App
@@ -27,8 +29,68 @@ Install xcode from app store
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
+### Settings
+
+- Messages
+        - Settings > iMessage
+            - Enable Messages in iCloud
+            - Send read receipts
+
+- System Settings (Use spotlight on these search terms)
+    - "Trackpad"
+        - Tracking Speed: Fastest
+        - Click: Light
+        - Tap to click: Toggle on
+    - "Trackpad Options"
+        - Scrolling Speed: Fastest
+    - "Language preference"
+        - Add Swedish
+        - Input Sources > Edit > + (Add Swedish)
+    - "Keyboard layouts"
+        - Show Input menu in menu bar > Toggle On
+    - "Keyboard sensitivity"
+        - Key Repeat: Fast (To the right)
+        - Delay Until Repeat: Short (To the right)
+        - Turn keyboard backlight off after inactivity: 5 seconds
+        - Keyboard navigation: Toggle on
+    - "Customize Modifier keys"
+        - Map: Caps Key -> Control
+    - "Keyboard Shortcuts"
+        - App Shortcuts > "+" > All Applications > Name:"Zoom" > Cmd+Ctrl+M
+        - Spotligt > Show Finder search window: Toggle off
+    - "Hot Corner Shortcuts"
+        - Top: Desktop, Desktop
+        - Bottom: Sleep, Sleep
+    - "Require Password to wake computer"
+        - Start Screen Saver when Inactive: Never
+        - Turn Display off on Battery when inactive: 10 min
+        - Turn Display off on Power Adaptor when inactive: 20 min
+	- Require password: 5 Seconds
+    - "Expose"
+        - Disable Keyboard shortcuts for all (Mission Control, Application windows, Show Desktop)
+    - "Desktop & Dock"
+	- Remove all items: `defaults write com.apple.dock persistent-apps -array && killall Dock`
+	- Position on screen: Left
+	- Automatically hide and show the Dock: On
+	- Show recent applications in Dock: Off
+	- Menu Bar > Automatically hide and show the menu bar > "Never"  
+  
+
+### APPS
+```bash
+	brew install dropbox spotify notion firefox slack visual-studio-code iterm2
+	cd /Applications && open "Dropbox.app" "Notion.app" "Slack.app" "Firefox.app" "Spotify.app" "Visual Studio Code.app" "iTerm.app"
+
+    npm install -g nativefier
+    cd /tmp
+    export NAME='Gmail' && nativefier --name "${NAME}" --honest https://mail.google.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications && open /Applications/${NAME}.app
+    export NAME='Gcal' && nativefier --name "${NAME}" --honest https://calendar.google.com/ && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications && open /Applications/${NAME}.app
+```
+
+
 ### bin
 ```bash
+	# IS THIS NEEDED?
     sudo mkdir -p /usr/local/bin
     sudo chown -R $(whoami) /usr/local/bin
 ```
@@ -47,17 +109,6 @@ Install xcode from app store
 ```
 
 
-### APPS
-```bash
-	brew install spotify notion firefox slack visual-studio-code iterm2
-	cd /Applications && open "Dropbox.app" "Notion.app" "Slack.app" "Firefox.app" "Spotify.app" "Visual Studio Code.app" "iTerm.app"
-
-    npm install -g nativefier
-    cd /tmp
-    export NAME='Gmail' && nativefier --name "${NAME}" --honest https://mail.google.com && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications && open /Applications/${NAME}.app
-    export NAME='Gcal' && nativefier --name "${NAME}" --honest https://calendar.google.com/ && mv "${NAME}-darwin-arm64/${NAME}.app" /Applications && open /Applications/${NAME}.app
-
-```
 
 - iTerm Settings > General > Window > Native full screen window: Uncheck
 
@@ -74,47 +125,6 @@ Install xcode from app store
     cd ~/code/marcuswestin/git-star && make
 ```
 
-- MEANWHILE: Settings
-    - Dock
-        - [ ] Remove ALL items (except Downloads next to Trash)
-            - defaults write com.apple.dock persistent-apps -array
-        - [ ] Position: Left
-        - [ ] Check: Automatically hide and show the Dock
-    - "iCloud Drive"
-        - iCloud Drive > Turn Off
-	- "Trackpad"
-        - Tracking Speed: Fastest
-        - Click: Light
-        - Tap to click: Toggle on
-    - "Mouse & Trackpad"
-        - Scrolling Speed: Fastest
-    - "Trackpad Options"
-        - Enable Dragging: Three finger drag
-    - "Language preference"
-        - Add Swedish
-    - "Keyboard layouts"
-        - Show Input menu in menu bar > Toggle On
-	- "Keyboard sensitivity"
-        - Key Repeat: Fast
-        - Delay Until Repeat: Short
-        - Turn keyboard backlight off after inactivity: 5 seconds
-    - "Keyboard Navigation"
-        - Keyboard navigation: Toggle on
-    - "Customize Modifier keys"
-        - Map: Caps Key -> Control
-    - Search: "Keyboard Shortcuts"
-        - App Shortcuts > "+" > All Applications > Name:"Zoom" > Cmd+Shift+M
-        - Spotligt > Show Finder Source: Toggle off
-	- "Hot Corner Shortcuts"
-		- Top: Desktop, Desktop
-		- Bottom: Sleep, Sleep
-	- "Require Password"
-        - Start Screen Saver when Inactive: Never
-        - Turn Display off on Battery when inactive: 10 min
-        - Turn Display off on Power Adaptor when inactive: 20 min
-		- Require password: 5 Seconds
-	- "Expose"
-		- Disable Keyboard shortcuts for all (Mission Control, Application windows, Show Desktop)
 
 
 
