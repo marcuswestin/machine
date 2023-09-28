@@ -80,13 +80,18 @@ Install xcode from app store
         - google calendar
 
 
-# Git and my own libs:
+# Git
 
 ```bash
     brew install git git-credential-manager
     git config --global credential.helper manager
     git config --global color.ui true
+```
 
+
+# Install commands & my own libs
+```bash
+    brew install node just
     git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
     cd ~/code/marcuswestin/dotfiles && make
     cd ~/code/marcuswestin/git-star && make
