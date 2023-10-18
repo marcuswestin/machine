@@ -49,6 +49,11 @@ Install xcode from app store
     - "Hot Corner Shortcuts"
         - Top: Desktop, Desktop
         - Bottom: Sleep, Sleep
+    - "Night Shift"
+        - Schedule: Sunset to Sunrise
+        - Color temperature: Warmest
+    - "Stage Manager"
+      - Stage Manager: Toggle On
     - "Require Password to wake computer"
         - Start Screen Saver when Inactive: Never
         - Turn Display off on Battery when inactive: 10 min
