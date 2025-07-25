@@ -1,6 +1,45 @@
 New Machine Setup
 =================
 
+# TODAY
+
+```bash
+    # Install Homebrew
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Install Apps
+	brew install notion firefox visual-studio-code iterm2 cursor spotify
+    cd /Applications && open "Notion.app" "Firefox.app" "Visual Studio Code.app" "iTerm.app" "Cursor.app" "Spotify.app"
+
+    # Github access
+    brew install gh
+    gh auth login
+
+    # Install my utils
+    brew install node just
+    git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
+    cd ~/code/marcuswestin/dotfiles && make
+    cd ~/code/marcuswestin/git-star && make
+
+    export PATH=$PATH:/Users/ro/code/marcuswestin/git-star/bin
+	echo '\n# git-star (see https://github.com/marcuswestin/git-star):\nPATH=$PATH:/Users/ro/code/marcuswestin/git-star/bin' >> ~/.zprofile
+
+```
+
+# CONSIDER:
+
+### Create WebApps
+
+- Once on macOS Sonomona:
+    - Create webapps for:
+        - gmail
+        - google calendar
+
+
+
+
+# OLD
+
 # XCode
 
 Install xcode from app store
@@ -77,13 +116,6 @@ Install xcode from app store
     open "Dropbox.app" "Notion.app" "Slack.app" "Firefox.app" "Spotify.app" "Visual Studio Code.app" "iTerm.app"
 ```
 
-# Create WebApps
-
-- Once on macOS Sonomona:
-    - Create webapps for:
-        - gmail
-        - google calendar
-
 
 # Git
 
@@ -93,14 +125,6 @@ Install xcode from app store
     git config --global color.ui true
 ```
 
-
-# Install commands & my own libs
-```bash
-    brew install node just
-    git clone --recurse-submodules https://github.com/marcuswestin/marcuswestin.git ~/code/marcuswestin
-    cd ~/code/marcuswestin/dotfiles && make
-    cd ~/code/marcuswestin/git-star && make
-```
 
 # TODOs?
 
