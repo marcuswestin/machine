@@ -343,10 +343,21 @@ _launch-startup-apps:
     set -euo pipefail
 
     nix {{nix_flags}} eval --json .#darwinConfigurations.{{host}}.config.machine.startupApps \
-      | jq -r '.[]' \
-      | while IFS= read -r app; do
-          [ -n "$app" ] || continue
-          /usr/bin/open -gj -a "$app" || printf 'Could not launch startup app: %s\n' "$app" >&2
+      | jq -r '.[] | [.name, .appPath, .executable, (.args | join("\u001f"))] | @tsv' \
+      | while IFS=$'\t' read -r name app_path executable args_joined; do
+          [ -n "$name" ] || continue
+
+          if [ -e "$app_path" ] && /usr/bin/open -gj "$app_path"; then
+            continue
+          fi
+
+          if [ -x "$executable" ]; then
+            IFS=$'\037' read -r -a args <<< "$args_joined"
+            nohup "$executable" "${args[@]}" >/dev/null 2>&1 &
+            continue
+          fi
+
+          printf 'Could not launch startup app: %s\n' "$name" >&2
         done
 
 # Validate the Nix flake without applying it.
