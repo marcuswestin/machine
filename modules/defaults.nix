@@ -1,4 +1,8 @@
-{ ... }:
+{ lib, user, ... }:
+
+let
+  userArg = lib.escapeShellArg user;
+in
 
 {
   system.keyboard = {
@@ -11,6 +15,7 @@
     NSGlobalDomain = {
       AppleKeyboardUIMode = 2; # Full keyboard access.
       AppleInterfaceStyle = "Dark";
+      ApplePressAndHoldEnabled = false; # Enable key repeat instead of accent popup.
       InitialKeyRepeat = 10; # Fastest.
       KeyRepeat = 1; # Fastest.
     };
@@ -82,4 +87,10 @@
       };
     };
   };
+
+  system.activationScripts.postActivation.text = ''
+    # Refresh the per-user defaults cache so keyboard repeat changes are visible
+    # promptly after `darwin-rebuild switch`.
+    /usr/bin/killall -qu ${userArg} cfprefsd || true
+  '';
 }
