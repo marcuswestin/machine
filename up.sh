@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO_URL="${MACHINE_REPO_URL:-https://github.com/marcuswestin/machine.git}"
 REPO_DIR="${MACHINE_REPO_DIR:-$HOME/code/machine}"
-REPO_REF="${MACHINE_REPO_REF:-main}"
+REPO_REF="${MACHINE_REPO_REF:-feat/fine-tune-machine-settings}"
 MACHINE_HOST="${MACHINE_HOST:-machine}"
 NIX_INSTALL_URL="${NIX_INSTALL_URL:-https://install.determinate.systems/nix}"
 
