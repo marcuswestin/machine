@@ -18,6 +18,8 @@ just dotfiles-diff   # review chezmoi changes
 just dotfiles-apply  # apply chezmoi changes directly
 just doctor          # show tool and repo state
 just check           # validate the flake
+just prune-diff      # show undeclared apps/extensions and dotfile drift
+just prune-apply     # prune undeclared apps/extensions and apply dotfiles
 just import-current  # capture current machine state into inventory for review
 ```
 
@@ -28,5 +30,6 @@ just import-current  # capture current machine state into inventory for review
 - `home-manager`: PATH/env/session variables only.
 - `chezmoi`: actual dotfiles and app config files.
 
-The default flow applies the conservative dotfile set automatically. Use
-`just dotfiles-diff` first when you want to preview changes manually.
+The default flow applies system/app/env layers and the repo-owned chezmoi
+dotfiles automatically. Use `just dotfiles-diff` first when you want to preview
+dotfile changes manually.

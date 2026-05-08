@@ -15,3 +15,4 @@ ryuta46.multi-command
 saoudrizwan.claude-dev
 vitest.explorer
 yzhang.markdown-all-in-one
+vscodevim.vim

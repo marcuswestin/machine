@@ -8,6 +8,8 @@ back into `modules/apps.nix` after review.
 
 | Item | Source | Status |
 | --- | --- | --- |
+| `oven-sh/bun/bun` | previously active | replaced by Nix `bun` |
+| `homebrew/core/cocoapods` | previously active | replaced by Nix `cocoapods` |
 | `homebrew/core/cmake` | previously active | move to Nix or reactivate if needed |
 | `homebrew/core/ffmpeg` | previously active | move to Nix or reactivate if needed |
 | `homebrew/core/mkcert` | previously active | move to Nix or reactivate if needed |
@@ -64,6 +66,7 @@ back into `modules/apps.nix` after review.
 - Numbers
 - Pages
 - TestFlight
+- Xcode
 
 ## Installed Apps To Map Or Keep Manual
 

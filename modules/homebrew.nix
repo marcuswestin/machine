@@ -4,7 +4,7 @@
   nix-homebrew = {
     enable = true;
     autoMigrate = true;
-    enableRosetta = true;
+    enableRosetta = false;
     taps = {
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
     };
@@ -23,9 +23,11 @@
       autoUpdate = true;
       cleanup = "none";
       extraEnv = {
+        HOMEBREW_NO_ANALYTICS = "1";
+        HOMEBREW_NO_ENV_HINTS = "1";
         # Homebrew 5.1.7 can crash while converting cask API JSON
-        # dependencies (`undefined method 'to_sym' for nil`). Use tapped cask
-        # definitions during nix-darwin activation instead of the API loader.
+        # dependencies (`undefined method 'to_sym' for nil`) during
+        # `brew fetch`. Use tapped cask definitions during activation.
         HOMEBREW_NO_INSTALL_FROM_API = "1";
       };
       upgrade = false;

@@ -20,7 +20,9 @@
   users.users.${user}.home = "/Users/${user}";
 
   environment.systemPackages = with pkgs; [
+    bun
     chezmoi
+    cocoapods
     git
     jq
     just

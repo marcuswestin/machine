@@ -2,10 +2,7 @@
 
 {
   homebrew = {
-    brews = [
-      "oven-sh/bun/bun"
-      "homebrew/core/cocoapods"
-    ];
+    brews = [ ];
 
     casks = [
       "google-chrome"
@@ -22,8 +19,6 @@
       "docker-desktop"
     ];
 
-    masApps = {
-      Xcode = 497799835;
-    };
+    masApps = { };
   };
 }

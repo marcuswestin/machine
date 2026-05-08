@@ -62,6 +62,10 @@ install_nix_tool() {
 clone_repo() {
   if [ -d "$REPO_DIR/.git" ]; then
     info "Repo already cloned at $REPO_DIR"
+    info "Updating repo to latest $REPO_REF"
+    git -C "$REPO_DIR" fetch origin "$REPO_REF"
+    git -C "$REPO_DIR" checkout "$REPO_REF"
+    git -C "$REPO_DIR" pull --ff-only origin "$REPO_REF"
     return
   fi
 
