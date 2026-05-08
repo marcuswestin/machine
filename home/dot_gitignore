@@ -1,0 +1,23 @@
+# OSX
+._*
+.DS_Store
+
+# XCode
+xcuserdata
+project.xcworkspace
+
+# Python
+*.pyc
+
+# Redis
+dump.rdb
+
+# Node
+node_modules
+.__npm_installed__
+
+# Misc
+build
+*~
+*.swp
+.bin
