@@ -7,16 +7,33 @@ info() {
   printf '\n==> %s\n' "$*"
 }
 
-load_nix() {
-  if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-    # shellcheck disable=SC1091
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+nix_cmd() {
+  nix --extra-experimental-features 'nix-command flakes' "$@"
+}
+
+ensure_nix() {
+  if command -v nix >/dev/null 2>&1; then
+    return
   fi
 
-  if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
-    # shellcheck disable=SC1091
-    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+  if [ -x /nix/var/nix/profiles/default/bin/nix ]; then
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+    return
   fi
+
+  printf 'Nix is not available. Run ./up.sh or the curl bootstrap first.\n' >&2
+  exit 1
+}
+
+ensure_just() {
+  if command -v just >/dev/null 2>&1; then
+    info "just already available at $(command -v just)"
+    return
+  fi
+
+  info "Installing just with Nix"
+  nix_cmd profile add nixpkgs#just
+  hash -r
 }
 
 developer_tools_installed() {
@@ -72,7 +89,8 @@ install_command_line_tools() {
 }
 
 main() {
-  load_nix
+  ensure_nix
+  ensure_just
   install_command_line_tools
   MACHINE_HOST="$MACHINE_HOST" just up
 }

@@ -38,23 +38,21 @@ install_nix() {
   load_nix
 }
 
-install_nix_tool() {
-  local cmd="$1"
-  local pkg="$2"
+install_git() {
   local existing=""
 
-  if command -v "$cmd" >/dev/null 2>&1; then
-    existing="$(command -v "$cmd")"
+  if command -v git >/dev/null 2>&1; then
+    existing="$(command -v git)"
     if [ "${existing#/usr/bin/}" = "$existing" ]; then
-      info "$cmd already available at $existing"
+      info "git already available at $existing"
       return
     fi
 
     info "Ignoring Apple developer-tools shim at $existing"
   fi
 
-  info "Installing $cmd with Nix"
-  nix_cmd profile add "$pkg"
+  info "Installing git with Nix"
+  nix_cmd profile add nixpkgs#git
   load_nix
   hash -r
 }
@@ -88,8 +86,7 @@ switch_machine() {
 main() {
   load_nix
   install_nix
-  install_nix_tool git nixpkgs#git
-  install_nix_tool just nixpkgs#just
+  install_git
   clone_repo
   switch_machine
 
