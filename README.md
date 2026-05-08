@@ -7,7 +7,7 @@ Declarative macOS setup for my machines.
 Run the bootstrap script from a fresh macOS install:
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/marcuswestin/machine/main/up.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/marcuswestin/machine/feat/declarative/up.sh)"
 ```
 
 ## Daily Command Surface

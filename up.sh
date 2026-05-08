@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO_URL="${MACHINE_REPO_URL:-https://github.com/marcuswestin/machine.git}"
 REPO_DIR="${MACHINE_REPO_DIR:-$HOME/code/machine}"
+REPO_REF="${MACHINE_REPO_REF:-feat/declarative}"
 MACHINE_HOST="${MACHINE_HOST:-machine}"
 NIX_INSTALL_URL="${NIX_INSTALL_URL:-https://install.determinate.systems/nix}"
 
@@ -40,14 +41,22 @@ install_nix() {
 install_nix_tool() {
   local cmd="$1"
   local pkg="$2"
+  local existing=""
 
   if command -v "$cmd" >/dev/null 2>&1; then
-    info "$cmd already available"
-    return
+    existing="$(command -v "$cmd")"
+    if [ "${existing#/usr/bin/}" = "$existing" ]; then
+      info "$cmd already available at $existing"
+      return
+    fi
+
+    info "Ignoring Apple developer-tools shim at $existing"
   fi
 
   info "Installing $cmd with Nix"
-  nix_cmd profile install "$pkg"
+  nix_cmd profile add "$pkg"
+  load_nix
+  hash -r
 }
 
 clone_repo() {
@@ -63,7 +72,7 @@ clone_repo() {
 
   info "Cloning machine repo into $REPO_DIR"
   mkdir -p "$(dirname "$REPO_DIR")"
-  git clone "$REPO_URL" "$REPO_DIR"
+  git clone --branch "$REPO_REF" "$REPO_URL" "$REPO_DIR"
 }
 
 switch_machine() {
