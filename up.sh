@@ -77,7 +77,7 @@ clone_repo() {
   git clone --branch "$REPO_REF" "$REPO_URL" "$REPO_DIR"
 }
 
-switch_machine() {
+setup_machine() {
   info "Running repo machine setup"
   cd "$REPO_DIR"
   MACHINE_HOST="$MACHINE_HOST" bash scripts/up-local.sh
@@ -88,7 +88,7 @@ main() {
   install_nix
   install_git
   clone_repo
-  switch_machine
+  setup_machine
 
   info "Machine setup complete"
 }

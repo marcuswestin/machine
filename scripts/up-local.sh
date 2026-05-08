@@ -11,20 +11,6 @@ nix_cmd() {
   nix --extra-experimental-features 'nix-command flakes' "$@"
 }
 
-ensure_nix() {
-  if command -v nix >/dev/null 2>&1; then
-    return
-  fi
-
-  if [ -x /nix/var/nix/profiles/default/bin/nix ]; then
-    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
-    return
-  fi
-
-  printf 'Nix is not available. Run ./up.sh or the curl bootstrap first.\n' >&2
-  exit 1
-}
-
 ensure_just() {
   if command -v just >/dev/null 2>&1; then
     info "just already available at $(command -v just)"
@@ -89,7 +75,6 @@ install_command_line_tools() {
 }
 
 main() {
-  ensure_nix
   ensure_just
   install_command_line_tools
   MACHINE_HOST="$MACHINE_HOST" just up
