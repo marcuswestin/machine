@@ -1,0 +1,80 @@
+# Agent Instructions
+
+This repo is a personal declarative macOS machine setup. Treat it as an
+operational repo: small changes, concrete validation, and no broad rewrites
+unless asked.
+
+## Primary Workflow
+
+- Fresh-machine entrypoint: `up.sh`.
+- Daily command surface: `just`.
+- Steady-state apply command: `just up`.
+- Public commands are the recipes shown by `just --list`; implementation
+  recipes are prefixed with `_` and should stay private.
+- `up.sh` should remain minimal: install/load base Nix, ensure enough tooling to
+  clone/update this repo, then hand off to `scripts/up-local.sh`.
+- `scripts/up-local.sh` should do local bootstrap checks and then call `just up`.
+
+## Ownership Boundaries
+
+- `nix-darwin`: system configuration, macOS defaults, Nix packages.
+- `nix-homebrew` / Homebrew: GUI apps and Brew-specific packages.
+- Home Manager: minimal PATH/env/session integration only.
+- `chezmoi`: actual dotfiles and app config files under `home/`.
+- `inventory/`: review snapshots and deferred/imported machine state; do not
+  blindly promote inventory entries into active config.
+
+Prefer first-class nix-darwin options over custom activation scripts. Use custom
+activation only when the option does not exist or macOS requires a special path.
+
+## Editing Rules
+
+- Use `apply_patch` for file edits.
+- Keep active config conservative and deterministic for fresh machines.
+- Do not import current-machine state into active config unless explicitly asked.
+- Do not add secrets, auth files, histories, caches, telemetry, SQLite DBs,
+  workspace storage, model caches, or session state.
+- Keep branch/default install references pointed at `main` unless the user is
+  explicitly testing another branch.
+- Preserve the `MACHINE_*` environment overrides in scripts where present.
+
+## Validation
+
+Run the smallest useful validation for the change. Common checks:
+
+```sh
+bash -n up.sh
+bash -n scripts/up-local.sh
+bash -n scripts/with-sudo-keepalive.sh
+just --list
+just --dry-run up
+nix flake check --extra-experimental-features 'nix-command flakes' --show-trace
+```
+
+For macOS defaults changes, also inspect the relevant nix-darwin option when
+possible:
+
+```sh
+nix eval --extra-experimental-features 'nix-command flakes' \
+  .#darwinConfigurations.machine.config.system.defaults
+```
+
+## Git
+
+- The user wants completed fixes committed and pushed by default.
+- Before committing, check `git status --short`.
+- Commit only the files relevant to the completed fix.
+- Push the current branch after a successful commit.
+- If the worktree contains unrelated user changes, leave them alone.
+
+## Fresh-Machine Safety
+
+- `just up` may install apps, apply macOS defaults, apply chezmoi dotfiles, and
+  install editor extensions.
+- `just prune-diff` should show removals before `just prune-apply` executes
+  them.
+- Prune commands should stay conservative: only remove undeclared Homebrew
+  leaves/casks and undeclared editor extensions.
+- Keep sudo usage explicit. The sudo keepalive wrapper should prompt up front
+  and only preserve the timestamp for commands that still invoke `sudo`
+  themselves.
