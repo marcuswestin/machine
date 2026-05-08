@@ -3,13 +3,29 @@ set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 repo := justfile_directory()
 host := env_var_or_default("MACHINE_HOST", "machine")
 nix_flags := "--extra-experimental-features 'nix-command flakes'"
+export PATH := "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/usr/local/bin:" + env_var_or_default("PATH", "")
 
 default:
     @just --list
 
 # Apply system/app/env/dotfile layers and install editor extensions.
-up: _sudo-refresh doctor _darwin-switch _post-darwin _prune-check
-    @printf '\nMachine setup complete.\n'
+up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    sudo -v
+    while true; do
+      sudo -n -v 2>/dev/null || exit
+      sleep 30
+    done &
+    sudo_keepalive_pid="$!"
+    trap 'kill "$sudo_keepalive_pid" 2>/dev/null || true; sudo -k' EXIT
+
+    just doctor
+    just _darwin-switch
+    just _post-darwin
+    just _prune-check
+    printf '\nMachine setup complete.\n'
 
 # Show the base tool state for this machine.
 doctor:
@@ -26,10 +42,6 @@ doctor:
 
 # Machine Setup
 ###############
-
-# Ask for sudo up front, before the longer machine setup starts.
-_sudo-refresh:
-    sudo -v
 
 # Post-switch tasks run after nix-darwin has installed tools/apps.
 _post-darwin:
