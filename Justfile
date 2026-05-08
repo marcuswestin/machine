@@ -10,22 +10,14 @@ default:
 
 # Apply system/app/env/dotfile layers and install editor extensions.
 up:
-    #!/usr/bin/env bash
-    set -euo pipefail
+    @scripts/with-sudo-keepalive.sh just _up
 
-    sudo -v
-    while true; do
-      sudo -n -v 2>/dev/null || exit
-      sleep 30
-    done &
-    sudo_keepalive_pid="$!"
-    trap 'kill "$sudo_keepalive_pid" 2>/dev/null || true; sudo -k' EXIT
-
-    just doctor
-    just _darwin-switch
-    just _post-darwin
-    just _prune-check
-    printf '\nMachine setup complete.\n'
+_up:
+    @just doctor
+    @just _darwin-switch
+    @just _post-darwin
+    @just _prune-check
+    @printf '\nMachine setup complete.\n'
 
 # Show the base tool state for this machine.
 doctor:
