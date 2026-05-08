@@ -1,0 +1,17 @@
+# Prompt
+PROMPT='%~ λ '
+
+# Home Manager
+. "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+# Homebrew
+eval "$(brew shellenv)"
+fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
+
+# ZSH completions
+fpath=("$HOME/.zsh-completions" $fpath)
+autoload -U compinit
+compinit
+
+# Aliases
+alias j="just"
