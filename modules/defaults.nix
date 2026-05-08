@@ -104,8 +104,15 @@ in
   };
 
   system.activationScripts.postActivation.text = ''
+    # Disable Spotlight's default keyboard shortcuts so Raycast can own
+    # Command-Space. Merge only these symbolic hotkey IDs to avoid replacing
+    # the whole AppleSymbolicHotKeys dictionary.
+    launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 '{ enabled = 0; value = { parameters = (32, 49, 1048576); type = standard; }; }'
+    launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65 '{ enabled = 0; value = { parameters = (32, 49, 1572864); type = standard; }; }'
+
     # Refresh the per-user defaults cache so keyboard repeat changes are visible
     # promptly after `darwin-rebuild switch`.
     /usr/bin/killall -qu ${userArg} cfprefsd || true
+    /usr/bin/killall -qu ${userArg} SystemUIServer || true
   '';
 }
