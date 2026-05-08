@@ -13,6 +13,10 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
+    homebrew-nikitabobko-tap = {
+      url = "git+https://github.com/nikitabobko/homebrew-tap";
+      flake = false;
+    };
   };
 
   outputs =

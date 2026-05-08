@@ -7,6 +7,7 @@
     enableRosetta = false;
     taps = {
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "nikitabobko/tap" = inputs.homebrew-nikitabobko-tap;
     };
     user = user;
   };

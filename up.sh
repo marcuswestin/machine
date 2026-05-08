@@ -59,6 +59,38 @@ install_nix_tool() {
   hash -r
 }
 
+install_command_line_tools() {
+  local marker="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
+  local label=""
+
+  if xcode-select -p >/dev/null 2>&1; then
+    info "Apple developer tools already installed"
+    return
+  fi
+
+  info "Installing Apple Command Line Tools"
+  touch "$marker"
+  label="$(
+    { softwareupdate --list 2>&1 || true; } \
+      | awk -F': ' '/Label: Command Line Tools/ { label=$2 } END { print label }'
+  )"
+
+  if [ -z "$label" ]; then
+    rm -f "$marker"
+    info "Requesting Apple Command Line Tools install"
+    xcode-select --install || true
+    printf 'Complete the Command Line Tools installer, then rerun this command.\n' >&2
+    exit 1
+  fi
+
+  if ! sudo softwareupdate --install "$label" --verbose; then
+    rm -f "$marker"
+    exit 1
+  fi
+  sudo xcode-select --switch /Library/Developer/CommandLineTools
+  rm -f "$marker"
+}
+
 clone_repo() {
   if [ -d "$REPO_DIR/.git" ]; then
     info "Repo already cloned at $REPO_DIR"
@@ -90,6 +122,7 @@ main() {
   install_nix
   install_nix_tool git nixpkgs#git
   install_nix_tool just nixpkgs#just
+  install_command_line_tools
   clone_repo
   switch_machine
 
