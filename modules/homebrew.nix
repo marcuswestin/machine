@@ -31,6 +31,10 @@
         # `brew fetch`. Use tapped cask definitions during activation.
         HOMEBREW_NO_INSTALL_FROM_API = "1";
       };
+      extraFlags = [
+        "--jobs"
+        "auto"
+      ];
       upgrade = false;
     };
   };
