@@ -16,6 +16,7 @@ in
       AppleKeyboardUIMode = 2; # Full keyboard access.
       AppleInterfaceStyle = "Dark";
       ApplePressAndHoldEnabled = false; # Enable key repeat instead of accent popup.
+      "com.apple.swipescrolldirection" = true; # Natural scrolling.
       InitialKeyRepeat = 10; # Fastest.
       KeyRepeat = 1; # Fastest.
     };
@@ -24,6 +25,8 @@ in
       autohide = true;
       expose-group-apps = false;
       launchanim = false;
+      magnification = false;
+      minimize-to-application = false;
       mru-spaces = false;
       orientation = "left";
       show-recents = false;
@@ -85,6 +88,18 @@ in
         TrackpadScroll = true;
         TrackpadThreeFingerDrag = true;
       };
+    };
+
+    WindowManager = {
+      AutoHide = false;
+      EnableStandardClickToShowDesktop = false;
+      EnableTiledWindowMargins = true;
+      EnableTilingByEdgeDrag = false;
+      EnableTopTilingByEdgeDrag = false;
+      GloballyEnabled = false;
+      HideDesktop = false;
+      StageManagerHideWidgets = false;
+      StandardHideWidgets = false;
     };
   };
 

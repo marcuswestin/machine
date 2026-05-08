@@ -10,6 +10,7 @@
     ../modules/defaults.nix
     ../modules/home-manager.nix
     ../modules/homebrew.nix
+    ../modules/startup.nix
   ];
 
   # Determinate Nix manages the daemon itself; nix-darwin must not.

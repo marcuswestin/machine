@@ -2,6 +2,8 @@ set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
 repo := justfile_directory()
 host := env_var_or_default("MACHINE_HOST", "machine")
+repos_file := env_var_or_default("MACHINE_REPOS_FILE", repo + "/repos.tsv")
+code_dir := env_var_or_default("MACHINE_CODE_DIR", env_var("HOME") + "/code")
 nix_flags := "--extra-experimental-features 'nix-command flakes'"
 export PATH := "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/usr/local/bin:" + env_var_or_default("PATH", "")
 
@@ -39,6 +41,8 @@ doctor:
 _post-darwin:
     @just dotfiles-apply
     @just _install-editor-extensions
+    @just repos-sync
+    @just _launch-startup-apps
 
 _prune-check:
     @output="$(just prune-diff 2>&1)" || true; \
@@ -58,6 +62,94 @@ import-current:
     just _import-editor-extensions
     just _import-home-files-review
     git status --short
+
+# Show missing declared repos or origin remote mismatches.
+repos-diff:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    normalize_url() {
+      local value="$1"
+      printf '%s\n' "${value%.git}"
+    }
+
+    status=0
+    while IFS=$'\t' read -r rel_path url _rest; do
+      [ -n "$rel_path" ] || continue
+      [[ "$rel_path" == \#* ]] && continue
+
+      dest="{{code_dir}}/$rel_path"
+      if [ ! -e "$dest" ]; then
+        printf 'Missing repo: %s -> %s\n' "$dest" "$url"
+        status=1
+        continue
+      fi
+
+      if [ ! -d "$dest/.git" ]; then
+        printf 'Path exists but is not a git repo: %s\n' "$dest"
+        status=1
+        continue
+      fi
+
+      actual="$(git -C "$dest" remote get-url origin 2>/dev/null || true)"
+      if [ -z "$actual" ]; then
+        printf 'Repo has no origin remote: %s\n' "$dest"
+        status=1
+        continue
+      fi
+
+      if [ "$(normalize_url "$actual")" != "$(normalize_url "$url")" ]; then
+        printf 'Origin mismatch for %s:\n  expected: %s\n  actual:   %s\n' "$dest" "$url" "$actual"
+        status=1
+      fi
+    done < "{{repos_file}}"
+
+    exit "$status"
+
+# Clone missing declared repos into ~/code without pulling or changing existing repos.
+repos-sync:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    mkdir -p "{{code_dir}}"
+
+    normalize_url() {
+      local value="$1"
+      printf '%s\n' "${value%.git}"
+    }
+
+    status=0
+    while IFS=$'\t' read -r rel_path url _rest; do
+      [ -n "$rel_path" ] || continue
+      [[ "$rel_path" == \#* ]] && continue
+
+      dest="{{code_dir}}/$rel_path"
+      if [ ! -e "$dest" ]; then
+        mkdir -p "$(dirname "$dest")"
+        git clone "$url" "$dest"
+        continue
+      fi
+
+      if [ ! -d "$dest/.git" ]; then
+        printf 'Path exists but is not a git repo: %s\n' "$dest" >&2
+        status=1
+        continue
+      fi
+
+      actual="$(git -C "$dest" remote get-url origin 2>/dev/null || true)"
+      if [ -z "$actual" ]; then
+        printf 'Repo has no origin remote: %s\n' "$dest" >&2
+        status=1
+        continue
+      fi
+
+      if [ "$(normalize_url "$actual")" != "$(normalize_url "$url")" ]; then
+        printf 'Origin mismatch for %s:\n  expected: %s\n  actual:   %s\n' "$dest" "$url" "$actual" >&2
+        status=1
+      fi
+    done < "{{repos_file}}"
+
+    exit "$status"
 
 # Show undeclared Homebrew formulae/casks, editor extensions, and dotfile drift.
 prune-diff:
@@ -245,6 +337,17 @@ _install-editor-extensions:
 
     wait "$code_pid"
     wait "$cursor_pid"
+
+_launch-startup-apps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    nix {{nix_flags}} eval --json .#darwinConfigurations.{{host}}.config.machine.startupApps \
+      | jq -r '.[]' \
+      | while IFS= read -r app; do
+          [ -n "$app" ] || continue
+          /usr/bin/open -gj -a "$app" || printf 'Could not launch startup app: %s\n' "$app" >&2
+        done
 
 # Validate the Nix flake without applying it.
 check:
