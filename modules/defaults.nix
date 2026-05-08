@@ -1,6 +1,12 @@
 { ... }:
 
 {
+  system.keyboard = {
+    # Use nix-darwin's official hidutil-backed key mapping support.
+    enableKeyMapping = true;
+    remapCapsLockToControl = true;
+  };
+
   system.defaults = {
     NSGlobalDomain = {
       AppleKeyboardUIMode = 2; # Full keyboard access.
