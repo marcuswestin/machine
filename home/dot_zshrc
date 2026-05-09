@@ -15,3 +15,6 @@ compinit
 
 # Aliases
 alias j="just"
+
+# Direnv
+eval "$(direnv hook zsh)"

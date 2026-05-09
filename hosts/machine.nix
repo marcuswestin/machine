@@ -28,7 +28,6 @@
     jq
     just
     mas
-    mise
     parallel
     ripgrep
   ];
