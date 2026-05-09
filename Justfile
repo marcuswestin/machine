@@ -50,16 +50,6 @@ git-auth:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    if [ "${MACHINE_GIT_AUTH:-1}" = "0" ]; then
-      echo "Skipping GitHub auth; MACHINE_GIT_AUTH=0"
-      exit 0
-    fi
-
-    if ! command -v gh >/dev/null 2>&1; then
-      echo "Skipping GitHub auth; gh is not installed yet"
-      exit 0
-    fi
-
     if gh auth status --hostname github.com >/dev/null 2>&1; then
       echo "GitHub auth already configured"
     elif [ -t 0 ] && [ -t 1 ]; then
