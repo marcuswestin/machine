@@ -364,6 +364,13 @@ _launch-startup-apps:
       | while IFS=$'\t' read -r name app_path executable args_joined; do
           [ -n "$name" ] || continue
 
+          process_name="$(basename "$executable")"
+          if pgrep -x "$process_name" >/dev/null 2>&1 \
+            || pgrep -f "$executable" >/dev/null 2>&1; then
+            printf '%s already running\n' "$name"
+            continue
+          fi
+
           if [ -e "$app_path" ] && /usr/bin/open -gj "$app_path"; then
             continue
           fi

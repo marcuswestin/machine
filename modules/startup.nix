@@ -26,6 +26,15 @@ let
     app:
     lib.nameValuePair "open-${lib.toLower app.name}" {
       script = ''
+        process_name="$(/usr/bin/basename ${lib.escapeShellArg app.executable})"
+        if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1; then
+          exit 0
+        fi
+
+        if /usr/bin/pgrep -f ${lib.escapeShellArg app.executable} >/dev/null 2>&1; then
+          exit 0
+        fi
+
         if [ -e ${lib.escapeShellArg app.appPath} ]; then
           /usr/bin/open -gj ${lib.escapeShellArg app.appPath} && exit 0
         fi
