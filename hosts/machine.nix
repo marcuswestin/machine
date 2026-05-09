@@ -24,6 +24,7 @@
     bun
     chezmoi
     cocoapods
+    gh
     git
     jq
     just

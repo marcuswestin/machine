@@ -20,7 +20,7 @@ back into `modules/apps.nix` after review.
 | `python@3.13` | previously commented | optional language runtime |
 | `golang-migrate` | previously commented | optional database tool |
 | `postgresql@18` | previously commented service | review before enabling service |
-| `gh` | previously commented | review GitHub auth flow first |
+| `gh` | previously commented | promoted to Nix package for GitHub auth |
 | `ollama` | previously commented | optional local model runtime |
 | `whisper-cpp` | previously commented | optional local speech tool |
 | `gemini-cli` | previously commented | optional AI CLI |

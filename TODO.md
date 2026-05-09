@@ -4,7 +4,6 @@
     - [ ] keybindings.json
     - [ ] settings.json.tmpl
 - [ ] Change marcus.westin@gmail.com to ro.marcus.westin@gmail.com
-- [ ] Fix git config to make "git push" work without adding the origin upstream
 - [ ] Cleanup LOTS.
     - [ ] Parallel command is looking complicated in lots of places
 - [ ] Create setups for agents setups (skills etc)
