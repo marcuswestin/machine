@@ -25,7 +25,7 @@ _up:
 doctor:
     @printf 'repo: %s\n' "{{repo}}"
     @printf 'host: %s\n' "{{host}}"
-    @for cmd in nix git just brew chezmoi mas darwin-rebuild; do \
+    @for cmd in nix git gh just brew chezmoi mas darwin-rebuild; do \
       if command -v "$cmd" >/dev/null 2>&1; then \
         printf 'ok   %s -> %s\n' "$cmd" "$(command -v "$cmd")"; \
       else \
@@ -41,8 +41,25 @@ doctor:
 _post-darwin:
     @just dotfiles-apply
     @just _install-editor-extensions
+    @just git-auth
     @just repos-sync
     @just _launch-startup-apps
+
+# Authenticate GitHub CLI and configure GitHub HTTPS pushes.
+git-auth:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if gh auth status --hostname github.com >/dev/null 2>&1; then
+      echo "GitHub auth already configured"
+    elif [ -t 0 ] && [ -t 1 ]; then
+      gh auth login --hostname github.com --git-protocol https --web
+    else
+      echo "Skipping GitHub auth; run 'just git-auth' from an interactive terminal"
+      exit 0
+    fi
+
+    gh auth setup-git --hostname github.com
 
 _prune-check:
     @output="$(just prune-diff 2>&1)" || true; \
