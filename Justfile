@@ -48,8 +48,13 @@ git-auth:
     gh auth setup-git --hostname github.com
 
 _prune-check:
-    @output="$(just prune-diff 2>&1)" || true; \
-      if printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions|^diff --git'; then \
+    @set +e; \
+      output="$(just prune-diff 2>&1)"; \
+      status="$?"; \
+      set -e; \
+      if [ "$status" -ne 0 ]; then \
+        printf '\nPrune check failed:\n%s\n' "$output" >&2; \
+      elif printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions|^diff --git'; then \
         printf '\nPrune candidates found:\n%s\n\nRun this to prune them:\n  just prune-apply\n' "$output"; \
       else \
         printf '\nNo prune candidates found.\n'; \
