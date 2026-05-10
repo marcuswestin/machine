@@ -1,4 +1,4 @@
-{ user, ... }:
+{ pkgs, user, ... }:
 
 {
   home-manager = {
@@ -21,6 +21,8 @@
           VISUAL = "cursor -w";
           HOMEBREW_NO_ENV_HINTS = "1";
         };
+
+        packages = [ pkgs.direnv ];
       };
 
       programs.home-manager.enable = true;
