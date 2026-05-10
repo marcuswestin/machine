@@ -56,8 +56,16 @@ verify:
     dprint check .
     {{ NIX_CMD }} flake check --show-trace
 
+# Build settings.rayconfig from settings.json and open it (always; ignores change stamp).
+raycast-import:
+    @{{ REPO }}/scripts/raycast-settings-sync.sh "{{ REPO }}" force
+
 # Private recipes
 #################
+
+# If config/raycast/settings.json changed, gzip + open for Raycast import (see scripts/raycast-settings-sync.sh).
+_raycast-settings-sync:
+    @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}"
 
 # Apply
 #####
@@ -85,6 +93,7 @@ _after-switch:
     @printf '\nInstalling editor extensions (may take a while)...\n'
     @just _install-editor-extensions
     @just _launch-startup-apps
+    @just _raycast-settings-sync
 
 _git-auth:
     #!/usr/bin/env bash
