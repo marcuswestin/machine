@@ -230,4 +230,3 @@ _import-home-files-review dir="inventory/home":
     [ ! -f "$HOME/.gitignore" ] || cp "$HOME/.gitignore" "{{dir}}/gitignore"
     [ ! -f "$HOME/.config/vscode-family/settings.json" ] || cp "$HOME/.config/vscode-family/settings.json" "{{dir}}/vscode-family-settings.json"
     [ ! -f "$HOME/.config/vscode-family/keybindings.json" ] || cp "$HOME/.config/vscode-family/keybindings.json" "{{dir}}/vscode-family-keybindings.json"
-    [ ! -f "$HOME/Library/Application Support/com.mitchellh.ghostty/config" ] || cp "$HOME/Library/Application Support/com.mitchellh.ghostty/config" "{{dir}}/ghostty-config"

@@ -17,7 +17,6 @@
       "cursor"
       "visual-studio-code"
       "iterm2"
-      "ghostty"
       "docker-desktop"
       "codex-app"
       "antigravity"
