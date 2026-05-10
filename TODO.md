@@ -3,9 +3,8 @@
     - [ ] keybindings.json
     - [ ] settings.json.tmpl
 - [ ] Change marcus.westin@gmail.com to ro.marcus.westin@gmail.com
-- [ ] Cleanup LOTS.
-    - [ ] Parallel command is looking complicated in lots of places
 - [ ] Create setups for agents setups (skills etc)
 - [ ] Import additional things
     - [ ] Review hotkeys
-    - [ ] Ask agent for what else to look through current machine to consider
+    - [x] Ask agent for what else to look through current machine to consider
+        - See `inventory/current-machine-review.md`
