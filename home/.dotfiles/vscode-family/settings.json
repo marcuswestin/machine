@@ -6,6 +6,15 @@
     }
   ],
   "vim.normalModeKeyBindingsNonRecursive": [
+    // Route Vim undo/redo through VS Code so the tab dirty dot tracks reverted files.
+    {
+      "before": ["u"],
+      "commands": ["undo"]
+    },
+    {
+      "before": ["<C-r>"],
+      "commands": ["redo"]
+    },
     {
       "before": ["Q"],
       "after": ["@", "@"]
