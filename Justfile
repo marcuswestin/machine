@@ -15,7 +15,7 @@ apply:
 
 # Apply dotfile changes with chezmoi
 chezmoi-apply:
-    chezmoi apply --force --no-tty --source "{{REPO}}/home"
+    chezmoi apply --force --no-tty --source "{{ REPO }}/home"
 
 # Capture current machine state into reviewable inventory files.
 import-current:
@@ -33,7 +33,7 @@ git-auth:
 
 # Capture the current display arrangement as the checked-in replay script.
 display-layout-capture file="scripts/display-layout.sh":
-    @just _display-layout-capture "{{file}}"
+    @just _display-layout-capture "{{ file }}"
 
 # Show undeclared Homebrew formulae/casks, editor extensions, and dotfile drift.
 prune-diff:
@@ -47,9 +47,14 @@ prune:
     @just _prune-editor-extensions-apply
     @just chezmoi-apply
 
+# Format repo files with dprint (config: `home/.dotfiles/dprint/dprint.json`).
+fmt:
+    dprint fmt .
+
 # Validate the Nix flake without applying it.
 verify:
-    {{NIX_CMD}} flake check --show-trace
+    dprint check .
+    {{ NIX_CMD }} flake check --show-trace
 
 # Private recipes
 #################
@@ -68,7 +73,7 @@ _apply:
 
 # `darwin-rebuild switch` for this flake (nix-darwin system generation).
 _system-switch host=HOST:
-    sudo -H env "PATH=$PATH" {{NIX_CMD}} run nix-darwin/master#darwin-rebuild -- switch --flake ".#{{host}}"
+    sudo -H env "PATH=$PATH" {{ NIX_CMD }} run nix-darwin/master#darwin-rebuild -- switch --flake ".#{{ host }}"
 
 # After switch
 ##############
@@ -102,7 +107,7 @@ _launch-startup-apps:
 
     # Join startup app args with ASCII Unit Separator (0x1f, octal 037) so
     # spaces inside individual args survive TSV parsing.
-    {{NIX_CMD}} eval --json .#darwinConfigurations.{{HOST}}.config.machine.startupApps \
+    {{ NIX_CMD }} eval --json .#darwinConfigurations.{{ HOST }}.config.machine.startupApps \
       | jq -r '.[] | [.name, .appPath, .executable, (.args | join("\u001f"))] | @tsv' \
       | while IFS=$'\t' read -r name app_path executable args_joined; do
           [ -n "$name" ] || continue
@@ -145,10 +150,10 @@ _prune-check:
       fi
 
 _prune-homebrew-diff:
-    @scripts/prune-homebrew.sh diff "{{HOST}}"
+    @scripts/prune-homebrew.sh diff "{{ HOST }}"
 
 _prune-homebrew-apply:
-    @scripts/prune-homebrew.sh apply "{{HOST}}"
+    @scripts/prune-homebrew.sh apply "{{ HOST }}"
 
 _prune-editor-extensions-diff:
     @scripts/editor-extensions.sh prune-diff
@@ -157,7 +162,7 @@ _prune-editor-extensions-apply:
     @scripts/editor-extensions.sh prune-apply
 
 _prune-dotfiles-diff:
-    @chezmoi diff --source "{{REPO}}/home" || true
+    @chezmoi diff --source "{{ REPO }}/home" || true
 
 # Display layout
 ##############
@@ -175,39 +180,39 @@ _display-layout-capture file="scripts/display-layout.sh":
       exit 1
     fi
 
-    cat > "{{file}}" <<EOF
+    cat > "{{ file }}" <<EOF
     #!/usr/bin/env bash
     set -euo pipefail
 
     # Captured from the current macOS display arrangement with displayplacer.
     exec $command
     EOF
-    chmod +x "{{file}}"
-    printf 'Captured display layout in %s\n' "{{file}}"
+    chmod +x "{{ file }}"
+    printf 'Captured display layout in %s\n' "{{ file }}"
 
 # Inventory
 ###########
 
 # Export current Homebrew state for review.
 _apps-dump file="inventory/Brewfile":
-    mkdir -p "$(dirname "{{file}}")"
-    brew bundle dump --force --file "{{file}}"
+    mkdir -p "$(dirname "{{ file }}")"
+    brew bundle dump --force --file "{{ file }}"
 
 _apps-apply file="inventory/Brewfile":
-    brew bundle --file "{{file}}"
+    brew bundle --file "{{ file }}"
 
 # Export current Mac App Store inventory for review.
 _mas-dump file="inventory/mas.json":
     #!/usr/bin/env bash
     set -euo pipefail
-    mkdir -p "$(dirname "{{file}}")"
+    mkdir -p "$(dirname "{{ file }}")"
     if command -v mas >/dev/null 2>&1; then
-      mas list --json > "{{file}}"
+      mas list --json > "{{ file }}"
     fi
 
 # Export selected macOS preferences for review, not blind re-application.
 _defaults-capture dir="inventory/defaults":
-    mkdir -p "{{dir}}"
+    mkdir -p "{{ dir }}"
     for domain in \
       NSGlobalDomain \
       com.apple.dock \
@@ -216,30 +221,33 @@ _defaults-capture dir="inventory/defaults":
       com.apple.driver.AppleBluetoothMultitouch.trackpad \
       com.apple.symbolichotkeys \
       com.apple.universalaccess; do \
-      defaults export "$domain" "{{dir}}/$domain.plist" 2>/dev/null || true; \
+      defaults export "$domain" "{{ dir }}/$domain.plist" 2>/dev/null || true; \
     done
 
 _import-editor-extensions dir="inventory/editor-extensions":
     @code_cli="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; \
       cursor_cli="/Applications/Cursor.app/Contents/Resources/app/bin/cursor"; \
-      mkdir -p "{{dir}}"; \
-      [ -x "$code_cli" ] && "$code_cli" --list-extensions > "{{dir}}/code.txt" || true; \
-      [ -x "$cursor_cli" ] && "$cursor_cli" --list-extensions > "{{dir}}/cursor.txt" || true
+      mkdir -p "{{ dir }}"; \
+      [ -x "$code_cli" ] && "$code_cli" --list-extensions > "{{ dir }}/code.txt" || true; \
+      [ -x "$cursor_cli" ] && "$cursor_cli" --list-extensions > "{{ dir }}/cursor.txt" || true
 
 _import-home-files-review dir="inventory/home":
-    mkdir -p "{{dir}}"
-    [ ! -f "$HOME/.zshrc" ] || cp "$HOME/.zshrc" "{{dir}}/zshrc"
-    [ ! -f "$HOME/.zprofile" ] || cp "$HOME/.zprofile" "{{dir}}/zprofile"
-    [ ! -f "$HOME/.zshenv" ] || cp "$HOME/.zshenv" "{{dir}}/zshenv"
-    [ ! -f "$HOME/.gitconfig" ] || cp "$HOME/.gitconfig" "{{dir}}/gitconfig"
-    [ ! -f "$HOME/.gitignore" ] || cp "$HOME/.gitignore" "{{dir}}/gitignore"
-    [ ! -f "$HOME/.aerospace.toml" ] || cp "$HOME/.aerospace.toml" "{{dir}}/aerospace.toml"
-    [ ! -f "$HOME/.config/vscode-family/settings.json" ] || cp "$HOME/.config/vscode-family/settings.json" "{{dir}}/vscode-family-settings.json"
-    [ ! -f "$HOME/.config/vscode-family/keybindings.json" ] || cp "$HOME/.config/vscode-family/keybindings.json" "{{dir}}/vscode-family-keybindings.json"
-    [ ! -f "$HOME/.config/vscode-family/extensions.txt" ] || cp "$HOME/.config/vscode-family/extensions.txt" "{{dir}}/vscode-family-extensions.txt"
+    mkdir -p "{{ dir }}"
+    [ ! -f "$HOME/.zshrc" ] || cp "$HOME/.zshrc" "{{ dir }}/zshrc"
+    [ ! -f "$HOME/.zprofile" ] || cp "$HOME/.zprofile" "{{ dir }}/zprofile"
+    [ ! -f "$HOME/.zshenv" ] || cp "$HOME/.zshenv" "{{ dir }}/zshenv"
+    [ ! -f "$HOME/.gitconfig" ] || cp "$HOME/.gitconfig" "{{ dir }}/gitconfig"
+    [ ! -f "$HOME/.gitignore" ] || cp "$HOME/.gitignore" "{{ dir }}/gitignore"
+    [ ! -f "$HOME/.aerospace.toml" ] || cp "$HOME/.aerospace.toml" "{{ dir }}/aerospace.toml"
+    [ ! -f "$HOME/.config/vscode-family/settings.json" ] || cp "$HOME/.config/vscode-family/settings.json" "{{ dir }}/vscode-family-settings.json"
+    [ ! -f "$HOME/.config/vscode-family/keybindings.json" ] || cp "$HOME/.config/vscode-family/keybindings.json" "{{ dir }}/vscode-family-keybindings.json"
+    [ ! -f "$HOME/.config/vscode-family/extensions.txt" ] || cp "$HOME/.config/vscode-family/extensions.txt" "{{ dir }}/vscode-family-extensions.txt"
+    [ ! -f "$HOME/.config/dprint/dprint.json" ] || cp "$HOME/.config/dprint/dprint.json" "{{ dir }}/dprint.json"
+    [ ! -f "$HOME/.cursor/cli-config.json" ] || cp "$HOME/.cursor/cli-config.json" "{{ dir }}/cursor-cli-config.json"
+    [ ! -f "$HOME/Library/Application Support/Cursor/User/settings.json" ] || cp "$HOME/Library/Application Support/Cursor/User/settings.json" "{{ dir }}/cursor-User-settings.json"
 
 # Flake
 #######
 
 _update:
-    {{NIX_CMD}} flake update
+    {{ NIX_CMD }} flake update

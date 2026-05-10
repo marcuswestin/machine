@@ -17,6 +17,7 @@ just apply           # apply system/app/env/dotfile layers
 just chezmoi-apply   # apply chezmoi from this repo
 just git-auth        # authenticate GitHub CLI for GitHub HTTPS pushes
 just verify          # validate the flake
+just fmt             # format with dprint
 just prune-diff      # show undeclared apps/extensions and dotfile drift
 just prune           # prune undeclared apps/extensions and apply dotfiles
 just import-current  # capture current machine state into inventory for review
