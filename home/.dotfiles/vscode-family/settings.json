@@ -1,103 +1,122 @@
 {
-  "vim.insertModeKeyBindings": [
-    {
-      "before": ["j", "j"],
-      "after": ["<Esc>"]
-    }
-  ],
+  // Editor (appearance)
+  /////////////////////////////
+  "editor.fontSize": 12.5,
+  "editor.lineHeight": 17,
+  // "window.zoomLevel": 1.5, // Monitor extra large
+  "window.zoomLevel": 1.3, // Monitor large
+  // "window.zoomLevel": 0.8, // Monitor medium
+  // "window.zoomLevel": 0.15, // Laptop
+
+  // Vim
+  /////////////////////////////
+  "vim.insertModeKeyBindings": [{ "after": ["<Esc>"], "before": ["j", "j"] }],
   "vim.normalModeKeyBindingsNonRecursive": [
     // Route Vim undo/redo through VS Code so the tab dirty dot tracks reverted files.
-    {
-      "before": ["u"],
-      "commands": ["undo"]
-    },
     {
       "before": ["<C-r>"],
       "commands": ["redo"]
     },
-    {
-      "before": ["Q"],
-      "after": ["@", "@"]
-    }
+    { "after": ["@", "@"], "before": ["Q"] },
+    { "before": ["u"], "commands": ["undo"] }
   ],
-  // Slight zoom-in for editor readability; VS Code/Cursor accept fractional zoom levels.
-  "window.zoomLevel": 0.2,
-  "window.confirmSaveUntitledWorkspace": false,
-  "workbench.startupEditor": "none",
-  "workbench.secondarySideBar.defaultVisibility": "visible",
-  "workbench.colorTheme": "Dark Modern",
+
+  // Window, workbench, explorer
+  /////////////////////////////
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
+  "window.confirmSaveUntitledWorkspace": false,
+  "workbench.colorTheme": "Dark Modern",
+  "workbench.secondarySideBar.defaultVisibility": "visible",
+  "workbench.startupEditor": "none",
+
+  // Editor (general)
+  /////////////////////////////
   "editor.defaultFormatter": "biomejs.biome",
-  "editor.minimap.enabled": false,
-  "editor.renderWhitespace": "all",
-  "editor.formatOnSave": true,
-  "editor.wordWrapColumn": 120,
   "editor.inlineSuggest.enabled": true,
   "editor.inlineSuggest.edits.showCollapsed": true,
   "editor.inlineSuggest.showToolbar": "always",
+  "editor.minimap.enabled": false,
+  "editor.quickSuggestions": { "comments": "on", "other": "on", "strings": "on" },
+  "editor.renderWhitespace": "all",
   "editor.suggest.snippetsPreventQuickSuggestions": true,
-  "editor.quickSuggestions": {
-    "comments": "on",
-    "strings": "on",
-    "other": "on"
-  },
-  "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "explicit"
-  },
+  "editor.wordWrapColumn": 120,
+
+  // Editor (format on save, imports, whitespace in files)
+  /////////////////////////////
+  "editor.codeActionsOnSave": { "source.addMissingImports": "explicit", "source.organizeImports": "explicit" },
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+
+  // JavaScript & TypeScript (defaults)
+  /////////////////////////////
   "javascript.suggest.completeFunctionCalls": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "typescript.suggest.completeFunctionCalls": true,
-  "typescript.suggest.enabled": true,
   "typescript.format.enable": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.completeJSDocs": true,
+  "typescript.suggest.enabled": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "[typescript]": {
-    "editor.defaultFormatter": "dprint.dprint"
-  },
-  "[python]": {
-    "editor.formatOnType": true
-  },
+
+  // Per-language editor overrides
+  /////////////////////////////
   "[dockercompose]": {
-    "editor.insertSpaces": true,
-    "editor.tabSize": 2,
     "editor.autoIndent": "advanced",
-    "editor.defaultFormatter": "redhat.vscode-yaml"
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
   },
-  "[github-actions-workflow]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml"
-  },
+  "[github-actions-workflow]": { "editor.defaultFormatter": "redhat.vscode-yaml" },
+  "[json]": { "editor.defaultFormatter": "dprint.dprint" },
+  "[jsonc]": { "editor.defaultFormatter": "dprint.dprint" },
+  "[python]": { "editor.formatOnType": true },
+  "[typescript]": { "editor.defaultFormatter": "dprint.dprint" },
+
+  // Git
+  /////////////////////////////
   "git.openRepositoryInParentFolders": "never",
   "git.suggestSmartCommit": false,
-  "github.copilot.enable": {
-    "*": true,
-    "plaintext": true,
-    "markdown": false,
-    "scminput": false
-  },
-  "github.copilot.nextEditSuggestions.enabled": true,
+
+  // GitHub Copilot & inline AI
+  /////////////////////////////
   "chat.disableAIFeatures": true,
-  "continue.enableTabAutocomplete": true,
-  "continue.enableNextEdit": true,
-  "continue.showInlineTip": false,
   "claudeCode.preferredLocation": "panel",
+  "continue.enableNextEdit": true,
+  "continue.enableTabAutocomplete": true,
+  "continue.showInlineTip": false,
+  "github.copilot.enable": { "*": true, "markdown": false, "plaintext": true, "scminput": false },
+  "github.copilot.nextEditSuggestions.enabled": true,
   "tabnine.experimentalAutoImports": true,
+
+  // Telemetry & workspace security
+  /////////////////////////////
   "redhat.telemetry.enabled": false,
-  "security.workspace.trust.untrustedFiles": "open",
   "security.promptForLocalFileProtocolHandling": false,
+  "security.workspace.trust.untrustedFiles": "open",
+
+  // JSON schemas, file associations, YAML
+  /////////////////////////////
+  "files.associations": { "*.just": "just" },
   "json.schemaDownload.trustedDomains": {
-    "https://schemastore.azurewebsites.net/": true,
-    "https://raw.githubusercontent.com/": true,
-    "https://www.schemastore.org/": true,
-    "https://json.schemastore.org/": true,
+    "https://biomejs.dev": true,
     "https://json-schema.org/": true,
-    "https://biomejs.dev": true
+    "https://json.schemastore.org/": true,
+    "https://raw.githubusercontent.com/": true,
+    "https://schemastore.azurewebsites.net/": true,
+    "https://www.schemastore.org/": true
   },
-  "files.associations": {
-    "*.just": "just"
-  },
-  "cursor.cpp.disabledLanguages": ["scminput"],
-  "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "yaml.schemas": {},
+
+  // Cursor
+  /////////////////////////////
   "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
-  "cursor.inlineDiff.mode": "unified",
-  "yaml.schemas": {}
+  "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "cursor.cpp.disabledLanguages": ["scminput"],
+  "cursor.inlineDiff.mode": "unified"
 }
