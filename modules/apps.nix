@@ -25,9 +25,6 @@
       "zoom"
     ];
 
-    masApps = {
-      "Apple Developer" = 640199958;
-      "Xcode" = 497799835;
-    };
+    masApps = { };
   };
 }
