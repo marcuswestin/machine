@@ -2,6 +2,29 @@
 
 let
   userArg = lib.escapeShellArg user;
+  trackpadPreferences = {
+    Clicking = true;
+    DragLock = false;
+    Dragging = false;
+    TrackpadRightClick = true;
+    TrackpadScroll = true;
+    TrackpadThreeFingerDrag = true;
+  };
+  spotlightHotkeys = [
+    {
+      id = 64;
+      modifiers = 1048576;
+    }
+    {
+      id = 65;
+      modifiers = 1572864;
+    }
+  ];
+  disableSpotlightHotkey =
+    hotkey:
+    ''
+      launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${toString hotkey.id} '{ enabled = 0; value = { parameters = (32, 49, ${toString hotkey.modifiers}); type = standard; }; }'
+    '';
 in
 
 {
@@ -71,23 +94,8 @@ in
         "com.apple.trackpad.scrolling" = true;
       };
 
-      "com.apple.AppleMultitouchTrackpad" = {
-        Clicking = true;
-        DragLock = false;
-        Dragging = false;
-        TrackpadRightClick = true;
-        TrackpadScroll = true;
-        TrackpadThreeFingerDrag = true;
-      };
-
-      "com.apple.driver.AppleBluetoothMultitouch.trackpad" = {
-        Clicking = true;
-        DragLock = false;
-        Dragging = false;
-        TrackpadRightClick = true;
-        TrackpadScroll = true;
-        TrackpadThreeFingerDrag = true;
-      };
+      "com.apple.AppleMultitouchTrackpad" = trackpadPreferences;
+      "com.apple.driver.AppleBluetoothMultitouch.trackpad" = trackpadPreferences;
     };
 
     WindowManager = {
@@ -107,7 +115,6 @@ in
     # Disable Spotlight's default keyboard shortcuts so Raycast can own
     # Command-Space. Merge only these symbolic hotkey IDs to avoid replacing
     # the whole AppleSymbolicHotKeys dictionary.
-    launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 '{ enabled = 0; value = { parameters = (32, 49, 1048576); type = standard; }; }'
-    launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65 '{ enabled = 0; value = { parameters = (32, 49, 1572864); type = standard; }; }'
+    ${lib.concatMapStringsSep "\n" disableSpotlightHotkey spotlightHotkeys}
   '';
 }

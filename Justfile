@@ -69,91 +69,11 @@ import-current:
 
 # Show missing declared repos or origin remote mismatches.
 repos-diff:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    normalize_url() {
-      local value="$1"
-      printf '%s\n' "${value%.git}"
-    }
-
-    status=0
-    while IFS=$'\t' read -r rel_path url _rest; do
-      [ -n "$rel_path" ] || continue
-      [[ "$rel_path" == \#* ]] && continue
-
-      dest="{{code_dir}}/$rel_path"
-      if [ ! -e "$dest" ]; then
-        printf 'Missing repo: %s -> %s\n' "$dest" "$url"
-        status=1
-        continue
-      fi
-
-      if [ ! -d "$dest/.git" ]; then
-        printf 'Path exists but is not a git repo: %s\n' "$dest"
-        status=1
-        continue
-      fi
-
-      actual="$(git -C "$dest" remote get-url origin 2>/dev/null || true)"
-      if [ -z "$actual" ]; then
-        printf 'Repo has no origin remote: %s\n' "$dest"
-        status=1
-        continue
-      fi
-
-      if [ "$(normalize_url "$actual")" != "$(normalize_url "$url")" ]; then
-        printf 'Origin mismatch for %s:\n  expected: %s\n  actual:   %s\n' "$dest" "$url" "$actual"
-        status=1
-      fi
-    done < "{{repos_file}}"
-
-    exit "$status"
+    @scripts/repos.sh diff "{{repos_file}}" "{{code_dir}}"
 
 # Clone missing declared repos into ~/code without pulling or changing existing repos.
 repos-sync:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    mkdir -p "{{code_dir}}"
-
-    normalize_url() {
-      local value="$1"
-      printf '%s\n' "${value%.git}"
-    }
-
-    status=0
-    while IFS=$'\t' read -r rel_path url _rest; do
-      [ -n "$rel_path" ] || continue
-      [[ "$rel_path" == \#* ]] && continue
-
-      dest="{{code_dir}}/$rel_path"
-      if [ ! -e "$dest" ]; then
-        mkdir -p "$(dirname "$dest")"
-        git clone "$url" "$dest"
-        continue
-      fi
-
-      if [ ! -d "$dest/.git" ]; then
-        printf 'Path exists but is not a git repo: %s\n' "$dest" >&2
-        status=1
-        continue
-      fi
-
-      actual="$(git -C "$dest" remote get-url origin 2>/dev/null || true)"
-      if [ -z "$actual" ]; then
-        printf 'Repo has no origin remote: %s\n' "$dest" >&2
-        status=1
-        continue
-      fi
-
-      if [ "$(normalize_url "$actual")" != "$(normalize_url "$url")" ]; then
-        printf 'Origin mismatch for %s:\n  expected: %s\n  actual:   %s\n' "$dest" "$url" "$actual" >&2
-        status=1
-      fi
-    done < "{{repos_file}}"
-
-    exit "$status"
+    @scripts/repos.sh sync "{{repos_file}}" "{{code_dir}}"
 
 # Show undeclared Homebrew formulae/casks, editor extensions, and dotfile drift.
 prune-diff:
@@ -168,134 +88,16 @@ prune-apply:
     @just dotfiles-apply
 
 _prune-homebrew-diff:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    brewfile="$(mktemp)"
-    desired_casks="$(mktemp)"
-    desired_formulae="$(mktemp)"
-    trap 'rm -f "$brewfile" "$desired_casks" "$desired_formulae"' EXIT
-
-    nix {{nix_flags}} eval --raw .#darwinConfigurations.{{host}}.config.homebrew.brewfile > "$brewfile"
-
-    awk -F'"' '/^cask "/ { print $2 }' "$brewfile" | sort -fu > "$desired_casks"
-    extra_casks="$(comm -23 <(brew list --cask --full-name | sort -fu) "$desired_casks")"
-
-    if [ -n "$extra_casks" ]; then
-      printf 'Would uninstall casks:\n%s\n' "$extra_casks"
-    fi
-
-    awk -F'"' '/^brew "/ { print $2 }' "$brewfile" | sort -fu > "$desired_formulae"
-    installed="$(
-      brew leaves --installed-on-request 2>/dev/null || brew leaves
-    )"
-    extra_formulae="$(comm -23 <(printf '%s\n' "$installed" | sort -fu) "$desired_formulae")"
-
-    if [ -n "$extra_formulae" ]; then
-      printf 'Would uninstall formulae leaves:\n%s\n' "$extra_formulae"
-    fi
+    @scripts/prune-homebrew.sh diff "{{host}}"
 
 _prune-homebrew-apply:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    brewfile="$(mktemp)"
-    desired_casks="$(mktemp)"
-    desired_formulae="$(mktemp)"
-    trap 'rm -f "$brewfile" "$desired_casks" "$desired_formulae"' EXIT
-
-    nix {{nix_flags}} eval --raw .#darwinConfigurations.{{host}}.config.homebrew.brewfile > "$brewfile"
-
-    awk -F'"' '/^cask "/ { print $2 }' "$brewfile" | sort -fu > "$desired_casks"
-    extra_casks="$(comm -23 <(brew list --cask --full-name | sort -fu) "$desired_casks")"
-
-    if [ -n "$extra_casks" ]; then
-      while IFS= read -r cask; do
-        HOMEBREW_NO_AUTOREMOVE=1 brew uninstall --cask --force "$cask"
-      done <<< "$extra_casks"
-    fi
-
-    awk -F'"' '/^brew "/ { print $2 }' "$brewfile" | sort -fu > "$desired_formulae"
-    installed="$(
-      brew leaves --installed-on-request 2>/dev/null || brew leaves
-    )"
-    extra_formulae="$(comm -23 <(printf '%s\n' "$installed" | sort -fu) "$desired_formulae")"
-
-    if [ -n "$extra_formulae" ]; then
-      while IFS= read -r formula; do
-        HOMEBREW_NO_AUTOREMOVE=1 brew uninstall --force "$formula"
-      done <<< "$extra_formulae"
-    fi
+    @scripts/prune-homebrew.sh apply "{{host}}"
 
 _prune-editor-extensions-diff:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    diff_extensions() {
-      local name="$1"
-      local cli="$2"
-      local desired_file="$3"
-      local err_file=""
-      local installed=""
-
-      err_file="$(mktemp)"
-      trap 'rm -f "$err_file"' RETURN
-
-      if ! installed="$("$cli" --list-extensions 2>"$err_file")"; then
-        cat "$err_file" >&2
-        return 1
-      fi
-
-      extra="$(
-        comm -23 \
-          <(printf '%s\n' "$installed" | sort -fu) \
-          <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
-      )"
-
-      if [ -n "$extra" ]; then
-        printf 'Undeclared %s extensions:\n%s\n' "$name" "$extra"
-      fi
-    }
-
-    diff_extensions "VS Code" "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "home/dot_config/vscode-family/extensions.code.txt"
-    diff_extensions "Cursor" "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "home/dot_config/vscode-family/extensions.cursor.txt"
+    @scripts/editor-extensions.sh prune-diff
 
 _prune-editor-extensions-apply:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    prune_extensions() {
-      local name="$1"
-      local cli="$2"
-      local desired_file="$3"
-      local err_file=""
-      local installed=""
-
-      err_file="$(mktemp)"
-      trap 'rm -f "$err_file"' RETURN
-
-      if ! installed="$("$cli" --list-extensions 2>"$err_file")"; then
-        cat "$err_file" >&2
-        return 1
-      fi
-
-      extra="$(
-        comm -23 \
-          <(printf '%s\n' "$installed" | sort -fu) \
-          <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
-      )"
-
-      if [ -z "$extra" ]; then
-        return
-      fi
-
-      while IFS= read -r extension; do
-        "$cli" --uninstall-extension "$extension"
-      done <<< "$extra"
-    }
-
-    prune_extensions "VS Code" "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "home/dot_config/vscode-family/extensions.code.txt"
-    prune_extensions "Cursor" "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "home/dot_config/vscode-family/extensions.cursor.txt"
+    @scripts/editor-extensions.sh prune-apply
 
 _prune-dotfiles-diff:
     @chezmoi diff --source "{{repo}}/home" || true
@@ -310,36 +112,7 @@ dotfiles-diff:
     @chezmoi diff --source "{{repo}}/home" || true
 
 _install-editor-extensions:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    install_extensions() {
-      local cli="$1"
-      local desired_file="$2"
-      local output=""
-      local status=0
-
-      while IFS= read -r extension; do
-        if output="$("$cli" --install-extension "$extension" 2>&1)"; then
-          continue
-        fi
-
-        status="$?"
-        printf '%s\n' "$output" >&2
-        return "$status"
-      done < <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
-    }
-
-    echo "Installing VS Code and Cursor extensions..."
-
-    install_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "home/dot_config/vscode-family/extensions.code.txt" &
-    code_pid="$!"
-
-    install_extensions "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "home/dot_config/vscode-family/extensions.cursor.txt" &
-    cursor_pid="$!"
-
-    wait "$code_pid"
-    wait "$cursor_pid"
+    @scripts/editor-extensions.sh install
 
 _launch-startup-apps:
     #!/usr/bin/env bash

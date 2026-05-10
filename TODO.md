@@ -1,5 +1,4 @@
 
-- [ ] Make extensions lists a single one. Mark cursor-ignored ones somehow (make it different format than txt?)
 - [ ] Review:
     - [ ] keybindings.json
     - [ ] settings.json.tmpl
