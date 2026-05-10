@@ -32,6 +32,12 @@ let
       executable = "/Applications/CodexBar.app/Contents/MacOS/CodexBar";
       args = [ ];
     }
+    {
+      name = "Docker";
+      appPath = "/Applications/Docker.app";
+      executable = "/Applications/Docker.app/Contents/MacOS/com.docker.backend";
+      args = [ ];
+    }
   ];
 
   launchAgentFor =
