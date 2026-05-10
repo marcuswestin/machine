@@ -52,7 +52,8 @@ in
       AppleInterfaceStyle = "Dark";
       ApplePressAndHoldEnabled = false; # Enable key repeat instead of accent popup.
       "com.apple.swipescrolldirection" = true; # Natural scrolling.
-      # Lower values are faster; 10/1 are the fastest accepted repeat settings.
+      # macOS stores keyboard repeat timings in 15 ms units; this is a 150 ms
+      # initial delay followed by a 15 ms repeat interval.
       InitialKeyRepeat = 10;
       KeyRepeat = 1;
     };
