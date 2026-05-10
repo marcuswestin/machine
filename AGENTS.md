@@ -37,6 +37,10 @@ activation only when the option does not exist or macOS requires a special path.
 - Keep branch/default install references pointed at `main` unless the user is
   explicitly testing another branch.
 - Preserve the `MACHINE_*` environment overrides in scripts where present.
+- Comment non-obvious settings where they are declared. For numeric or encoded
+  values such as macOS defaults IDs, modifier bitmasks, key codes, separator
+  characters, and state-version pins, look up what the value means and record
+  that meaning in an adjacent comment.
 
 ## Validation
 
