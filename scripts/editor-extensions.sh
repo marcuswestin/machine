@@ -8,7 +8,7 @@ fi
 
 mode="$1"
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-desired_file="$repo_dir/home/dot_config/vscode-family/extensions.txt"
+desired_file="$repo_dir/home/.dotfiles/vscode-family/extensions.txt"
 
 case "$mode" in
   install | prune-diff | prune-apply) ;;

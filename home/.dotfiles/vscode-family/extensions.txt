@@ -13,6 +13,7 @@ openai.chatgpt
 redhat.vscode-yaml
 ryuta46.multi-command
 saoudrizwan.claude-dev
+tamasfe.even-better-toml
 vitest.explorer
 yzhang.markdown-all-in-one
 vscodevim.vim

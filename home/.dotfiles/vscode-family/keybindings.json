@@ -1,5 +1,25 @@
 [
     {
+        "key": "shift+j",
+        "command": "cursorDownSelect",
+        "when": "editorTextFocus && vim.active && (vim.mode == 'Normal' || vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock')"
+    },
+    {
+        "key": "shift+k",
+        "command": "cursorUpSelect",
+        "when": "editorTextFocus && vim.active && (vim.mode == 'Normal' || vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock')"
+    },
+    {
+        "key": "shift+h",
+        "command": "cursorLeftSelect",
+        "when": "editorTextFocus && vim.active && (vim.mode == 'Normal' || vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock')"
+    },
+    {
+        "key": "shift+l",
+        "command": "cursorRightSelect",
+        "when": "editorTextFocus && vim.active && (vim.mode == 'Normal' || vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock')"
+    },
+    {
         "key": "ctrl+right",
         "command": "cursorWordPartRight",
         "when": "textInputFocus"
