@@ -26,6 +26,13 @@ unless asked.
   templates.
 - `inventory/`: review snapshots and deferred/imported machine state; do not
   blindly promote inventory entries into active config.
+- **`just import-current`** aggregates `_apps-dump`, `_mas-dump`, `_defaults-capture`,
+  `_import-editor-extensions`, and `_import-home-files-review`, and runs
+  `display-layout-capture` into `inventory/display-layout.sh` for review (errors ignored
+  if no replayable layout); that file is separate from the canonical replay script
+  `scripts/display-layout.sh` used by `_display-layout-apply`. When you add or move managed dotfiles, editor inventory paths, or
+  other capture targets, update those `_import-*` helpers and the `import-current`
+  recipe together so a single run still reflects the full snapshot set.
 
 Prefer first-class nix-darwin options over custom activation scripts. Use custom
 activation only when the option does not exist or macOS requires a special path.
@@ -59,7 +66,7 @@ bash -n scripts/up-local.sh
 bash -n scripts/with-sudo-keepalive.sh
 just --list
 just --dry-run apply
-nix flake check --extra-experimental-features 'nix-command flakes' --show-trace
+just verify
 ```
 
 For macOS defaults changes, also inspect the relevant nix-darwin option when
@@ -82,7 +89,7 @@ nix eval --extra-experimental-features 'nix-command flakes' \
 
 - `just apply` may install apps, apply macOS defaults, apply chezmoi dotfiles, and
   install editor extensions.
-- `just prune-diff` should show removals before `just prune-apply` executes
+- `just prune-diff` should show removals before `just prune` executes
   them.
 - Prune commands should stay conservative: only remove undeclared Homebrew
   leaves/casks and undeclared editor extensions.

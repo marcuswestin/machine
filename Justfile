@@ -1,113 +1,39 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
-repo := justfile_directory()
-host := env_var_or_default("MACHINE_HOST", "machine")
-repos_file := env_var_or_default("MACHINE_REPOS_FILE", repo + "/repos.tsv")
-code_dir := env_var_or_default("MACHINE_CODE_DIR", env_var("HOME") + "/code")
-nix_flags := "--extra-experimental-features 'nix-command flakes'"
 export PATH := "/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/opt/homebrew/bin:/usr/local/bin:" + env_var_or_default("PATH", "")
+
+REPO := justfile_directory()
+HOST := env_var_or_default("MACHINE_HOST", "machine")
+NIX_CMD := "nix --extra-experimental-features 'nix-command flakes'"
 
 default:
     @just --list
 
-# Apply system/app/env/dotfile layers and install editor extensions.
+# Update system/app/env/dotfile layers and install editor extensions.
 apply:
     @scripts/with-sudo-keepalive.sh just _apply
 
-_apply:
-    @just _darwin-switch
-    @just _post-darwin
-    @printf '\nMachine setup complete.\n'
-    @just _prune-check
-
-# Machine Setup
-###############
-
-# Post-switch tasks run after nix-darwin has installed tools/apps.
-_post-darwin:
-    @just git-auth
-    @just dotfiles-apply
-    @just _install-editor-extensions
-    @just repos-sync
-    @just _launch-startup-apps
-
-# Authenticate GitHub CLI and configure GitHub HTTPS pushes.
-git-auth:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    if gh auth status --hostname github.com >/dev/null 2>&1; then
-      echo "GitHub auth already configured"
-    elif [ -t 0 ] && [ -t 1 ]; then
-      gh auth login --hostname github.com --git-protocol https --web
-    else
-      echo "Skipping GitHub auth; run 'just git-auth' from an interactive terminal"
-      exit 0
-    fi
-
-    gh auth setup-git --hostname github.com
-
-_prune-check:
-    @set +e; \
-      output="$(just prune-diff 2>&1)"; \
-      status="$?"; \
-      set -e; \
-      if [ "$status" -ne 0 ]; then \
-        printf '\nPrune check failed:\n%s\n' "$output" >&2; \
-      elif printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions|^diff --git'; then \
-        printf '\nPrune candidates found:\n%s\n\nRun this to prune them:\n  just prune-apply\n' "$output"; \
-      else \
-        printf '\nNo prune candidates found.\n'; \
-      fi
-
-
-# Save Machine State
-####################
+# Apply dotfile changes with chezmoi
+chezmoi-apply:
+    chezmoi apply --force --no-tty --source "{{REPO}}/home"
 
 # Capture current machine state into reviewable inventory files.
 import-current:
     just _apps-dump
+    just _mas-dump
     just _defaults-capture
     just _import-editor-extensions
     just _import-home-files-review
+    -just display-layout-capture inventory/display-layout.sh
     git status --short
 
-# Show missing declared repos or origin remote mismatches.
-repos-diff:
-    @scripts/repos.sh diff "{{repos_file}}" "{{code_dir}}"
-
-# Clone missing declared repos into ~/code without pulling or changing existing repos.
-repos-sync:
-    @scripts/repos.sh sync "{{repos_file}}" "{{code_dir}}"
-
-# Replay the checked-in display arrangement.
-display-layout-apply:
-    @scripts/display-layout.sh
-
-# Show the current displayplacer layout and replay command.
-display-layout-list:
-    @displayplacer list
+# Authenticate GitHub CLI and configure GitHub HTTPS pushes.
+git-auth:
+    @just _git-auth
 
 # Capture the current display arrangement as the checked-in replay script.
 display-layout-capture file="scripts/display-layout.sh":
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    command="$(displayplacer list | awk '/^displayplacer( |$)/ { print; exit }')"
-    if [ -z "$command" ] || [ "$command" = "displayplacer" ]; then
-      printf 'No replayable display layout found. Connect and arrange the displays, then rerun this recipe.\n' >&2
-      exit 1
-    fi
-
-    cat > "{{file}}" <<EOF
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # Captured from the current macOS display arrangement with displayplacer.
-    exec $command
-    EOF
-    chmod +x "{{file}}"
-    printf 'Captured display layout in %s\n' "{{file}}"
+    @just _display-layout-capture "{{file}}"
 
 # Show undeclared Homebrew formulae/casks, editor extensions, and dotfile drift.
 prune-diff:
@@ -116,34 +42,56 @@ prune-diff:
     @just _prune-dotfiles-diff
 
 # Remove undeclared Homebrew formulae/casks and editor extensions, then apply dotfiles.
-prune-apply:
+prune:
     @just _prune-homebrew-apply
     @just _prune-editor-extensions-apply
-    @just dotfiles-apply
+    @just chezmoi-apply
 
-_prune-homebrew-diff:
-    @scripts/prune-homebrew.sh diff "{{host}}"
+# Validate the Nix flake without applying it.
+verify:
+    {{NIX_CMD}} flake check --show-trace
 
-_prune-homebrew-apply:
-    @scripts/prune-homebrew.sh apply "{{host}}"
+# Private recipes
+#################
 
-_prune-editor-extensions-diff:
-    @scripts/editor-extensions.sh prune-diff
+# Apply
+#####
 
-_prune-editor-extensions-apply:
-    @scripts/editor-extensions.sh prune-apply
+_apply:
+    @just _system-switch
+    @just _after-switch
+    @printf '\nMachine setup complete.\n'
+    @just _prune-check
 
-_prune-dotfiles-diff:
-    @chezmoi diff --source "{{repo}}/home" || true
+# System switch
+###############
 
-_darwin-switch host=host:
-    sudo -H env "PATH=$PATH" nix {{nix_flags}} run nix-darwin/master#darwin-rebuild -- switch --flake ".#{{host}}"
+# `darwin-rebuild switch` for this flake (nix-darwin system generation).
+_system-switch host=HOST:
+    sudo -H env "PATH=$PATH" {{NIX_CMD}} run nix-darwin/master#darwin-rebuild -- switch --flake ".#{{host}}"
 
-dotfiles-apply:
-    chezmoi apply --force --no-tty --source "{{repo}}/home"
+# After switch
+##############
 
-dotfiles-diff:
-    @chezmoi diff --source "{{repo}}/home" || true
+# After `darwin-rebuild switch`: auth, chezmoi, editor extensions, startup apps.
+_after-switch:
+    @just git-auth
+    @just chezmoi-apply
+    @just _install-editor-extensions
+    @just _launch-startup-apps
+
+_git-auth:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if gh auth status --hostname github.com >/dev/null 2>&1; then
+      echo "GitHub auth already configured"
+    elif [ -t 0 ] && [ -t 1 ]; then
+      gh auth login --hostname github.com --git-protocol https --web
+    else
+      echo "Skipping GitHub auth; run 'just git-auth' from an interactive terminal"
+      exit 0
+    fi
+    gh auth setup-git --hostname github.com
 
 _install-editor-extensions:
     @scripts/editor-extensions.sh install
@@ -154,7 +102,7 @@ _launch-startup-apps:
 
     # Join startup app args with ASCII Unit Separator (0x1f, octal 037) so
     # spaces inside individual args survive TSV parsing.
-    nix {{nix_flags}} eval --json .#darwinConfigurations.{{host}}.config.machine.startupApps \
+    {{NIX_CMD}} eval --json .#darwinConfigurations.{{HOST}}.config.machine.startupApps \
       | jq -r '.[] | [.name, .appPath, .executable, (.args | join("\u001f"))] | @tsv' \
       | while IFS=$'\t' read -r name app_path executable args_joined; do
           [ -n "$name" ] || continue
@@ -180,12 +128,65 @@ _launch-startup-apps:
           printf 'Could not launch startup app: %s\n' "$name" >&2
         done
 
-# Validate the Nix flake without applying it.
-check:
-    nix {{nix_flags}} flake check
+# Prune
+#######
 
-_update:
-    nix {{nix_flags}} flake update
+_prune-check:
+    @set +e; \
+      output="$(just prune-diff 2>&1)"; \
+      status="$?"; \
+      set -e; \
+      if [ "$status" -ne 0 ]; then \
+        printf '\nPrune check failed:\n%s\n' "$output" >&2; \
+      elif printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions|^diff --git'; then \
+        printf '\nPrune candidates found:\n%s\n\nRun this to prune them:\n  just prune\n' "$output"; \
+      else \
+        printf '\nNo prune candidates found.\n'; \
+      fi
+
+_prune-homebrew-diff:
+    @scripts/prune-homebrew.sh diff "{{HOST}}"
+
+_prune-homebrew-apply:
+    @scripts/prune-homebrew.sh apply "{{HOST}}"
+
+_prune-editor-extensions-diff:
+    @scripts/editor-extensions.sh prune-diff
+
+_prune-editor-extensions-apply:
+    @scripts/editor-extensions.sh prune-apply
+
+_prune-dotfiles-diff:
+    @chezmoi diff --source "{{REPO}}/home" || true
+
+# Display layout
+##############
+
+_display-layout-apply:
+    @scripts/display-layout.sh
+
+_display-layout-capture file="scripts/display-layout.sh":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    command="$(displayplacer list | awk '/^displayplacer( |$)/ { print; exit }')"
+    if [ -z "$command" ] || [ "$command" = "displayplacer" ]; then
+      printf 'No replayable display layout found. Connect and arrange the displays, then rerun this recipe.\n' >&2
+      exit 1
+    fi
+
+    cat > "{{file}}" <<EOF
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Captured from the current macOS display arrangement with displayplacer.
+    exec $command
+    EOF
+    chmod +x "{{file}}"
+    printf 'Captured display layout in %s\n' "{{file}}"
+
+# Inventory
+###########
 
 # Export current Homebrew state for review.
 _apps-dump file="inventory/Brewfile":
@@ -197,8 +198,12 @@ _apps-apply file="inventory/Brewfile":
 
 # Export current Mac App Store inventory for review.
 _mas-dump file="inventory/mas.json":
+    #!/usr/bin/env bash
+    set -euo pipefail
     mkdir -p "$(dirname "{{file}}")"
-    mas list --json > "{{file}}"
+    if command -v mas >/dev/null 2>&1; then
+      mas list --json > "{{file}}"
+    fi
 
 # Export selected macOS preferences for review, not blind re-application.
 _defaults-capture dir="inventory/defaults":
@@ -228,5 +233,13 @@ _import-home-files-review dir="inventory/home":
     [ ! -f "$HOME/.zshenv" ] || cp "$HOME/.zshenv" "{{dir}}/zshenv"
     [ ! -f "$HOME/.gitconfig" ] || cp "$HOME/.gitconfig" "{{dir}}/gitconfig"
     [ ! -f "$HOME/.gitignore" ] || cp "$HOME/.gitignore" "{{dir}}/gitignore"
+    [ ! -f "$HOME/.aerospace.toml" ] || cp "$HOME/.aerospace.toml" "{{dir}}/aerospace.toml"
     [ ! -f "$HOME/.config/vscode-family/settings.json" ] || cp "$HOME/.config/vscode-family/settings.json" "{{dir}}/vscode-family-settings.json"
     [ ! -f "$HOME/.config/vscode-family/keybindings.json" ] || cp "$HOME/.config/vscode-family/keybindings.json" "{{dir}}/vscode-family-keybindings.json"
+    [ ! -f "$HOME/.config/vscode-family/extensions.txt" ] || cp "$HOME/.config/vscode-family/extensions.txt" "{{dir}}/vscode-family-extensions.txt"
+
+# Flake
+#######
+
+_update:
+    {{NIX_CMD}} flake update

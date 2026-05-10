@@ -8,7 +8,7 @@ Arrange the displays in System Settings, then run:
   just display-layout-capture
 
 After reviewing the generated script, replay it with:
-  just display-layout-apply
+  just _display-layout-apply
 EOF
 
 exit 1

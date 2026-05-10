@@ -14,12 +14,11 @@ Run the bootstrap script from a fresh macOS install:
 
 ```sh
 just apply           # apply system/app/env/dotfile layers
-just dotfiles-diff   # review chezmoi changes
-just dotfiles-apply  # apply chezmoi changes directly
+just chezmoi-apply   # apply chezmoi from this repo
 just git-auth        # authenticate GitHub CLI for GitHub HTTPS pushes
-just check           # validate the flake
+just verify          # validate the flake
 just prune-diff      # show undeclared apps/extensions and dotfile drift
-just prune-apply     # prune undeclared apps/extensions and apply dotfiles
+just prune           # prune undeclared apps/extensions and apply dotfiles
 just import-current  # capture current machine state into inventory for review
 ```
 
@@ -31,5 +30,5 @@ just import-current  # capture current machine state into inventory for review
 - `chezmoi`: actual dotfiles and app config files.
 
 The default flow applies system/app/env layers and the repo-owned chezmoi
-dotfiles automatically. Use `just dotfiles-diff` first when you want to preview
-dotfile changes manually.
+dotfiles automatically. `just prune-diff` includes chezmoi drift alongside other
+undeclared state.
