@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# What: Delete a git tag, locally and remotely
+# Usage: gittag-delete <tag> [remote]
+# Examples:
+#> gittag-delete v1.0.0
+#> gittag-delete "v2 release"
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+TAGNAME="${1:-}"
+REMOTE="${2:-origin}"
+
+if [[ -z "$TAGNAME" ]]; then
+	echo "Usage: gittag-delete <tag> [remote]" >&2
+	exit 2
+fi
+
+git tag -d "$TAGNAME"
+git push "$REMOTE" ":refs/tags/$TAGNAME"

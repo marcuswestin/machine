@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# What: Push changes to the remote branch
+# Usage: gitp-push [remote [branch]]
+# Examples:
+#> gitp-push
+#> gitp-push master
+#> gitp-push origin master
+#> gitp-push marcuswestin_remote feature_branch
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+push_if_ahead() {
+	local repo_dir="$1"
+	shift
+
+	(
+		cd "$repo_dir"
+		echo "- Check $repo_dir"
+
+		if git status -sb | grep -q '\[ahead'; then
+			echo "- Push $repo_dir"
+			git push "$@"
+		fi
+	)
+}
+
+while IFS= read -r git_dir; do
+	push_if_ahead "$(dirname "$git_dir")" "$@"
+done < <(find . -depth -name .git -print 2>/dev/null | sort -r)

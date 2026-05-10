@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# What: Add a tag and push it to the remote
+# Usage: gittag-new <tag name> [remote]
+# Examples:
+#> gittag-new v1.0.0
+#> gittag-new "v2 release"
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+REMOTE="${2:-origin}"
+TAGNAME="${1:-}"
+
+if [[ -z "$TAGNAME" ]]; then
+	echo "Usage: gittag-new <tag> [remote]" >&2
+	exit 2
+fi
+
+git tag -a "$TAGNAME" -m "Tag $TAGNAME"
+
+echo "Pushing tag $TAGNAME..."
+git push "$REMOTE" "refs/tags/$TAGNAME"

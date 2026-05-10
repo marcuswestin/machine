@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# What: Pull from origin for the branch, then push it
+# Usage: gitu-updatenpush [branch]
+# Examples:
+#> gitu-updatenpush
+#> gitu-updatenpush master
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+if [[ $# -gt 1 ]]; then
+	echo "Usage: gitu-updatenpush [branch]" >&2
+	exit 2
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ -n "${1:-}" ]]; then
+	"$script_dir/gitu-update" "$1"
+else
+	"$script_dir/gitu-update"
+fi
+
+REMOTE="origin"
+BRANCH="$(git branch --show-current)"
+
+echo "Pushing..."
+git push "$REMOTE" "$BRANCH"
