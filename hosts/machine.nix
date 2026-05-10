@@ -27,6 +27,7 @@
     chezmoi
     cocoapods
     devenv
+    dprint
     direnv
     gh
     git
