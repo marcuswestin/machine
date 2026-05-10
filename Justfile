@@ -299,9 +299,17 @@ _install-editor-extensions:
     install_extensions() {
       local cli="$1"
       local desired_file="$2"
+      local output=""
+      local status=0
 
       while IFS= read -r extension; do
-        "$cli" --install-extension "$extension"
+        if output="$("$cli" --install-extension "$extension" 2>&1)"; then
+          continue
+        fi
+
+        status="$?"
+        printf '%s\n' "$output" >&2
+        return "$status"
       done < <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
     }
 
