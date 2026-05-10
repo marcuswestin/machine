@@ -12,9 +12,9 @@ nix_cmd() {
 }
 
 main() {
-  info "Running just up"
+  info "Running just apply"
   export MACHINE_HOST
-  nix_cmd shell nixpkgs#just -c just up
+  nix_cmd shell nixpkgs#just -c just apply
 }
 
 main "$@"

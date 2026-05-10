@@ -8,7 +8,7 @@ unless asked.
 
 - Fresh-machine entrypoint: `up.sh`.
 - Daily command surface: `just`.
-- Steady-state apply command: `just up`.
+- Steady-state apply command: `just apply`.
 - Public commands are the recipes shown by `just --list`; implementation
   recipes are prefixed with `_` and should stay private.
 - `up.sh` should remain minimal: install/load base Nix, ensure enough tooling to
@@ -56,7 +56,7 @@ bash -n up.sh
 bash -n scripts/up-local.sh
 bash -n scripts/with-sudo-keepalive.sh
 just --list
-just --dry-run up
+just --dry-run apply
 nix flake check --extra-experimental-features 'nix-command flakes' --show-trace
 ```
 
@@ -78,7 +78,7 @@ nix eval --extra-experimental-features 'nix-command flakes' \
 
 ## Fresh-Machine Safety
 
-- `just up` may install apps, apply macOS defaults, apply chezmoi dotfiles, and
+- `just apply` may install apps, apply macOS defaults, apply chezmoi dotfiles, and
   install editor extensions.
 - `just prune-diff` should show removals before `just prune-apply` executes
   them.

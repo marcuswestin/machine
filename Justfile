@@ -11,10 +11,10 @@ default:
     @just --list
 
 # Apply system/app/env/dotfile layers and install editor extensions.
-up:
-    @scripts/with-sudo-keepalive.sh just _up
+apply:
+    @scripts/with-sudo-keepalive.sh just _apply
 
-_up:
+_apply:
     @just _darwin-switch
     @just _post-darwin
     @printf '\nMachine setup complete.\n'

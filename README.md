@@ -13,7 +13,7 @@ Run the bootstrap script from a fresh macOS install:
 ## Daily Command Surface
 
 ```sh
-just up              # apply system/app/env/dotfile layers
+just apply           # apply system/app/env/dotfile layers
 just dotfiles-diff   # review chezmoi changes
 just dotfiles-apply  # apply chezmoi changes directly
 just git-auth        # authenticate GitHub CLI for GitHub HTTPS pushes
