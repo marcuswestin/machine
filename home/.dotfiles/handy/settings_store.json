@@ -17,7 +17,7 @@
         "name": "Cancel"
       },
       "transcribe": {
-        "current_binding": "ctrl_left+d",
+        "current_binding": "fn",
         "default_binding": "option+space",
         "description": "Converts your speech into text.",
         "id": "transcribe",
@@ -163,7 +163,7 @@
     "selected_output_device": null,
     "show_tray_icon": true,
     "sound_theme": "marimba",
-    "start_hidden": true,
+    "start_hidden": false,
     "translate_to_english": false,
     "typing_tool": "auto",
     "update_checks_enabled": true,
