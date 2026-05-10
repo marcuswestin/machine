@@ -65,6 +65,24 @@ persistent-workspaces = [
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 on-mode-changed = []
 
+# Force workspaces onto monitors (case-insensitive substring / regex; AeroSpace guide "Assign workspaces to monitors").
+[workspace-to-monitor-force-assignment]
+1 = 'dell'
+2 = 'dell'
+3 = 'dell'
+4 = 'dell'
+5 = 'dell'
+6 = 'dell'
+7 = 'dell'
+8 = 'dell'
+9 = 'dell'
+A = 'ultrafine'
+B = 'ultrafine'
+C = 'ultrafine'
+X = 'built-in'
+Y = 'built-in'
+Z = 'built-in'
+
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
 # - Constant:     gaps.outer.top = 8
