@@ -1,30 +1,15 @@
 {
   "version": 1,
-  "editor": {
-    "vimMode": false
-  },
+  "editor": { "vimMode": false },
   "notifications": true,
   "hints": true,
   "rewind": false,
   "suggestNextPrompt": false,
   "hasChangedDefaultModel": false,
-  "permissions": {
-    "allow": [
-      "Shell(ls)"
-    ],
-    "deny": []
-  },
+  "permissions": { "allow": ["Shell(ls)"], "deny": [] },
   "approvalMode": "allowlist",
-  "sandbox": {
-    "mode": "disabled",
-    "networkAccess": "user_config_with_defaults"
-  },
+  "sandbox": { "mode": "disabled", "networkAccess": "user_config_with_defaults" },
   "runEverythingSettingsPromptStreak": 0,
-  "network": {
-    "useHttp1ForAgent": false
-  },
-  "attribution": {
-    "attributeCommitsToAgent": true,
-    "attributePRsToAgent": true
-  }
+  "network": { "useHttp1ForAgent": false },
+  "attribution": { "attributeCommitsToAgent": true, "attributePRsToAgent": true }
 }
