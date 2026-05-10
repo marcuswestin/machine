@@ -37,6 +37,10 @@ activation only when the option does not exist or macOS requires a special path.
 - Keep branch/default install references pointed at `main` unless the user is
   explicitly testing another branch.
 - Preserve the `MACHINE_*` environment overrides in scripts where present.
+- Do not add safety checks, fallback branches, or workaround paths for
+  unexpected machine state. This repo is declarative: if state is unexpected,
+  fix the owning nix-darwin, Homebrew, Home Manager, or chezmoi declaration so
+  every managed machine converges to the same expected state.
 
 ## Validation
 
