@@ -1,6 +1,11 @@
 {
   "typescript": {},
-  "json": {},
+  "json": {
+    "jsonTrailingCommaFiles": ["**/.vscode/settings.json", "**/vscode-family/settings.json"],
+    "lineWidth": 120,
+    "preferSingleLine": false,
+    "trailingCommas": "jsonc"
+  },
   "markdown": {},
   "toml": {},
   "dockerfile": {},
@@ -13,9 +18,7 @@
   "markup": {},
   "yaml": {},
   "graphql": {},
-  "prettier": {
-    "associations": ["!**/Justfile", "!**/justfile"]
-  },
+  "prettier": {},
   "roslyn": {},
   "exec": {
     "cwd": "${configDir}",
@@ -27,10 +30,7 @@
       }
     ]
   },
-  "excludes": [
-    "**/node_modules",
-    "**/*-lock.json"
-  ],
+  "excludes": ["**/node_modules", "**/*-lock.json"],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.96.0.wasm",
     "https://plugins.dprint.dev/json-0.21.3.wasm",
