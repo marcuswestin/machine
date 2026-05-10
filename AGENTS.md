@@ -21,7 +21,9 @@ unless asked.
 - `nix-darwin`: system configuration, macOS defaults, Nix packages.
 - `nix-homebrew` / Homebrew: GUI apps and Brew-specific packages.
 - Home Manager: minimal PATH/env/session integration only.
-- `chezmoi`: actual dotfiles and app config files under `home/`.
+- `chezmoi`: actual dotfiles under `home/`; editable configs live in `home/.dotfiles/`
+  (hidden so chezmoi does not copy them) and are symlinked into `$HOME` via `symlink_*`
+  templates.
 - `inventory/`: review snapshots and deferred/imported machine state; do not
   blindly promote inventory entries into active config.
 
