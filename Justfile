@@ -15,24 +15,10 @@ up:
     @scripts/with-sudo-keepalive.sh just _up
 
 _up:
-    @just doctor
     @just _darwin-switch
     @just _post-darwin
-    @just _prune-check
     @printf '\nMachine setup complete.\n'
-
-# Show the base tool state for this machine.
-doctor:
-    @printf 'repo: %s\n' "{{repo}}"
-    @printf 'host: %s\n' "{{host}}"
-    @for cmd in nix git gh just brew chezmoi mas darwin-rebuild; do \
-      if command -v "$cmd" >/dev/null 2>&1; then \
-        printf 'ok   %s -> %s\n' "$cmd" "$(command -v "$cmd")"; \
-      else \
-        printf 'miss %s\n' "$cmd"; \
-      fi; \
-    done
-    @test -f flake.nix || printf 'miss flake.nix\n'
+    @just _prune-check
 
 # Machine Setup
 ###############
@@ -68,6 +54,7 @@ _prune-check:
       else \
         printf '\nNo prune candidates found.\n'; \
       fi
+
 
 # Save Machine State
 ####################
@@ -249,11 +236,6 @@ _prune-editor-extensions-diff:
       local cli="$2"
       local desired_file="$3"
 
-      if [ ! -x "$cli" ]; then
-        echo "Skipping $name extension prune diff; CLI not found at $cli"
-        return
-      fi
-
       extra="$(
         comm -23 \
           <("$cli" --list-extensions | sort -fu) \
@@ -279,11 +261,6 @@ _prune-editor-extensions-apply:
       local cli="$2"
       local desired_file="$3"
 
-      if [ ! -x "$cli" ]; then
-        echo "Skipping $name extension prune; CLI not found at $cli"
-        return
-      fi
-
       extra="$(
         comm -23 \
           <("$cli" --list-extensions | sort -fu) \
@@ -307,7 +284,6 @@ _prune-dotfiles-diff:
     @chezmoi diff --source "{{repo}}/home" || true
 
 _darwin-switch host=host:
-    @test -f flake.nix || { echo 'No flake.nix yet. Add the nix-darwin flake first.' >&2; exit 1; }
     sudo -H env "PATH=$PATH" nix {{nix_flags}} run nix-darwin/master#darwin-rebuild -- switch --flake ".#{{host}}"
 
 dotfiles-apply:
@@ -321,35 +297,18 @@ _install-editor-extensions:
     set -euo pipefail
 
     install_extensions() {
-      local name="$1"
-      local cli="$2"
-      local desired_file="$3"
-
-      if [ ! -x "$cli" ]; then
-        echo "Skipping $name extensions; CLI not found at $cli"
-        return
-      fi
-
-      missing="$(
-        comm -23 \
-          <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu) \
-          <("$cli" --list-extensions | sort -fu)
-      )"
-
-      if [ -z "$missing" ]; then
-        echo "$name extensions already installed"
-        return
-      fi
+      local cli="$1"
+      local desired_file="$2"
 
       while IFS= read -r extension; do
         "$cli" --install-extension "$extension"
-      done <<< "$missing"
+      done < <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
     }
 
-    install_extensions "VS Code" "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "home/dot_config/vscode-family/extensions.code.txt" &
+    install_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "home/dot_config/vscode-family/extensions.code.txt" &
     code_pid="$!"
 
-    install_extensions "Cursor" "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "home/dot_config/vscode-family/extensions.cursor.txt" &
+    install_extensions "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "home/dot_config/vscode-family/extensions.cursor.txt" &
     cursor_pid="$!"
 
     wait "$code_pid"
@@ -386,11 +345,9 @@ _launch-startup-apps:
 
 # Validate the Nix flake without applying it.
 check:
-    @test -f flake.nix || { echo 'No flake.nix yet.' >&2; exit 1; }
     nix {{nix_flags}} flake check
 
 _update:
-    @test -f flake.nix || { echo 'No flake.nix yet.' >&2; exit 1; }
     nix {{nix_flags}} flake update
 
 # Export current Homebrew state for review.
