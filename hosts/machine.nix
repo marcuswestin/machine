@@ -8,6 +8,7 @@
   imports = [
     ../modules/apps.nix
     ../modules/defaults.nix
+    ../modules/raycast.nix
     ../modules/home-manager.nix
     ../modules/homebrew.nix
     ../modules/startup.nix
