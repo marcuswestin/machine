@@ -61,11 +61,11 @@ nix eval --extra-experimental-features 'nix-command flakes' \
 
 ## Git
 
-- The user wants completed fixes committed and pushed by default.
+- Don't stage or commit changes unless asked to do so.
 - Before committing, check `git status --short`.
 - Commit only the files relevant to the completed fix.
 - Push the current branch after a successful commit.
-- If the worktree contains unrelated user changes, leave them alone.
+- If the worktree contains unrelated user changes, leave them alone, unless relevant to your change.
 
 ## Fresh-Machine Safety
 
