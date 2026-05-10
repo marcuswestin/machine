@@ -144,7 +144,7 @@ alt-8 = ['workspace 8']
 alt-9 = ['workspace 9']
 
 alt-i = ['workspace next']
-alt-u = ['workspace previous']
+alt-u = ['workspace prev']
 
 # Move window to workspace 1-9, A-Z
 alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
