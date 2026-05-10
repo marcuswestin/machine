@@ -25,9 +25,9 @@ _up:
 
 # Post-switch tasks run after nix-darwin has installed tools/apps.
 _post-darwin:
+    @just git-auth
     @just dotfiles-apply
     @just _install-editor-extensions
-    @just git-auth
     @just repos-sync
     @just _launch-startup-apps
 
@@ -235,16 +235,24 @@ _prune-editor-extensions-diff:
       local name="$1"
       local cli="$2"
       local desired_file="$3"
+      local err_file=""
+      local installed=""
+
+      err_file="$(mktemp)"
+      trap 'rm -f "$err_file"' RETURN
+
+      if ! installed="$("$cli" --list-extensions 2>"$err_file")"; then
+        cat "$err_file" >&2
+        return 1
+      fi
 
       extra="$(
         comm -23 \
-          <("$cli" --list-extensions | sort -fu) \
+          <(printf '%s\n' "$installed" | sort -fu) \
           <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
       )"
 
-      if [ -z "$extra" ]; then
-        echo "$name extensions match declaration"
-      else
+      if [ -n "$extra" ]; then
         printf 'Undeclared %s extensions:\n%s\n' "$name" "$extra"
       fi
     }
@@ -260,15 +268,24 @@ _prune-editor-extensions-apply:
       local name="$1"
       local cli="$2"
       local desired_file="$3"
+      local err_file=""
+      local installed=""
+
+      err_file="$(mktemp)"
+      trap 'rm -f "$err_file"' RETURN
+
+      if ! installed="$("$cli" --list-extensions 2>"$err_file")"; then
+        cat "$err_file" >&2
+        return 1
+      fi
 
       extra="$(
         comm -23 \
-          <("$cli" --list-extensions | sort -fu) \
+          <(printf '%s\n' "$installed" | sort -fu) \
           <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
       )"
 
       if [ -z "$extra" ]; then
-        echo "$name extensions match declaration"
         return
       fi
 
