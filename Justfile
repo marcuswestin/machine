@@ -80,6 +80,35 @@ repos-diff:
 repos-sync:
     @scripts/repos.sh sync "{{repos_file}}" "{{code_dir}}"
 
+# Replay the checked-in display arrangement.
+display-layout-apply:
+    @scripts/display-layout.sh
+
+# Show the current displayplacer layout and replay command.
+display-layout-list:
+    @displayplacer list
+
+# Capture the current display arrangement as the checked-in replay script.
+display-layout-capture file="scripts/display-layout.sh":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    command="$(displayplacer list | awk '/^displayplacer( |$)/ { print; exit }')"
+    if [ -z "$command" ] || [ "$command" = "displayplacer" ]; then
+      printf 'No replayable display layout found. Connect and arrange the displays, then rerun this recipe.\n' >&2
+      exit 1
+    fi
+
+    cat > "{{file}}" <<EOF
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Captured from the current macOS display arrangement with displayplacer.
+    exec $command
+    EOF
+    chmod +x "{{file}}"
+    printf 'Captured display layout in %s\n' "{{file}}"
+
 # Show undeclared Homebrew formulae/casks, editor extensions, and dotfile drift.
 prune-diff:
     @just _prune-homebrew-diff

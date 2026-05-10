@@ -2,7 +2,9 @@
 
 {
   homebrew = {
-    brews = [ ];
+    brews = [
+      "displayplacer"
+    ];
 
     casks = [
       "google-chrome"
