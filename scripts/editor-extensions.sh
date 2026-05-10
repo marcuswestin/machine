@@ -9,6 +9,7 @@ fi
 mode="$1"
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 desired_file="$repo_dir/home/.dotfiles/vscode-family/extensions.txt"
+prune_ignore_extensions="$(printf '%s\n' 'tao.tao-ide-extension')"
 
 case "$mode" in
   install | prune-diff | prune-apply) ;;
@@ -42,7 +43,7 @@ extra_extensions() {
   local cli="$1"
   local installed=""
 
-  installed="$(list_extensions "$cli")"
+  installed="$(list_extensions "$cli" | grep -vxFf <(printf '%s' "$prune_ignore_extensions") || true)"
   comm -23 \
     <(printf '%s\n' "$installed") \
     <(desired_extensions)
