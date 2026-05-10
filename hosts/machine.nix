@@ -26,6 +26,8 @@
     bun
     chezmoi
     cocoapods
+    devenv
+    direnv
     gh
     git
     jq
