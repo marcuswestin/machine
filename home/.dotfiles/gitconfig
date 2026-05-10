@@ -37,6 +37,8 @@
 [init]
 	defaultBranch = main
 [credential "https://github.com"]
-	helper = !gh auth git-credential
+	helper = 
+	helper = !/nix/store/iqnlcrakmwilxwwm2v127lvic5f11wj4-gh-2.92.0/bin/.gh-wrapped auth git-credential
 [credential "https://gist.github.com"]
-	helper = !gh auth git-credential
+	helper = 
+	helper = !/nix/store/iqnlcrakmwilxwwm2v127lvic5f11wj4-gh-2.92.0/bin/.gh-wrapped auth git-credential
