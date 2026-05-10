@@ -6,6 +6,7 @@ REPO_DIR="${MACHINE_REPO_DIR:-$HOME/code/machine}"
 REPO_REF="${MACHINE_REPO_REF:-feat/fine-tune-machine-settings}"
 MACHINE_HOST="${MACHINE_HOST:-machine}"
 NIX_INSTALL_URL="${NIX_INSTALL_URL:-https://install.determinate.systems/nix}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 info() {
   printf '\n==> %s\n' "$*"
@@ -27,21 +28,12 @@ nix_cmd() {
   nix --extra-experimental-features 'nix-command flakes' "$@"
 }
 
-start_sudo_keepalive() {
-  # Prompt once up front so privileged setup does not ask later mid-run.
-  sudo -v
+restart_with_sudo_keepalive() {
+  if [ "${MACHINE_SUDO_KEEPALIVE_ACTIVE:-}" = 1 ]; then
+    return
+  fi
 
-  while true; do
-    sudo -n -v 2>/dev/null || exit
-    sleep 30
-  done &
-  sudo_keepalive_pid="$!"
-
-  cleanup_sudo_keepalive() {
-    kill "$sudo_keepalive_pid" 2>/dev/null || true
-    sudo -k
-  }
-  trap cleanup_sudo_keepalive EXIT
+  exec "$SCRIPT_DIR/scripts/with-sudo-keepalive.sh" "$SCRIPT_DIR/up.sh" "$@"
 }
 
 install_nix() {
@@ -86,7 +78,7 @@ setup_machine() {
 }
 
 main() {
-  start_sudo_keepalive
+  restart_with_sudo_keepalive "$@"
   load_nix
   install_nix
   clone_repo
