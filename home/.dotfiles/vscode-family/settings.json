@@ -32,7 +32,7 @@
 
   // Editor (general)
   /////////////////////////////
-  "editor.defaultFormatter": "biomejs.biome",
+  "editor.defaultFormatter": "dprint.dprint",
   "editor.inlineSuggest.enabled": true,
   "editor.inlineSuggest.edits.showCollapsed": true,
   "editor.inlineSuggest.showToolbar": "always",
@@ -104,7 +104,6 @@
   /////////////////////////////
   "files.associations": { "*.just": "just" },
   "json.schemaDownload.trustedDomains": {
-    "https://biomejs.dev": true,
     "https://json-schema.org/": true,
     "https://json.schemastore.org/": true,
     "https://raw.githubusercontent.com/": true,
