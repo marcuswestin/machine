@@ -10,8 +10,11 @@ fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
 
 # ZSH completions
 fpath=("$HOME/.zsh-completions" $fpath)
+
 autoload -U compinit
 compinit
 
 # Aliases
 alias j="just"
+
+eval "$(direnv hook zsh)"

@@ -64,32 +64,17 @@ install_nix() {
   load_nix
 }
 
-install_git() {
-  local existing=""
-
-  if command -v git >/dev/null 2>&1; then
-    existing="$(command -v git)"
-    if [ "${existing#/usr/bin/}" = "$existing" ]; then
-      info "git already available at $existing"
-      return
-    fi
-
-    info "Ignoring Apple developer-tools shim at $existing"
-  fi
-
-  info "Installing git with Nix"
-  nix_cmd profile add nixpkgs#git
-  load_nix
-  hash -r
+git_cmd() {
+  nix_cmd shell nixpkgs#git -c git "$@"
 }
 
 clone_repo() {
   if [ -d "$REPO_DIR/.git" ]; then
     info "Repo already cloned at $REPO_DIR"
     info "Updating repo to latest $REPO_REF"
-    git -C "$REPO_DIR" fetch origin "$REPO_REF"
-    git -C "$REPO_DIR" checkout "$REPO_REF"
-    git -C "$REPO_DIR" pull --ff-only origin "$REPO_REF"
+    git_cmd -C "$REPO_DIR" fetch origin "$REPO_REF"
+    git_cmd -C "$REPO_DIR" checkout "$REPO_REF"
+    git_cmd -C "$REPO_DIR" pull --ff-only origin "$REPO_REF"
     return
   fi
 
@@ -100,7 +85,7 @@ clone_repo() {
 
   info "Cloning machine repo into $REPO_DIR"
   mkdir -p "$(dirname "$REPO_DIR")"
-  git clone --branch "$REPO_REF" "$REPO_URL" "$REPO_DIR"
+  git_cmd clone --branch "$REPO_REF" "$REPO_URL" "$REPO_DIR"
 }
 
 setup_machine() {
@@ -113,7 +98,6 @@ main() {
   start_sudo_keepalive
   load_nix
   install_nix
-  install_git
   clone_repo
   setup_machine
 

@@ -13,7 +13,8 @@ unless asked.
   recipes are prefixed with `_` and should stay private.
 - `up.sh` should remain minimal: install/load base Nix, ensure enough tooling to
   clone/update this repo, then hand off to `scripts/up-local.sh`.
-- `scripts/up-local.sh` should do local bootstrap checks and then call `just up`.
+- `scripts/up-local.sh` should invoke the declarative apply path with minimal
+  bootstrap, not inspect and repair unexpected local state.
 
 ## Ownership Boundaries
 
@@ -41,6 +42,10 @@ activation only when the option does not exist or macOS requires a special path.
   unexpected machine state. This repo is declarative: if state is unexpected,
   fix the owning nix-darwin, Homebrew, Home Manager, or chezmoi declaration so
   every managed machine converges to the same expected state.
+- Comment non-obvious settings where they are declared. For numeric or encoded
+  values such as macOS defaults IDs, modifier bitmasks, key codes, separator
+  characters, and state-version pins, look up what the value means and record
+  that meaning in an adjacent comment.
 
 ## Validation
 
@@ -65,11 +70,11 @@ nix eval --extra-experimental-features 'nix-command flakes' \
 
 ## Git
 
-- The user wants completed fixes committed and pushed by default.
+- Don't stage or commit changes unless asked to do so.
 - Before committing, check `git status --short`.
 - Commit only the files relevant to the completed fix.
 - Push the current branch after a successful commit.
-- If the worktree contains unrelated user changes, leave them alone.
+- If the worktree contains unrelated user changes, leave them alone, unless relevant to your change.
 
 ## Fresh-Machine Safety
 

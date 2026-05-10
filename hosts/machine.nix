@@ -10,6 +10,7 @@
     ../modules/defaults.nix
     ../modules/home-manager.nix
     ../modules/homebrew.nix
+    ../modules/startup.nix
   ];
 
   # Determinate Nix manages the daemon itself; nix-darwin must not.
@@ -25,15 +26,17 @@
     bun
     chezmoi
     cocoapods
+    gh
     git
     jq
     just
     mas
-    mise
     parallel
     ripgrep
   ];
 
   system.primaryUser = user;
+  # nix-darwin migration compatibility version. This is not the macOS version;
+  # only bump it intentionally when accepting nix-darwin state migrations.
   system.stateVersion = 6;
 }

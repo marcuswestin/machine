@@ -1,4 +1,4 @@
-{ user, ... }:
+{ pkgs, user, ... }:
 
 {
   home-manager = {
@@ -9,6 +9,8 @@
       home = {
         username = user;
         homeDirectory = "/Users/${user}";
+        # Home Manager migration compatibility version. This is not the
+        # installed package version; only bump it intentionally.
         stateVersion = "25.05";
 
         sessionPath = [
@@ -21,6 +23,8 @@
           VISUAL = "cursor -w";
           HOMEBREW_NO_ENV_HINTS = "1";
         };
+
+        packages = [ pkgs.direnv ];
       };
 
       programs.home-manager.enable = true;

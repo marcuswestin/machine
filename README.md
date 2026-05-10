@@ -16,7 +16,7 @@ Run the bootstrap script from a fresh macOS install:
 just up              # apply system/app/env/dotfile layers
 just dotfiles-diff   # review chezmoi changes
 just dotfiles-apply  # apply chezmoi changes directly
-just doctor          # show tool and repo state
+just git-auth        # authenticate GitHub CLI for GitHub HTTPS pushes
 just check           # validate the flake
 just prune-diff      # show undeclared apps/extensions and dotfile drift
 just prune-apply     # prune undeclared apps/extensions and apply dotfiles
