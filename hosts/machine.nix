@@ -15,6 +15,8 @@
   # Determinate Nix manages the daemon itself; nix-darwin must not.
   nix.enable = false;
 
+  security.pam.services.sudo_local.touchIdAuth = true;
+
   nixpkgs.hostPlatform = "aarch64-darwin";
 
   users.users.${user}.home = "/Users/${user}";

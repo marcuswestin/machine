@@ -6,6 +6,12 @@ if [ "$#" -eq 0 ]; then
   exit 64
 fi
 
+if [ "${MACHINE_SUDO_KEEPALIVE_ACTIVE:-}" = 1 ]; then
+  exec "$@"
+fi
+
+export MACHINE_SUDO_KEEPALIVE_ACTIVE=1
+
 # Prompt once up front. Later privileged commands still need to invoke `sudo`
 # explicitly; this only keeps the timestamp warm while the wrapped command runs.
 sudo -v

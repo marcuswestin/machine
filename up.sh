@@ -27,6 +27,32 @@ nix_cmd() {
   nix --extra-experimental-features 'nix-command flakes' "$@"
 }
 
+start_sudo_keepalive() {
+  if [ "${MACHINE_SUDO_KEEPALIVE_ACTIVE:-}" = 1 ]; then
+    return
+  fi
+
+  export MACHINE_SUDO_KEEPALIVE_ACTIVE=1
+
+  # Prompt once up front. Later privileged commands still need to invoke `sudo`
+  # explicitly; this only keeps the timestamp warm while setup runs.
+  sudo -v
+
+  # Refresh the sudo timestamp without prompting. If the timestamp is revoked or
+  # expires unexpectedly, the next sudo command will ask normally.
+  while true; do
+    sudo -n -v 2>/dev/null || exit
+    sleep 30
+  done &
+  sudo_keepalive_pid="$!"
+
+  cleanup_sudo_keepalive() {
+    kill "$sudo_keepalive_pid" 2>/dev/null || true
+    sudo -k
+  }
+  trap cleanup_sudo_keepalive EXIT
+}
+
 install_nix() {
   if command -v nix >/dev/null 2>&1; then
     info "Nix already installed"
@@ -84,6 +110,7 @@ setup_machine() {
 }
 
 main() {
+  start_sudo_keepalive
   load_nix
   install_nix
   install_git
