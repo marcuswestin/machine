@@ -1,0 +1,57 @@
+{
+  "builtin_package_default": {
+    "didMigrateQuicklinkFallbackSearch": true,
+    "disabledSiriShortcutIds": [],
+    "disabledSiriShortcutNames": [],
+    "didMigrateWebSearches": true,
+    "enabledFallbackSearchIdentifiers": [],
+    "installedNativeExtensionIdentifiers": [],
+    "provider_schemaVersion": 1
+  },
+  "builtin_package_raycastPreferences": {
+    "preferencesAdvanced": {
+      "keepWindowVisibleOnResignKey": false,
+      "mainWindowCaptureCopyToClipboard": true,
+      "mainWindowCaptureOpenQuickAccessOverlay": false,
+      "mainWindowCaptureShowInFinder": false,
+      "navigationCommandStyleIdentifierKey": "macos",
+      "popToRootTimeout": 90,
+      "raycastAPIOptions": 0,
+      "raycastWindowPresentationMode": 0,
+      "useHyperKeyIcon": false
+    },
+    "preferencesAppearance": {
+      "raycastPreferredWindowMode": "default",
+      "raycastUI_preferredTextSize": "medium",
+      "showFavoritesInCompactMode": true,
+      "statusBarIsVisible": true
+    },
+    "preferencesGeneral": {
+      "raycastAlternativeEscape": false,
+      "raycastGlobalHotkey": "Command-49"
+    },
+    "provider_schemaVersion": 1
+  },
+  "builtin_package_snippets": {
+    "provider_schemaVersion": 1,
+    "snippets": []
+  },
+  "raycast_app_defaults": {
+    "anonymousId": "00000000-0000-0000-0000-000000000000",
+    "firstKnownVersion": "1.104.16",
+    "installationDate": "2026-05-10T00:00:00Z",
+    "provider_schemaVersion": 1
+  },
+  "raycast_onboarding": {
+    "completedTaskIdentifiers": [],
+    "provider_schemaVersion": 1,
+    "showOnboardingItem": false
+  },
+  "raycast_user_activity": {
+    "activities": [],
+    "activityInfo": [],
+    "aiChatActivities": [],
+    "provider_schemaVersion": 1
+  },
+  "raycast_version": "1.104.16"
+}
