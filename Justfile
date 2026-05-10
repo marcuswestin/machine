@@ -82,6 +82,7 @@ _system-switch host=HOST:
 _after-switch:
     @just git-auth
     @just chezmoi-apply
+    @printf '\nInstalling editor extensions (may take a while)...\n'
     @just _install-editor-extensions
     @just _launch-startup-apps
 
@@ -245,6 +246,8 @@ _import-home-files-review dir="inventory/home":
     [ ! -f "$HOME/.config/dprint/dprint.json" ] || cp "$HOME/.config/dprint/dprint.json" "{{ dir }}/dprint.json"
     [ ! -f "$HOME/.cursor/cli-config.json" ] || cp "$HOME/.cursor/cli-config.json" "{{ dir }}/cursor-cli-config.json"
     [ ! -f "$HOME/Library/Application Support/Cursor/User/settings.json" ] || cp "$HOME/Library/Application Support/Cursor/User/settings.json" "{{ dir }}/cursor-User-settings.json"
+    [ ! -f "$HOME/Library/Application Support/com.pais.handy/settings_store.json" ] || cp "$HOME/Library/Application Support/com.pais.handy/settings_store.json" "{{ dir }}/handy-settings_store.json"
+    [ ! -f "$HOME/Library/Group Containers/group.com.docker/settings-store.json" ] || cp "$HOME/Library/Group Containers/group.com.docker/settings-store.json" "{{ dir }}/docker-settings-store.json"
 
 # Flake
 #######
