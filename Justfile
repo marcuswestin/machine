@@ -313,6 +313,8 @@ _install-editor-extensions:
       done < <(grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu)
     }
 
+    echo "Installing VS Code and Cursor extensions..."
+
     install_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "home/dot_config/vscode-family/extensions.code.txt" &
     code_pid="$!"
 
