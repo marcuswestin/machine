@@ -8,6 +8,7 @@
     taps = {
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
       "nikitabobko/tap" = inputs.homebrew-nikitabobko-tap;
+      "steipete/tap" = inputs.homebrew-steipete-tap;
     };
     user = user;
   };

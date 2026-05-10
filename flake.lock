@@ -70,6 +70,22 @@
         "url": "https://github.com/nikitabobko/homebrew-tap"
       }
     },
+    "homebrew-steipete-tap": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778431884,
+        "narHash": "sha256-zmW7QzrR/H156PDETIoQscwNzy7fyJxN02tgIbWrBkg=",
+        "ref": "refs/heads/main",
+        "rev": "e3b9681bace61639f397ba9658a0d4c905b2d935",
+        "revCount": 309,
+        "type": "git",
+        "url": "https://github.com/steipete/homebrew-tap"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/steipete/homebrew-tap"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -130,6 +146,7 @@
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-nikitabobko-tap": "homebrew-nikitabobko-tap",
+        "homebrew-steipete-tap": "homebrew-steipete-tap",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs"

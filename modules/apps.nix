@@ -14,14 +14,20 @@
       "handy"
       "spotify"
       "chatgpt"
+      "chatgpt-atlas"
       "cursor"
       "visual-studio-code"
       "iterm2"
       "docker-desktop"
       "codex-app"
+      "steipete/tap/codexbar"
       "antigravity"
+      "zoom"
     ];
 
-    masApps = { };
+    masApps = {
+      "Apple Developer" = 640199958;
+      "Xcode" = 497799835;
+    };
   };
 }

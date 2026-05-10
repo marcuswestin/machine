@@ -17,6 +17,10 @@
       url = "git+https://github.com/nikitabobko/homebrew-tap";
       flake = false;
     };
+    homebrew-steipete-tap = {
+      url = "git+https://github.com/steipete/homebrew-tap";
+      flake = false;
+    };
   };
 
   outputs =
