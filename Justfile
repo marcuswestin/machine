@@ -118,6 +118,8 @@ _launch-startup-apps:
     #!/usr/bin/env bash
     set -euo pipefail
 
+    # Join startup app args with ASCII Unit Separator (0x1f, octal 037) so
+    # spaces inside individual args survive TSV parsing.
     nix {{nix_flags}} eval --json .#darwinConfigurations.{{host}}.config.machine.startupApps \
       | jq -r '.[] | [.name, .appPath, .executable, (.args | join("\u001f"))] | @tsv' \
       | while IFS=$'\t' read -r name app_path executable args_joined; do
@@ -135,6 +137,7 @@ _launch-startup-apps:
           fi
 
           if [ -x "$executable" ]; then
+            # ASCII Unit Separator (0x1f, octal 037), matching the jq join above.
             IFS=$'\037' read -r -a args <<< "$args_joined"
             nohup "$executable" "${args[@]}" >/dev/null 2>&1 &
             continue

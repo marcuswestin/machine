@@ -9,6 +9,8 @@
       home = {
         username = user;
         homeDirectory = "/Users/${user}";
+        # Home Manager migration compatibility version. This is not the
+        # installed package version; only bump it intentionally.
         stateVersion = "25.05";
 
         sessionPath = [

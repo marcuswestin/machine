@@ -36,5 +36,7 @@
   ];
 
   system.primaryUser = user;
+  # nix-darwin migration compatibility version. This is not the macOS version;
+  # only bump it intentionally when accepting nix-darwin state migrations.
   system.stateVersion = 6;
 }

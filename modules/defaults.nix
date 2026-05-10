@@ -10,12 +10,23 @@ let
     TrackpadScroll = true;
     TrackpadThreeFingerDrag = true;
   };
+  # AppleSymbolicHotKeys stores shortcuts as opaque numeric plist values:
+  # id 64 is Spotlight search, id 65 is the Finder search window.
+  # Shortcut parameters are (character, keyCode, modifierMask). For Space,
+  # character is 32 and keyCode is 49. Modifier masks are Cocoa values:
+  # Command is 1048576, Option is 524288, and Command-Option is 1572864.
+  spotlightSpaceKey = {
+    character = 32;
+    keyCode = 49;
+  };
   spotlightHotkeys = [
     {
+      # Command-Space, disabled so Raycast can own that shortcut.
       id = 64;
       modifiers = 1048576;
     }
     {
+      # Command-Option-Space, the paired Finder search shortcut.
       id = 65;
       modifiers = 1572864;
     }
@@ -23,7 +34,7 @@ let
   disableSpotlightHotkey =
     hotkey:
     ''
-      launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${toString hotkey.id} '{ enabled = 0; value = { parameters = (32, 49, ${toString hotkey.modifiers}); type = standard; }; }'
+      launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${toString hotkey.id} '{ enabled = 0; value = { parameters = (${toString spotlightSpaceKey.character}, ${toString spotlightSpaceKey.keyCode}, ${toString hotkey.modifiers}); type = standard; }; }'
     '';
 in
 
@@ -36,12 +47,14 @@ in
 
   system.defaults = {
     NSGlobalDomain = {
-      AppleKeyboardUIMode = 2; # Full keyboard access.
+      # 2 means Full Keyboard Access for all controls, not only text boxes/lists.
+      AppleKeyboardUIMode = 2;
       AppleInterfaceStyle = "Dark";
       ApplePressAndHoldEnabled = false; # Enable key repeat instead of accent popup.
       "com.apple.swipescrolldirection" = true; # Natural scrolling.
-      InitialKeyRepeat = 10; # Fastest.
-      KeyRepeat = 1; # Fastest.
+      # Lower values are faster; 10/1 are the fastest accepted repeat settings.
+      InitialKeyRepeat = 10;
+      KeyRepeat = 1;
     };
 
     dock = {
@@ -53,7 +66,8 @@ in
       mru-spaces = false;
       orientation = "left";
       show-recents = false;
-      tilesize = 64;
+      tilesize = 64; # Dock icon size in pixels.
+      # wvous values are Dock hot-corner action IDs.
       wvous-bl-corner = 10; # Lock Screen.
       wvous-tl-corner = 4; # Desktop.
       wvous-tr-corner = 12; # Notification Center.
@@ -87,10 +101,10 @@ in
         NSAutomaticPeriodSubstitutionEnabled = true;
         NSQuitAlwaysKeepsWindows = true;
         NSWindowShouldDragOnGesture = true;
-        "com.apple.sound.beep.feedback" = 0;
-        "com.apple.sound.beep.flash" = 0;
+        "com.apple.sound.beep.feedback" = 0; # Disable volume-change feedback sounds.
+        "com.apple.sound.beep.flash" = 0; # Do not flash the screen for alert sounds.
         "com.apple.trackpad.forceClick" = true;
-        "com.apple.trackpad.scaling" = 3.0;
+        "com.apple.trackpad.scaling" = 3.0; # Trackpad tracking speed.
         "com.apple.trackpad.scrolling" = true;
       };
 
