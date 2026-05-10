@@ -1,6 +1,12 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  user,
+  ...
+}:
 
 let
+  displayLayoutScript = "/Users/${user}/code/machine/scripts/display-layout.sh";
   startupApps = [
     {
       name = "Handy";
@@ -18,6 +24,12 @@ let
       name = "Raycast";
       appPath = "/Applications/Raycast.app";
       executable = "/Applications/Raycast.app/Contents/MacOS/Raycast";
+      args = [ ];
+    }
+    {
+      name = "CodexBar";
+      appPath = "/Applications/CodexBar.app";
+      executable = "/Applications/CodexBar.app/Contents/MacOS/CodexBar";
       args = [ ];
     }
   ];
@@ -49,6 +61,27 @@ let
         RunAtLoad = true;
       };
     };
+
+  displayLayoutAgent = {
+    script = ''
+      display_layout_script=${lib.escapeShellArg displayLayoutScript}
+      if [ ! -x "$display_layout_script" ]; then
+        exit 0
+      fi
+
+      # Captured layouts contain an exec displayplacer command. The initial
+      # placeholder stays a no-op so login is clean before a layout is captured.
+      if ! /usr/bin/grep -Eq '^[[:space:]]*exec[[:space:]]+displayplacer[[:space:]]+' "$display_layout_script"; then
+        exit 0
+      fi
+
+      export PATH="/opt/homebrew/bin:/usr/local/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
+      "$display_layout_script" || true
+    '';
+    serviceConfig = {
+      RunAtLoad = true;
+    };
+  };
 in
 
 {
@@ -72,6 +105,8 @@ in
 
   config = {
     machine.startupApps = startupApps;
-    launchd.user.agents = lib.listToAttrs (map launchAgentFor config.machine.startupApps);
+    launchd.user.agents = lib.listToAttrs (map launchAgentFor config.machine.startupApps) // {
+      display-layout = displayLayoutAgent;
+    };
   };
 }
