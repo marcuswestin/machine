@@ -49,6 +49,20 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 on-mode-changed = []
 
+# Spotify → LG UltraFine via workspace A (see workspace-to-monitor-force-assignment).
+[[on-window-detected]]
+  if.app-id = 'com.spotify.client'
+  run = 'move-node-to-workspace A'
+
+# Chrome + Simulator → LG UltraFine (workspaces B/C; alt-w / alt-e).
+[[on-window-detected]]
+  if.app-id = 'com.google.Chrome'
+  run = 'move-node-to-workspace B'
+
+[[on-window-detected]]
+  if.app-id = 'com.apple.iphonesimulator'
+  run = 'move-node-to-workspace C'
+
 # Force workspaces onto monitors (case-insensitive substring / regex; AeroSpace guide "Assign workspaces to monitors").
 [workspace-to-monitor-force-assignment]
   1 = 'dell'
