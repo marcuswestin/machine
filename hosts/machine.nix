@@ -34,7 +34,6 @@
     git
     jq
     just
-    just-lsp
     mas
     parallel
     ripgrep

@@ -122,9 +122,7 @@
   // Load repo `.taplo.toml` so format-on-save matches `just fmt` (indent under `[tables]`, etc.).
   // Path is relative to the workspace folder; open the `machine` repo root (not only `home/`).
   "evenBetterToml.taplo.configFile.path": "home/.dotfiles/.taplo.toml",
-  // vscode-just: LSP does not resolve $PATH reliably; use nix-darwin system profile (just apply / rebuild).
   "vscode-just.justPath": "/run/current-system/sw/bin/just",
-  "vscode-just.lspPath": "/run/current-system/sw/bin/just-lsp",
   "[python]": {
     "editor.formatOnType": true
   },
