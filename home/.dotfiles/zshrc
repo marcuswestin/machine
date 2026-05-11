@@ -17,4 +17,23 @@ compinit
 # Aliases
 alias j="just"
 
+# Project launchers
+et() {
+  cd "$HOME/code/tao-lang" || return
+  open -a codex .
+  cursor .
+}
+
+em() {
+  cd "$HOME/code/machine" || return
+  open -a codex .
+  cursor .
+}
+
+ea() {
+  cd "$HOME/code/agent-os" || return
+  open -a codex .
+  cursor .
+}
+
 eval "$(direnv hook zsh)"
