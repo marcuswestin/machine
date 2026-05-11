@@ -25,7 +25,10 @@ unless asked.
   (hidden so chezmoi does not copy them) and are symlinked into `$HOME` via `symlink_*`
   templates.
 - `inventory/`: review snapshots and deferred/imported machine state; do not
-  blindly promote inventory entries into active config.
+  blindly promote inventory entries into active config. `_import-home-files-review`
+  copies live app and editor files (Docker, Cursor, Handy, etc.); treat those
+  paths as potentially sensitive and scrub or omit before committing anything
+  derived from them.
 - **`just import-current`** aggregates `_apps-dump`, `_mas-dump`, `_defaults-capture`,
   `_import-editor-extensions`, and `_import-home-files-review`, and runs
   `display-layout-capture` into `inventory/display-layout.sh` for review (errors ignored
