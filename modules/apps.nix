@@ -15,6 +15,7 @@
       "spotify"
       "chatgpt"
       "chatgpt-atlas"
+      "claude"
       "cursor"
       "visual-studio-code"
       "iterm2"
