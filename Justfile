@@ -237,21 +237,7 @@ _import-editor-extensions dir="inventory/editor-extensions":
       [ -x "$cursor_cli" ] && "$cursor_cli" --list-extensions > "{{ dir }}/cursor.txt" || true
 
 _import-home-files-review dir="inventory/home":
-    mkdir -p "{{ dir }}"
-    [ ! -f "$HOME/.zshrc" ] || cp "$HOME/.zshrc" "{{ dir }}/zshrc"
-    [ ! -f "$HOME/.zprofile" ] || cp "$HOME/.zprofile" "{{ dir }}/zprofile"
-    [ ! -f "$HOME/.zshenv" ] || cp "$HOME/.zshenv" "{{ dir }}/zshenv"
-    [ ! -f "$HOME/.gitconfig" ] || cp "$HOME/.gitconfig" "{{ dir }}/gitconfig"
-    [ ! -f "$HOME/.gitignore" ] || cp "$HOME/.gitignore" "{{ dir }}/gitignore"
-    [ ! -f "$HOME/.aerospace.toml" ] || cp "$HOME/.aerospace.toml" "{{ dir }}/aerospace.toml"
-    [ ! -f "$HOME/.config/vscode-family/settings.json" ] || cp "$HOME/.config/vscode-family/settings.json" "{{ dir }}/vscode-family-settings.json"
-    [ ! -f "$HOME/.config/vscode-family/keybindings.json" ] || cp "$HOME/.config/vscode-family/keybindings.json" "{{ dir }}/vscode-family-keybindings.json"
-    [ ! -f "$HOME/.config/vscode-family/extensions.txt" ] || cp "$HOME/.config/vscode-family/extensions.txt" "{{ dir }}/vscode-family-extensions.txt"
-    [ ! -f "$HOME/.config/dprint/dprint.json" ] || cp "$HOME/.config/dprint/dprint.json" "{{ dir }}/dprint.json"
-    [ ! -f "$HOME/.cursor/cli-config.json" ] || cp "$HOME/.cursor/cli-config.json" "{{ dir }}/cursor-cli-config.json"
-    [ ! -f "$HOME/Library/Application Support/Cursor/User/settings.json" ] || cp "$HOME/Library/Application Support/Cursor/User/settings.json" "{{ dir }}/cursor-User-settings.json"
-    [ ! -f "$HOME/Library/Application Support/com.pais.handy/settings_store.json" ] || cp "$HOME/Library/Application Support/com.pais.handy/settings_store.json" "{{ dir }}/handy-settings_store.json"
-    [ ! -f "$HOME/Library/Group Containers/group.com.docker/settings-store.json" ] || cp "$HOME/Library/Group Containers/group.com.docker/settings-store.json" "{{ dir }}/docker-settings-store.json"
+    @"{{ REPO }}/scripts/import-home-files-review.sh" "{{ dir }}"
 
 # Flake
 #######
