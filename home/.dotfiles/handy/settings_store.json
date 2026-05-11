@@ -2,7 +2,7 @@
   "settings": {
     "always_on_microphone": false,
     "app_language": "en-US",
-    "append_trailing_space": false,
+    "append_trailing_space": true,
     "audio_feedback": false,
     "audio_feedback_volume": 1.0,
     "auto_submit": false,
