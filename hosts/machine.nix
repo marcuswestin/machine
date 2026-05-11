@@ -38,6 +38,7 @@
     mas
     parallel
     ripgrep
+    taplo
   ];
 
   system.primaryUser = user;

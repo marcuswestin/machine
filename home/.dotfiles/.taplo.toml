@@ -1,0 +1,9 @@
+# Taplo: used by `dprint` exec (same engine as Even Better TOML). Discovery:
+# `.taplo.toml` before `taplo.toml` — https://taplo.tamasfe.dev/configuration/file.html
+# Formatter options: https://taplo.tamasfe.dev/configuration/formatter-options.html
+[formatting]
+  column_width = 120
+  # Indent key/value lines under each [table] header (Taplo "sections").
+  indent_entries = true
+  # Indent nested subtables when they appear in order under a parent.
+  indent_tables = true

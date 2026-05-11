@@ -42,23 +42,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "A",
-  "B",
-  "C",
-  "X",
-  "Y",
-  "Z",
-]
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "X", "Y", "Z"]
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -67,132 +51,133 @@ on-mode-changed = []
 
 # Force workspaces onto monitors (case-insensitive substring / regex; AeroSpace guide "Assign workspaces to monitors").
 [workspace-to-monitor-force-assignment]
-1 = 'dell'
-2 = 'dell'
-3 = 'dell'
-4 = 'dell'
-5 = 'dell'
-6 = 'dell'
-7 = 'dell'
-8 = 'dell'
-9 = 'dell'
-A = 'ultrafine'
-B = 'ultrafine'
-C = 'ultrafine'
-X = 'built-in'
-Y = 'built-in'
-Z = 'built-in'
+  1 = 'dell'
+  2 = 'dell'
+  3 = 'dell'
+  4 = 'dell'
+  5 = 'dell'
+  6 = 'dell'
+  7 = 'dell'
+  8 = 'dell'
+  9 = 'dell'
+  A = 'ultrafine'
+  B = 'ultrafine'
+  C = 'ultrafine'
+  X = 'built-in'
+  Y = 'built-in'
+  Z = 'built-in'
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
 # - Constant:     gaps.outer.top = 8
 # - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
 [gaps]
-inner.horizontal = 0
-inner.vertical = 0
-outer.left = 0
-outer.bottom = 0
-outer.top = 0
-outer.right = 0
+  inner.horizontal = 0
+  inner.vertical = 0
+  outer.left = 0
+  outer.bottom = 0
+  outer.top = 0
+  outer.right = 0
 
 # 'main' binding mode declaration
 [mode.main.binding]
+
   # --- General (non-workspace) ---
   alt-shift-semicolon = ['mode service']
   alt-enter = ['exec-and-forget open -na iTerm']
-alt-slash = ['layout tiles horizontal vertical']
-alt-comma = ['layout accordion horizontal vertical']
-alt-tab = ['workspace-back-and-forth']
-alt-shift-tab = ['move-workspace-to-monitor --wrap-around next']
+  alt-slash = ['layout tiles horizontal vertical']
+  alt-comma = ['layout accordion horizontal vertical']
+  alt-tab = ['workspace-back-and-forth']
+  alt-shift-tab = ['move-workspace-to-monitor --wrap-around next']
 
-# --- Tiling: focus / move / resize ---
-alt-h = ['focus left']
-alt-j = ['focus down']
-alt-k = ['focus up']
-alt-l = ['focus right']
-alt-shift-h = ['move left']
-alt-shift-j = ['move down']
-alt-shift-k = ['move up']
-alt-shift-l = ['move right']
-alt-minus = ['resize smart -75']
-alt-equal = ['resize smart +75']
+  # --- Tiling: focus / move / resize ---
+  alt-h = ['focus left']
+  alt-j = ['focus down']
+  alt-k = ['focus up']
+  alt-l = ['focus right']
+  alt-shift-h = ['move left']
+  alt-shift-j = ['move down']
+  alt-shift-k = ['move up']
+  alt-shift-l = ['move right']
+  alt-minus = ['resize smart -75']
+  alt-equal = ['resize smart +75']
 
-# --- Dell monitor: workspaces 1–9 (alt = focus, alt-shift = move window + focus) ---
-alt-1 = ['workspace 1']
-alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
-alt-2 = ['workspace 2']
-alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
-alt-3 = ['workspace 3']
-alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
-alt-4 = ['workspace 4']
-alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
-alt-5 = ['workspace 5']
-alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
-alt-6 = ['workspace 6']
-alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
-alt-7 = ['workspace 7']
-alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
-alt-8 = ['workspace 8']
-alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
-alt-9 = ['workspace 9']
-alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+  # --- Dell monitor: workspaces 1–9 (alt = focus, alt-shift = move window + focus) ---
+  alt-1 = ['workspace 1']
+  alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+  alt-2 = ['workspace 2']
+  alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+  alt-3 = ['workspace 3']
+  alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+  alt-4 = ['workspace 4']
+  alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+  alt-5 = ['workspace 5']
+  alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+  alt-6 = ['workspace 6']
+  alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+  alt-7 = ['workspace 7']
+  alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+  alt-8 = ['workspace 8']
+  alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+  alt-9 = ['workspace 9']
+  alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
 
-# --- LG UltraFine: workspaces A–C (Q/W/E mnemonics) ---
-alt-q = ['workspace A']
-alt-shift-q = ['move-node-to-workspace A', 'workspace A']
-alt-w = ['workspace B']
-alt-shift-w = ['move-node-to-workspace B', 'workspace B']
-alt-e = ['workspace C']
-alt-shift-e = ['move-node-to-workspace C', 'workspace C']
+  # --- LG UltraFine: workspaces A–C (Q/W/E mnemonics) ---
+  alt-q = ['workspace A']
+  alt-shift-q = ['move-node-to-workspace A', 'workspace A']
+  alt-w = ['workspace B']
+  alt-shift-w = ['move-node-to-workspace B', 'workspace B']
+  alt-e = ['workspace C']
+  alt-shift-e = ['move-node-to-workspace C', 'workspace C']
 
-# --- Built-in Retina: workspaces X–Z (A/S/D keys) ---
-alt-a = ['workspace X']
-alt-shift-a = ['move-node-to-workspace X', 'workspace X']
-alt-s = ['workspace Y']
-alt-shift-s = ['move-node-to-workspace Y', 'workspace Y']
-alt-d = ['workspace Z']
-alt-shift-d = ['move-node-to-workspace Z', 'workspace Z']
+  # --- Built-in Retina: workspaces X–Z (A/S/D keys) ---
+  alt-a = ['workspace X']
+  alt-shift-a = ['move-node-to-workspace X', 'workspace X']
+  alt-s = ['workspace Y']
+  alt-shift-s = ['move-node-to-workspace Y', 'workspace Y']
+  alt-d = ['workspace Z']
+  alt-shift-d = ['move-node-to-workspace Z', 'workspace Z']
 
-# --- Focused monitor: cycle workspaces (I/U) ---
-alt-i = ['workspace --wrap-around next']
-alt-shift-i = ['move-node-to-workspace --wrap-around next', 'workspace --wrap-around next']
-alt-u = ['workspace --wrap-around prev']
-alt-shift-u = ['move-node-to-workspace --wrap-around prev', 'workspace --wrap-around prev']
+  # --- Focused monitor: cycle workspaces (I/U) ---
+  alt-i = ['workspace --wrap-around next']
+  alt-shift-i = ['move-node-to-workspace --wrap-around next', 'workspace --wrap-around next']
+  alt-u = ['workspace --wrap-around prev']
+  alt-shift-u = ['move-node-to-workspace --wrap-around prev', 'workspace --wrap-around prev']
 
-# --- Monitors: focus (O/Y); swap prev/next to match display arrangement ---
-alt-o = ['focus-monitor --wrap-around prev']
-alt-shift-o = ['move-node-to-monitor --focus-follows-window --wrap-around prev']
-alt-y = ['focus-monitor --wrap-around next']
-alt-shift-y = ['move-node-to-monitor --focus-follows-window --wrap-around next']
+  # --- Monitors: focus (O/Y); swap prev/next to match display arrangement ---
+  alt-o = ['focus-monitor --wrap-around prev']
+  alt-shift-o = ['move-node-to-monitor --focus-follows-window --wrap-around prev']
+  alt-y = ['focus-monitor --wrap-around next']
+  alt-shift-y = ['move-node-to-monitor --focus-follows-window --wrap-around next']
 
 [mode.service.binding]
-r = ['reload-config', 'mode main']
-esc = ['flatten-workspace-tree', 'mode main'] # reset layout
-f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
-backspace = ['close-all-windows-but-current', 'mode main']
+  r = ['reload-config', 'mode main']
+  esc = ['flatten-workspace-tree', 'mode main']              # reset layout
+  f = ['layout floating tiling', 'mode main']                # Toggle between floating and tiling layout
+  backspace = ['close-all-windows-but-current', 'mode main']
 
-alt-shift-h = ['join-with left', 'mode main']
-alt-shift-j = ['join-with down', 'mode main']
-alt-shift-k = ['join-with up', 'mode main']
-alt-shift-l = ['join-with right', 'mode main']
+  alt-shift-h = ['join-with left', 'mode main']
+  alt-shift-j = ['join-with down', 'mode main']
+  alt-shift-k = ['join-with up', 'mode main']
+  alt-shift-l = ['join-with right', 'mode main']
 
-# Notes and info
-################
+  # Notes and info
+  ################
 
-# [mode.main.binding]
-# All possible keys:
-# - Letters.        a, b, c, ..., z
-# - Numbers.        0, 1, 2, ..., 9
-# - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
-# - F-keys.         f1, f2, ..., f20
-# - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon,
-#                   backtick, leftSquareBracket, rightSquareBracket, space, enter, esc,
-#                   backspace, tab, pageUp, pageDown, home, end, forwardDelete,
-#                   sectionSign (ISO keyboards only, european keyboards only)
-# - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
-#                   keypadMinus, keypadMultiply, keypadPlus
-# - Arrows.         left, down, up, right
+  # [mode.main.binding]
+  # All possible keys:
+  # - Letters.        a, b, c, ..., z
+  # - Numbers.        0, 1, 2, ..., 9
+  # - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
+  # - F-keys.         f1, f2, ..., f20
+  # - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon,
+  #                   backtick, leftSquareBracket, rightSquareBracket, space, enter, esc,
+  #                   backspace, tab, pageUp, pageDown, home, end, forwardDelete,
+  #                   sectionSign (ISO keyboards only, european keyboards only)
+  # - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
+  #                   keypadMinus, keypadMultiply, keypadPlus
+  # - Arrows.         left, down, up, right
 
-# All possible modifiers: cmd, alt, ctrl, shift
+  # All possible modifiers: cmd, alt, ctrl, shift
 
-# All possible commands: https://nikitabobko.github.io/AeroSpace/commands
+  # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
