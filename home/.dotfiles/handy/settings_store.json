@@ -163,7 +163,7 @@
     "selected_output_device": null,
     "show_tray_icon": true,
     "sound_theme": "marimba",
-    "start_hidden": false,
+    "start_hidden": true,
     "translate_to_english": false,
     "typing_tool": "auto",
     "update_checks_enabled": true,
