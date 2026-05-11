@@ -26,9 +26,17 @@ unless asked.
   templates.
 - `inventory/`: review snapshots and deferred/imported machine state; do not
   blindly promote inventory entries into active config. `_import-home-files-review`
-  copies live app and editor files (Docker, Cursor, Handy, etc.); treat those
-  paths as potentially sensitive and scrub or omit before committing anything
-  derived from them.
+  (`scripts/import-home-files-review.sh`) copies optional unmanaged shell files
+  (`.zprofile`/`.zshenv` when present) for review. Managed config—including Antigravity,
+  Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`), Codex CLI
+  (`~/.codex/config.toml` first-install template via `home/dot_codex/create_private_config.toml.tmpl`),
+  Cursor (`~/.cursor/cli-config.json` and `~/.cursor/permissions.json` share one source, plus
+  vscode-family `chatgpt.*` / `cursor.*` keys), GitHub CLI, and iTerm2 Dynamic Profiles—lives
+  under `home/` / `home/.dotfiles/` with
+  chezmoi; use `chezmoi diff` for drift. Auth/session files (`~/.codex/auth.json`,
+  `~/.claude.json`, `~/.config/gh/hosts.yml`), caches, logs, and SQLite state stay
+  unmanaged. Treat captured paths as potentially sensitive and scrub or omit before
+  committing anything derived from them.
 - **`just import-current`** aggregates `_apps-dump`, `_mas-dump`, `_defaults-capture`,
   `_import-editor-extensions`, and `_import-home-files-review`, and runs
   `display-layout-capture` into `inventory/display-layout.sh` for review (errors ignored
