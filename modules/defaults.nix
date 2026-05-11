@@ -111,6 +111,13 @@ in
 
       "com.apple.AppleMultitouchTrackpad" = trackpadPreferences;
       "com.apple.driver.AppleBluetoothMultitouch.trackpad" = trackpadPreferences;
+
+      # Human Interface Toolbox — Globe/FN key action (Settings → Keyboard → Press 🌐 key to).
+      # 0 = Do Nothing; 1 = Change Input Source; 2 = Show Emoji & Symbols; 3 = Start Dictation (press 🌐 twice).
+      # Single-press emoji steals Fn from apps (e.g. Handy transcribe bound to fn).
+      "com.apple.HIToolbox" = {
+        AppleFnUsageType = 0;
+      };
     };
 
     WindowManager = {
