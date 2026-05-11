@@ -73,7 +73,7 @@ _raycast-settings-sync:
 _apply:
     @just _system-switch
     @just _after-switch
-    @printf '\nMachine setup complete.\n'
+    @echo "Machine setup complete."
     @just _prune-check
 
 # System switch
@@ -90,7 +90,7 @@ _system-switch host=HOST:
 _after-switch:
     @just git-auth
     @just chezmoi-apply
-    @printf '\nInstalling editor extensions (may take a while)...\n'
+    @echo "Installing editor extensions (may take a while)..."
     @just _install-editor-extensions
     @just _launch-startup-apps
     @just _raycast-settings-sync
