@@ -1,0 +1,5 @@
+# Managed by chezmoi (symlink ~/.continue/config.yaml → this file).
+name: Local Config
+version: 1.0.0
+schema: v1
+models: []
