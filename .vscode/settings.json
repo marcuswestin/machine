@@ -1,0 +1,5 @@
+{
+  "evenBetterToml.taplo.configFile.path": "home/.dotfiles/.taplo.toml",
+  "vscode-just.justPath": "/run/current-system/sw/bin/just",
+  "vscode-just.lspPath": "/run/current-system/sw/bin/just-lsp"
+}
