@@ -81,7 +81,7 @@ _apply:
 
 # `darwin-rebuild switch` for this flake (nix-darwin system generation).
 _system-switch host=HOST:
-    sudo -H env "PATH=$PATH" {{ NIX_CMD }} run nix-darwin/master#darwin-rebuild -- switch --flake ".#{{ host }}"
+    sudo -H env "PATH=$PATH" {{ NIX_CMD }} run "{{ REPO }}#darwin-rebuild" -- switch --flake "{{ REPO }}#{{ host }}"
 
 # After switch
 ##############

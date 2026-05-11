@@ -40,6 +40,10 @@
       host = "machine";
     in
     {
+      # Same revision as `flake.lock`; `just apply` runs this instead of
+      # `nix run nix-darwin/master#darwin-rebuild`, which ignores the lockfile.
+      packages.${system}.darwin-rebuild = nix-darwin.packages.${system}.darwin-rebuild;
+
       darwinConfigurations.${host} = nix-darwin.lib.darwinSystem {
         inherit system;
         specialArgs = { inherit inputs user host; };
