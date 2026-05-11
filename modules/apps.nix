@@ -24,7 +24,5 @@
       "antigravity"
       "zoom"
     ];
-
-    masApps = { };
   };
 }
