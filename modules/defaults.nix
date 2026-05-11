@@ -90,6 +90,13 @@ in
       TrackpadThreeFingerDrag = true;
     };
 
+    # Control Center → Menu Bar Only / Battery: show numeric percentage next to the icon.
+    # nix-darwin exposes only a boolean; System Settings may still offer Always / When Low /
+    # Never on newer macOS—adjust there if you want “when low” only.
+    controlcenter = {
+      BatteryShowPercentage = true;
+    };
+
     CustomUserPreferences = {
       NSGlobalDomain = {
         AppleLanguages = [
