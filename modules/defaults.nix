@@ -145,5 +145,8 @@ in
     # Command-Space. Merge only these symbolic hotkey IDs to avoid replacing
     # the whole AppleSymbolicHotKeys dictionary.
     ${lib.concatMapStringsSep "\n" disableSpotlightHotkey spotlightHotkeys}
+    # Hide the Spotlight magnifying-glass menu bar item (search still works via Raycast).
+    # MenuItemHidden 1 = hidden; Apple changes menu bar plumbing occasionally—verify after OS upgrades.
+    launchctl asuser "$(id -u -- ${userArg})" sudo --user=${userArg} -- /usr/bin/defaults -currentHost write com.apple.Spotlight MenuItemHidden -int 1
   '';
 }
