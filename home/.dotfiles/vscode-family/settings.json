@@ -136,6 +136,13 @@
   /////////////////////////////
   "chat.disableAIFeatures": true,
   "claudeCode.preferredLocation": "panel",
+  // Codex IDE extension (openai.chatgpt). Same vscode-family file is symlinked for Cursor + VS Code.
+  // Cloud/delegated runs still use your ChatGPT account; extension prefs are local only.
+  "chatgpt.commentCodeLensEnabled": true,
+  "chatgpt.openOnStartup": false,
+  "chatgpt.followUpQueueMode": "queue",
+  "chatgpt.composerEnterBehavior": "enter",
+  "chatgpt.reviewDelivery": "inline",
   "continue.enableNextEdit": true,
   "continue.enableTabAutocomplete": true,
   "continue.showInlineTip": false,
@@ -165,7 +172,8 @@
     "https://www.schemastore.org/": true
   },
   "yaml.schemas": {},
-  // Cursor
+  // Cursor (desktop). Cloud Agents defaults (model, repo, network mode, secrets) are configured in
+  // the Cursor dashboard (cursor.com → Cloud Agents), not as stable User settings keys here.
   /////////////////////////////
   "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
   "cursor.composer.shouldChimeAfterChatFinishes": true,
