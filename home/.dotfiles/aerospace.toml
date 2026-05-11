@@ -57,11 +57,11 @@ on-mode-changed = []
 # Chrome + Simulator → LG UltraFine (workspaces B/C; alt-w / alt-e).
 [[on-window-detected]]
   if.app-id = 'com.google.Chrome'
-  run = 'move-node-to-workspace B'
+  run = 'move-node-to-workspace A'
 
 [[on-window-detected]]
   if.app-id = 'com.apple.iphonesimulator'
-  run = 'move-node-to-workspace C'
+  run = 'move-node-to-workspace A'
 
 # Force workspaces onto monitors (case-insensitive substring / regex; AeroSpace guide "Assign workspaces to monitors").
 [workspace-to-monitor-force-assignment]
