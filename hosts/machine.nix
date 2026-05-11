@@ -26,7 +26,6 @@
   environment.systemPackages = with pkgs; [
     bun
     chezmoi
-    cocoapods
     devenv
     dprint
     direnv
