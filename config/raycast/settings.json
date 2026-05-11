@@ -24,7 +24,7 @@
       "raycastPreferredWindowMode": "default",
       "raycastUI_preferredTextSize": "medium",
       "showFavoritesInCompactMode": true,
-      "statusBarIsVisible": true
+      "statusBarIsVisible": false
     },
     "preferencesGeneral": {
       "raycastAlternativeEscape": false,
