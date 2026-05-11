@@ -4,9 +4,9 @@
   "editor.fontSize": 12.5,
   "editor.lineHeight": 17,
   // "window.zoomLevel": 1.5, // Monitor extra large
-  "window.zoomLevel": 1.3, // Monitor large
+  // "window.zoomLevel": 1.3, // Monitor large
   // "window.zoomLevel": 0.8, // Monitor medium
-  // "window.zoomLevel": 0.15, // Laptop
+  "window.zoomLevel": 0.15, // Laptop
   // Vim
   /////////////////////////////
   "vim.insertModeKeyBindings": [
@@ -116,6 +116,9 @@
   "[toml]": {
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
+  "[just]": {
+    "editor.formatOnSave": false
+  },
   // Load repo `.taplo.toml` so format-on-save matches `just fmt` (indent under `[tables]`, etc.).
   // Path is relative to the workspace folder; open the `machine` repo root (not only `home/`).
   "evenBetterToml.taplo.configFile.path": "home/.dotfiles/.taplo.toml",
@@ -162,7 +165,9 @@
   // JSON schemas, file associations, YAML
   /////////////////////////////
   "files.associations": {
-    "*.just": "just"
+    "*.just": "just",
+    "Justfile": "just",
+    "justfile": "just"
   },
   "json.schemaDownload.trustedDomains": {
     "https://json-schema.org/": true,
