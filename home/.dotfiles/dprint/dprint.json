@@ -36,7 +36,9 @@
   "excludes": [
     "**/node_modules",
     "**/*-lock.json",
-    "**/inventory/home/**"
+    "**/inventory/home/**",
+    "**/Justfile",
+    "**/justfile"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.96.0.wasm",
