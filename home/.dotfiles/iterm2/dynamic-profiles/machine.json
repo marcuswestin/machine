@@ -1,0 +1,9 @@
+{
+  "Profiles": [
+    {
+      "Guid": "1e7270ff-59ad-4b07-b2b0-87089cb2748d",
+      "Name": "Machine",
+      "Dynamic Profile Parent Name": "Default"
+    }
+  ]
+}
