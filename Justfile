@@ -16,6 +16,7 @@ apply:
 # Apply dotfile changes with chezmoi
 chezmoi-apply:
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
+    @aerospace reload-config --no-gui
 
 # Capture current machine state into reviewable inventory files.
 import-current:
@@ -54,6 +55,7 @@ fmt:
 # Validate the Nix flake without applying it.
 verify:
     dprint check .
+    @"{{ REPO }}/scripts/check-vscode-family-symlinks.sh" "{{ REPO }}"
     {{ NIX_CMD }} flake check --show-trace
 
 # Build settings.rayconfig from settings.json and open it (always; ignores change stamp).
