@@ -88,8 +88,9 @@ _system-switch host=HOST:
 # After switch
 ##############
 
-# After `darwin-rebuild switch`: auth, chezmoi, editor extensions, startup apps.
+# After `darwin-rebuild switch`: Xcode, auth, chezmoi, editor extensions, startup apps.
 _after-switch:
+    @just _setup-xcode
     @just git-auth
     @just chezmoi-apply
     @echo "Installing editor extensions (may take a while)..."
@@ -109,6 +110,9 @@ _git-auth:
       exit 0
     fi
     gh auth setup-git --hostname github.com
+
+_setup-xcode:
+    @scripts/setup-xcode.sh
 
 _install-editor-extensions:
     @scripts/editor-extensions.sh install
