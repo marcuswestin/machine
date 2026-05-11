@@ -47,7 +47,7 @@ prune:
     @just _prune-editor-extensions-apply
     @just chezmoi-apply
 
-# Format repo files with dprint (config: `home/.dotfiles/dprint/dprint.json`).
+# Format repo files with dprint. Uses `./dprint.json` at repo root (extends chezmoi-config).
 fmt:
     dprint fmt .
 

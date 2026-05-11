@@ -1,0 +1,3 @@
+{
+  "extends": "./home/.dotfiles/dprint/dprint.json"
+}
