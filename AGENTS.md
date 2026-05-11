@@ -23,7 +23,12 @@ unless asked.
 - Home Manager: minimal PATH/env/session integration only.
 - `chezmoi`: actual dotfiles under `home/`; editable configs live in `home/.dotfiles/`
   (hidden so chezmoi does not copy them) and are symlinked into `$HOME` via `symlink_*`
-  templates.
+  templates. **VS Code / Cursor user `settings.json` and `keybindings.json`** are not edited
+  in Application Support directly: chezmoi writes symlinks
+  `~/.config/vscode-family/*` → `home/.dotfiles/vscode-family/*`, and
+  `~/Library/Application Support/{Code,Cursor}/User/{settings,keybindings}.json` →
+  `~/.config/vscode-family/*`. Edit the repo files only; run `just chezmoi-apply` so the
+  symlinks stay authoritative (`just verify` checks resolution).
 - `inventory/`: review snapshots and deferred/imported machine state; do not
   blindly promote inventory entries into active config. `_import-home-files-review`
   (`scripts/import-home-files-review.sh`) copies optional unmanaged shell files
@@ -62,6 +67,9 @@ activation only when the option does not exist or macOS requires a special path.
   unexpected machine state. This repo is declarative: if state is unexpected,
   fix the owning nix-darwin, Homebrew, Home Manager, or chezmoi declaration so
   every managed machine converges to the same expected state.
+- Do not gate scripts on presence checks for apps or CLIs that this repo installs
+  (`command -v`, `pgrep`, `test -f` on bundle paths, etc.). Declared packages and
+  casks are assumed present; call them directly and let failures surface.
 - Comment non-obvious settings where they are declared. For numeric or encoded
   values such as macOS defaults IDs, modifier bitmasks, key codes, separator
   characters, and state-version pins, look up what the value means and record
