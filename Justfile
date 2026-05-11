@@ -190,13 +190,8 @@ _display-layout-capture file="scripts/display-layout.sh":
       exit 1
     fi
 
-    cat > "{{ file }}" <<EOF
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    # Captured from the current macOS display arrangement with displayplacer.
-    exec $command
-    EOF
+    # Avoid a leading-indented heredoc here; those spaces break the shebang line.
+    printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' '' '# Captured from the current macOS display arrangement with displayplacer.' "exec $command" > "{{ file }}"
     chmod +x "{{ file }}"
     printf 'Captured display layout in %s\n' "{{ file }}"
 
