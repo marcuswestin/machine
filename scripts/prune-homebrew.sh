@@ -26,7 +26,12 @@ trap 'rm -f "$brewfile" "$desired_casks" "$desired_formulae"' EXIT
 nix "${nix_flags[@]}" eval --raw ".#darwinConfigurations.${host}.config.homebrew.brewfile" > "$brewfile"
 
 awk -F'"' '/^cask "/ { print $2 }' "$brewfile" | sort -fu > "$desired_casks"
-extra_casks="$(comm -23 <(brew list --cask --full-name | sort -fu) "$desired_casks")"
+desired_cask_aliases="$(
+  awk -F'"' '/^cask "/ { print $2 }' "$brewfile" \
+    | awk '{ print; sub(/^.*\//, ""); print }' \
+    | sort -fu
+)"
+extra_casks="$(comm -23 <(brew list --cask | sort -fu) <(printf '%s\n' "$desired_cask_aliases"))"
 
 awk -F'"' '/^brew "/ { print $2 }' "$brewfile" | sort -fu > "$desired_formulae"
 installed_formulae="$(

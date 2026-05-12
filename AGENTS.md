@@ -6,6 +6,7 @@ unless asked.
 
 ## Primary Workflow
 
+- Run `just help` to list all recipes.
 - Fresh-machine entrypoint: `up.sh`.
 - Daily command surface: `just`.
 - Steady-state apply command: `just apply`.
@@ -28,11 +29,18 @@ unless asked.
   `~/.config/vscode-family/*` → `home/.dotfiles/vscode-family/*`, and
   `~/Library/Application Support/{Code,Cursor}/User/{settings,keybindings}.json` →
   `~/.config/vscode-family/*`. Edit the repo files only; run `just chezmoi-apply` so the
-  symlinks stay authoritative (`just verify` checks resolution).
-- `inventory/`: review snapshots and deferred/imported machine state; do not
-  blindly promote inventory entries into active config. `_import-home-files-review`
-  (`scripts/import-home-files-review.sh`) copies optional unmanaged shell files
-  (`.zprofile`/`.zshenv` when present) for review. Managed config—including Antigravity,
+  symlinks stay authoritative (`just verify` checks resolution). **`just merge-in-settings`**
+  compares live app JSON/JSONC on disk to those repo files and can merge new keys (see
+  `scripts/repo-settings-import.ts`).
+- `inventory-tracked/` and `inventory-global/`: optional local snapshots for human review;
+  do not blindly promote them into active config. **`just _snapshot-diff`**
+  compares captured files under one of those folders to current machine output when those files exist
+  (Brewfile, `mas.json`, `defaults/*.plist`, `display-layout.sh` vs the canonical
+  script). **`just _plist-sidecars`** (`scripts/plist-sidecars.sh`)
+  writes readable sidecars next to plist paths (`.xml`, `.json`, `.toml`, plus
+  `.error.txt` files when a conversion fails). With no paths it reads
+  `inventory-global/defaults/`; pass explicit paths as `just _plist-sidecars path …`
+  when needed. Managed config—including Antigravity,
   Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`), Codex CLI
   (`~/.codex/config.toml` first-install template via `home/dot_codex/create_private_config.toml.tmpl`),
   Cursor (`~/.cursor/cli-config.json` and `~/.cursor/permissions.json` share one source, plus
@@ -41,14 +49,23 @@ unless asked.
   chezmoi; use `chezmoi diff` for drift. Auth/session files (`~/.codex/auth.json`,
   `~/.claude.json`, `~/.config/gh/hosts.yml`), caches, logs, and SQLite state stay
   unmanaged. Treat captured paths as potentially sensitive and scrub or omit before
-  committing anything derived from them.
-- **`just import-current`** aggregates `_apps-dump`, `_mas-dump`, `_defaults-capture`,
-  `_import-editor-extensions`, and `_import-home-files-review`, and runs
-  `display-layout-capture` into `inventory/display-layout.sh` for review (errors ignored
-  if no replayable layout); that file is separate from the canonical replay script
-  `scripts/display-layout.sh` used by `_display-layout-apply`. When you add or move managed dotfiles, editor inventory paths, or
-  other capture targets, update those `_import-*` helpers and the `import-current`
-  recipe together so a single run still reflects the full snapshot set.
+  committing anything derived from them. When you add new declaration surfaces
+  that should show up in tracked drift review, extend `scripts/diff-tracked.sh`
+  (and keep `just prune-diff` in sync if those items are also prune candidates).
+  **`just import-inventory tracked`** (`scripts/import-inventory.sh`) refreshes
+  `inventory-tracked/` (Brewfile, `mas.json`, `defaults/` with readable sidecars,
+  editor extension lists, and display layout via **`just _display-layout-capture`**).
+  **`just import-inventory global`** refreshes `inventory-global/` (the same tracked snapshot, and
+  **`scripts/raycast-settings-sync.sh`** when `config/raycast/settings.json` changed).
+  **`just diff-tracked`** runs the tracked import, then reports tracked drift:
+  Homebrew, Mac App Store apps, editor extensions, chezmoi, and live app JSON vs
+  repo. **`just discover-global`** is the separate discovery mode for unmanaged
+  candidates into `inventory-global/discovery/`: `/Applications`, defaults domains
+  outside the tracked list, preference plists, LaunchAgents/LaunchDaemons, fonts,
+  system extensions, and unmanaged shell snippets. Use `git diff` / `git status` separately for
+  version-control work on the repo itself.
+  When plist review output changes, update `scripts/plist-sidecars.sh` together with
+  **`just _plist-sidecars`** when testing paths manually.
 
 Prefer first-class nix-darwin options over custom activation scripts. Use custom
 activation only when the option does not exist or macOS requires a special path.
@@ -67,13 +84,24 @@ activation only when the option does not exist or macOS requires a special path.
   unexpected machine state. This repo is declarative: if state is unexpected,
   fix the owning nix-darwin, Homebrew, Home Manager, or chezmoi declaration so
   every managed machine converges to the same expected state.
-- Do not gate scripts on presence checks for apps or CLIs that this repo installs
-  (`command -v`, `pgrep`, `test -f` on bundle paths, etc.). Declared packages and
-  casks are assumed present; call them directly and let failures surface.
+- Do not gate scripts on **installation** probes for apps or CLIs that this repo
+  already declares (nix-darwin, nix-homebrew, Home Manager, chezmoi): no
+  `command -v …`, no `[ -x … ]` on those bundle paths before invoking them, and
+  no `test -f` / `[ -e … ]` on declared `.app` bundles solely to skip a
+  declared tool. After bootstrap, recipes should call declared tools directly
+  and let failures surface. Exception: `up.sh` and similar **pre-Nix** entrypoints
+  may still test whether Nix itself is present before installing it. Probes for
+  **runtime state** unrelated to “is this package installed?” remain fine (for
+  example `pgrep` to avoid launching a startup app twice, or `gh auth status`
+  before `gh auth login`).
 - Comment non-obvious settings where they are declared. For numeric or encoded
   values such as macOS defaults IDs, modifier bitmasks, key codes, separator
   characters, and state-version pins, look up what the value means and record
-  that meaning in an adjacent comment.
+  that meaning in an adjacent comment. Do the same for **opaque or symbolic**
+  option values that are not self-explanatory English prose—Finder four-letter
+  view codes (for example `icnv`), symbolic hotkey IDs, locale or bundle
+  identifier spellings, and similar Apple vocabulary—so the next reader does not
+  have to reverse-engineer them.
 
 ## Validation
 
@@ -83,6 +111,12 @@ Run the smallest useful validation for the change. Common checks:
 bash -n up.sh
 bash -n scripts/up-local.sh
 bash -n scripts/with-sudo-keepalive.sh
+bash -n scripts/discover-global.sh
+bash -n scripts/snapshot-diff.sh
+bash -n scripts/plist-sidecars.sh
+bash -n scripts/import-inventory.sh
+bash -n scripts/diff-tracked.sh
+bun scripts/repo-settings-import.ts . --json >/dev/null
 just --list
 just --dry-run apply
 just verify

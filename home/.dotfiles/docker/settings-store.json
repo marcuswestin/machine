@@ -1,11 +1,11 @@
 {
-  "AutoStart": false,
+  "AutoStart": true,
   "DisplayedOnboarding": true,
   "DockerAppLaunchPath": "/Applications/Docker.app",
   "EnableDockerAI": true,
   "LastContainerdSnapshotterEnable": 1778440808,
   "LicenseTermsVersion": 2,
-  "openUIOnStartupDisabled": true,
+  "OpenUIOnStartupDisabled": true,
   "SettingsVersion": 43,
   "ShowInstallScreen": false,
   "UseContainerdSnapshotter": true,

@@ -5,12 +5,8 @@ set -euo pipefail
 
 REPO="${1:?usage: check-vscode-family-symlinks.sh <repo-root>}"
 
-realpath_py() {
-  python3 -c "import os, sys; print(os.path.realpath(sys.argv[1]))" "$1"
-}
-
-canonical_settings="$(realpath_py "$REPO/home/.dotfiles/vscode-family/settings.json")"
-canonical_keybindings="$(realpath_py "$REPO/home/.dotfiles/vscode-family/keybindings.json")"
+canonical_settings="$(realpath "${REPO}/home/.dotfiles/vscode-family/settings.json")"
+canonical_keybindings="$(realpath "${REPO}/home/.dotfiles/vscode-family/keybindings.json")"
 
 err=0
 
@@ -22,7 +18,7 @@ check_resolves() {
     return
   fi
   local got
-  got="$(realpath_py "$path")"
+  got="$(realpath "$path")"
   if [[ "$got" != "$expected" ]]; then
     printf 'vscode-family symlink check: %s drifts from repo canonical copy.\n' "$label" >&2
     printf '  %s\n  resolves to: %s\n  expected:      %s\n' "$path" "$got" "$expected" >&2

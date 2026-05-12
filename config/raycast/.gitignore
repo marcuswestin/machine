@@ -1,2 +1,2 @@
-# Built by `just raycast-import` from settings.json (gzip stream, not worth diffing).
+# Built by `scripts/raycast-settings-sync.sh` from settings.json (gzip stream, not worth diffing).
 settings.rayconfig

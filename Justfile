@@ -6,7 +6,8 @@ REPO := justfile_directory()
 HOST := env_var_or_default("MACHINE_HOST", "machine")
 NIX_CMD := "nix --extra-experimental-features 'nix-command flakes'"
 
-default:
+# List all recipes
+help:
     @just --list
 
 # Update system/app/env/dotfile layers and install editor extensions.
@@ -16,27 +17,30 @@ apply:
 # Apply dotfile changes with chezmoi
 chezmoi-apply:
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
+    @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live
     @aerospace reload-config --no-gui
 
-# Capture current machine state into reviewable inventory files.
-import-current:
-    just _apps-dump
-    just _mas-dump
-    just _defaults-capture
-    just _import-editor-extensions
-    just _import-home-files-review
-    -just display-layout-capture inventory/display-layout.sh
-    git status --short
+# Capture machine state into inventory-tracked/ or inventory-global/ (see AGENTS.md).
+import-inventory scope="global":
+    @"{{ REPO }}/scripts/import-inventory.sh" "{{ scope }}"
+
+# Run tracked inventory import, then report drift for currently managed surfaces.
+diff-tracked:
+    @"{{ REPO }}/scripts/diff-tracked.sh"
+
+# Discover unmanaged global machine surfaces that may be worth tracking.
+discover-global:
+    @"{{ REPO }}/scripts/discover-global.sh"
+
+# Merge live app JSON/JSONC into chezmoi-backed repo files (report by default; see scripts/repo-settings-import.ts).
+merge-in-settings *args:
+    bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" {{ args }}
 
 # Authenticate GitHub CLI and configure GitHub HTTPS pushes.
 git-auth:
     @just _git-auth
 
-# Capture the current display arrangement as the checked-in replay script.
-display-layout-capture file="scripts/display-layout.sh":
-    @just _display-layout-capture "{{ file }}"
-
-# Show undeclared Homebrew formulae/casks, editor extensions, and dotfile drift.
+# Homebrew, editor extensions, and chezmoi only (used by `_prune-check` and `diff-tracked`).
 prune-diff:
     @just _prune-homebrew-diff
     @just _prune-editor-extensions-diff
@@ -58,16 +62,24 @@ verify:
     @"{{ REPO }}/scripts/check-vscode-family-symlinks.sh" "{{ REPO }}"
     {{ NIX_CMD }} flake check --show-trace
 
-# Build settings.rayconfig from settings.json and open it (always; ignores change stamp).
-raycast-import:
-    @{{ REPO }}/scripts/raycast-settings-sync.sh "{{ REPO }}" force
-
 # Private recipes
 #################
 
 # If config/raycast/settings.json changed, gzip + open for Raycast import (see scripts/raycast-settings-sync.sh).
 _raycast-settings-sync:
     @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}"
+
+# Diff captured files under inventory-tracked/ or inventory-global/ vs current machine.
+_snapshot-diff scope="global":
+    @"{{ REPO }}/scripts/snapshot-diff.sh" "{{ scope }}"
+
+# Write readable plist sidecars (default: inventory-global/defaults when no args).
+_plist-sidecars *paths:
+    @"{{ REPO }}/scripts/plist-sidecars.sh" {{ paths }}
+
+# Force Raycast .rayconfig rebuild + open (ignores change stamp). Normal path: `import-inventory global` or `_after-switch`.
+_raycast-import-force:
+    @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" force
 
 # Apply
 #####
@@ -76,6 +88,7 @@ _apply:
     @just _system-switch
     @just _after-switch
     @echo "Machine setup complete."
+    @echo "opening apps"
     @just _prune-check
 
 # System switch
@@ -101,15 +114,9 @@ _after-switch:
 _git-auth:
     #!/usr/bin/env bash
     set -euo pipefail
-    if gh auth status --hostname github.com >/dev/null 2>&1; then
-      echo "GitHub auth already configured"
-    elif [ -t 0 ] && [ -t 1 ]; then
-      gh auth login --hostname github.com --git-protocol https --web
-    else
-      echo "Skipping GitHub auth; run 'just git-auth' from an interactive terminal"
-      exit 0
+    if ! gh auth status --hostname github.com >/dev/null 2>&1; then
+      yes | gh auth login --hostname github.com --git-protocol https --web
     fi
-    gh auth setup-git --hostname github.com
 
 _setup-xcode:
     @scripts/setup-xcode.sh
@@ -135,18 +142,14 @@ _launch-startup-apps:
             continue
           fi
 
-          if [ -e "$app_path" ] && /usr/bin/open -gj "$app_path"; then
+          if /usr/bin/open -gj "$app_path"; then
             continue
           fi
 
-          if [ -x "$executable" ]; then
-            # ASCII Unit Separator (0x1f, octal 037), matching the jq join above.
-            IFS=$'\037' read -r -a args <<< "$args_joined"
-            nohup "$executable" "${args[@]}" >/dev/null 2>&1 &
-            continue
-          fi
-
-          printf 'Could not launch startup app: %s\n' "$name" >&2
+          # ASCII Unit Separator (0x1f, octal 037), matching the jq join above.
+          IFS=$'\037' read -r -a args <<< "$args_joined"
+          nohup "$executable" "${args[@]}" >/dev/null 2>&1 &
+          continue
         done
 
 # Prune
@@ -200,50 +203,6 @@ _display-layout-capture file="scripts/display-layout.sh":
     printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' '' '# Captured from the current macOS display arrangement with displayplacer.' "exec $command" > "{{ file }}"
     chmod +x "{{ file }}"
     printf 'Captured display layout in %s\n' "{{ file }}"
-
-# Inventory
-###########
-
-# Export current Homebrew state for review.
-_apps-dump file="inventory/Brewfile":
-    mkdir -p "$(dirname "{{ file }}")"
-    brew bundle dump --force --file "{{ file }}"
-
-_apps-apply file="inventory/Brewfile":
-    brew bundle --file "{{ file }}"
-
-# Export current Mac App Store inventory for review.
-_mas-dump file="inventory/mas.json":
-    #!/usr/bin/env bash
-    set -euo pipefail
-    mkdir -p "$(dirname "{{ file }}")"
-    if command -v mas >/dev/null 2>&1; then
-      mas list --json > "{{ file }}"
-    fi
-
-# Export selected macOS preferences for review, not blind re-application.
-_defaults-capture dir="inventory/defaults":
-    mkdir -p "{{ dir }}"
-    for domain in \
-      NSGlobalDomain \
-      com.apple.dock \
-      com.apple.finder \
-      com.apple.AppleMultitouchTrackpad \
-      com.apple.driver.AppleBluetoothMultitouch.trackpad \
-      com.apple.symbolichotkeys \
-      com.apple.universalaccess; do \
-      defaults export "$domain" "{{ dir }}/$domain.plist" 2>/dev/null || true; \
-    done
-
-_import-editor-extensions dir="inventory/editor-extensions":
-    @code_cli="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"; \
-      cursor_cli="/Applications/Cursor.app/Contents/Resources/app/bin/cursor"; \
-      mkdir -p "{{ dir }}"; \
-      [ -x "$code_cli" ] && "$code_cli" --list-extensions > "{{ dir }}/code.txt" || true; \
-      [ -x "$cursor_cli" ] && "$cursor_cli" --list-extensions > "{{ dir }}/cursor.txt" || true
-
-_import-home-files-review dir="inventory/home":
-    @"{{ REPO }}/scripts/import-home-files-review.sh" "{{ dir }}"
 
 # Flake
 #######
