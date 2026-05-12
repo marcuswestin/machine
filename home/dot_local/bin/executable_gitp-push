@@ -19,9 +19,35 @@ push_if_ahead() {
 		cd "$repo_dir"
 		echo "- Check $repo_dir"
 
-		if git status -sb | grep -q '\[ahead'; then
-			echo "- Push $repo_dir"
+		local branch
+		branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+		if [ -z "$branch" ]; then
+			echo "  - Detached HEAD, skipping"
+			return
+		fi
+
+		# `git status -sb` only emits `[ahead N]` when an upstream is configured,
+		# so a brand-new branch with no `@{upstream}` would otherwise be skipped
+		# silently. Detect upstream explicitly and fall back to `push -u` so the
+		# first push both creates the remote branch and wires up tracking.
+		local upstream
+		upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+
+		if [ -n "$upstream" ]; then
+			local ahead
+			ahead="$(git rev-list --count "${upstream}..HEAD")"
+			if [ "$ahead" -eq 0 ]; then
+				return
+			fi
+			echo "- Push $repo_dir ($ahead ahead of $upstream)"
 			git push "$@"
+		elif [ "$#" -gt 0 ]; then
+			# Caller supplied remote/branch; let git wire upstream from that.
+			echo "- Push $repo_dir (set upstream from args: $*)"
+			git push -u "$@"
+		else
+			echo "- Push $repo_dir (set upstream origin/$branch)"
+			git push -u origin "HEAD:$branch"
 		fi
 	)
 }
