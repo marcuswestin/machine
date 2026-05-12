@@ -37,6 +37,7 @@
     parallel
     ripgrep
     taplo
+    yq-go
   ];
 
   system.primaryUser = user;

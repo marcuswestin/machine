@@ -6,7 +6,9 @@
 }:
 
 let
+  # Repo-local script; applied at login only if it already contains a real displayplacer line.
   displayLayoutScript = "/Users/${user}/code/machine/scripts/display-layout.sh";
+  # Each entry drives a user LaunchAgent: try the .app bundle first, fall back to the bundle binary + args.
   startupApps = [
     {
       name = "Handy";
@@ -33,35 +35,39 @@ let
       args = [ ];
     }
     {
-      name = "Docker";
+      name = "Docker Desktop";
       appPath = "/Applications/Docker.app";
       executable = "/Applications/Docker.app/Contents/MacOS/com.docker.backend";
       args = [ ];
     }
   ];
 
+  # nix-darwin builds plist paths from the agent key; spaces (e.g. "Docker Desktop") break activate(8)'s shell.
+  agentKeyFragment = app: lib.replaceStrings [ " " ] [ "-" ] (lib.toLower app.name);
+
+  # Nix interpolates paths/args through lib.escapeShellArg(s) so spaces and metacharacters stay one shell word each.
   launchAgentFor =
     app:
-    lib.nameValuePair "open-${lib.toLower app.name}" {
+    lib.nameValuePair "open-${agentKeyFragment app}" {
       script = ''
         process_name="$(/usr/bin/basename ${lib.escapeShellArg app.executable})"
+        # -x: exact process name match (cheap guard when the binary basename is unique).
         if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1; then
           exit 0
         fi
 
+        # -f: full command line match on the executable path (catches renamed helpers sharing a basename).
         if /usr/bin/pgrep -f ${lib.escapeShellArg app.executable} >/dev/null 2>&1; then
           exit 0
         fi
 
-        if [ -e ${lib.escapeShellArg app.appPath} ]; then
-          /usr/bin/open -gj ${lib.escapeShellArg app.appPath} && exit 0
+        # Prefer Launch Services: -g do not foreground, -j start hidden (when the app supports it).
+        if /usr/bin/open -gj ${lib.escapeShellArg app.appPath}; then
+          exit 0
         fi
 
-        if [ -x ${lib.escapeShellArg app.executable} ]; then
-          exec ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args}
-        fi
-
-        exit 0
+        # Last resort: run the bundle’s Mach-O directly with the declared argv (same words open would use).
+        exec ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args}
       '';
       serviceConfig = {
         RunAtLoad = true;
@@ -81,6 +87,7 @@ let
         exit 0
       fi
 
+      # displayplacer is Homebrew-managed here; nix paths cover darwin-rebuild and default profiles.
       export PATH="/opt/homebrew/bin:/usr/local/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
       "$display_layout_script" || true
     '';

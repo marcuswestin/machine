@@ -24,6 +24,7 @@
       "steipete/tap/codexbar"
       "antigravity"
       "zoom"
+      "monitorcontrol"
     ];
 
     # Mac App Store apps that can be installed with `mas install <id>` belong in
