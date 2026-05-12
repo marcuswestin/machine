@@ -53,7 +53,8 @@ fi
 
 if [ -n "$extra_casks" ]; then
   while IFS= read -r cask; do
-    HOMEBREW_NO_AUTOREMOVE=1 brew uninstall --cask --force "$cask"
+    # Avoid Homebrew's JSON cask API here; cask metadata bugs can break uninstall lookup.
+    HOMEBREW_NO_AUTOREMOVE=1 HOMEBREW_NO_INSTALL_FROM_API=1 brew uninstall --cask --force "$cask"
   done <<< "$extra_casks"
 fi
 
