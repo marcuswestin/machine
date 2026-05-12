@@ -1,6 +1,14 @@
 # Prompt
 PROMPT='%~ λ '
 
+# Tool loaders and Completions
+##############################
+
+# ZSH completions
+fpath=("$HOME/.zsh-completions" $fpath)
+autoload -U compinit
+compinit
+
 # Home Manager
 . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
 
@@ -8,32 +16,21 @@ PROMPT='%~ λ '
 eval "$(brew shellenv)"
 fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
 
-# ZSH completions
-fpath=("$HOME/.zsh-completions" $fpath)
+# Direnv
+eval "$(direnv hook zsh)"
 
-autoload -U compinit
-compinit
 
-# Aliases
+# Command aliases
+#################
+
 alias j="just"
 
-# Project launchers
-et() {
-  cd "$HOME/code/tao-lang" || return
-  open -a codex .
-  cursor .
-}
+# Workflow aliases
+##################
 
-em() {
-  cd "$HOME/code/machine" || return
-  open -a codex .
-  cursor .
-}
-
-ea() {
-  cd "$HOME/code/agent-os" || return
-  open -a codex .
-  cursor .
-}
-
-eval "$(direnv hook zsh)"
+alias em="cd ~/code/machine"
+alias om="cd ~/code/machine && sleep 1 && aerospace move-node-to-workspace 1 && aerospace workspace 1 && sleep 1 && open -na Codex && sleep 1 && cursor --new-window . "
+alias ea="cd ~/code/agent-os"
+alias oa="cd ~/code/agent-os && sleep 1 && aerospace move-node-to-workspace 2 && aerospace workspace 2 && sleep 1 && open -na Codex && sleep 1 && cursor --new-window . "
+alias et="cd ~/code/tao-lang"
+alias ot="cd ~/code/tao-lang && sleep 1 && aerospace move-node-to-workspace 3 && aerospace workspace 3 && sleep 1 && open -na Codex && sleep 1 && cursor --new-window . "

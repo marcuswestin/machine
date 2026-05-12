@@ -4,6 +4,7 @@ dprint.dprint
 expo.vscode-expo-tools
 firsttris.vscode-jest-runner
 google.geminicodeassist
+jnoortheen.nix-ide
 langium.langium-vscode
 ms-azuretools.vscode-containers
 ms-vscode.vscode-typescript-next

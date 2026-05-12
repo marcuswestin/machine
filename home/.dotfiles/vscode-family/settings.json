@@ -20,7 +20,46 @@
       ]
     }
   ],
+  // `gj` / `gk`: move by screen line when `editor.wordWrap` is on (stay in the same visual column across wraps). Insert `jj` → Esc is unchanged.
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "after": [
+        "g",
+        "j"
+      ],
+      "before": [
+        "j"
+      ]
+    },
+    {
+      "after": [
+        "g",
+        "k"
+      ],
+      "before": [
+        "k"
+      ]
+    }
+  ],
   "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "after": [
+        "g",
+        "j"
+      ],
+      "before": [
+        "j"
+      ]
+    },
+    {
+      "after": [
+        "g",
+        "k"
+      ],
+      "before": [
+        "k"
+      ]
+    },
     // Route Vim undo/redo through VS Code so the tab dirty dot tracks reverted files.
     {
       "before": [
@@ -30,13 +69,31 @@
         "redo"
       ]
     },
+    // Replay the scratch macro: record with `qq` … `q` (always register `q`). `@@` only repeats the last `@x`, so it cannot run a freshly recorded macro before the first `@`.
     {
       "after": [
         "@",
-        "@"
+        "q"
       ],
       "before": [
         "Q"
+      ]
+    },
+    // `*` / `#`: next / previous whole-word match for text under cursor (replaces default `G` end-of-buffer, `F` backward-on-line `F{char}`).
+    {
+      "after": [
+        "*"
+      ],
+      "before": [
+        "G"
+      ]
+    },
+    {
+      "after": [
+        "#"
+      ],
+      "before": [
+        "F"
       ]
     },
     {
@@ -174,14 +231,20 @@
     "https://schemastore.azurewebsites.net/": true,
     "https://www.schemastore.org/": true
   },
-  "yaml.schemas": {},
-  // Cursor (desktop). Cloud Agents defaults (model, repo, network mode, secrets) are configured in
-  // the Cursor dashboard (cursor.com → Cloud Agents), not as stable User settings keys here.
-  /////////////////////////////
-  "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
+  "yaml.schemas": {
+    "file:///Users/ro/.cursor/extensions/continue.continue-1.2.22-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///Users/ro/.vscode/extensions/continue.continue-1.2.22-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ]
+  },
   "cursor.composer.shouldChimeAfterChatFinishes": true,
+  // Agent "Queue Messages": queue = send after current message; stop-and-send = interrupt.
+  "cursor.composer.queueMessageDefaultBehavior": "queue",
   "cursor.cpp.disabledLanguages": [
     "scminput"
   ],
-  "cursor.inlineDiff.mode": "unified"
+  "cursor.inlineDiff.mode": "unified",
+  "geminicodeassist.displayInlineContextHint": false
 }
