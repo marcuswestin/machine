@@ -1,5 +1,11 @@
 # Prompt
-PROMPT='%~ λ '
+autoload -Uz vcs_info
+setopt prompt_subst
+zstyle ':vcs_info:git:*' formats ' %F{245}<%b>%f'
+precmd() {
+  vcs_info
+}
+PROMPT='%F{240}[%D{%-m/%d-%H:%M}${vcs_info_msg_0_}%F{240}]%f %F{248}%~%f %B%F{15}λ%f%b '
 
 # Tool loaders and Completions
 ##############################
