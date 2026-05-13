@@ -1,4 +1,9 @@
-{ inputs, user, ... }:
+{
+  inputs,
+  pkgs,
+  user,
+  ...
+}:
 
 {
   nix-homebrew = {
@@ -7,6 +12,10 @@
     enableRosetta = false;
     taps = {
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "machine/homebrew-handy" = pkgs.runCommandLocal "homebrew-handy" { } ''
+        mkdir -p "$out"
+        cp -R ${../homebrew/handy}/. "$out"
+      '';
       "nikitabobko/tap" = inputs.homebrew-nikitabobko-tap;
       "steipete/tap" = inputs.homebrew-steipete-tap;
     };

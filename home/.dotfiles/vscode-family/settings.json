@@ -1,8 +1,8 @@
 {
   // Editor (appearance)
   /////////////////////////////
-  "editor.fontSize": 12.5,
-  "editor.lineHeight": 17,
+  "editor.fontSize": 11,
+  "editor.lineHeight": 14,
   // "window.zoomLevel": 1.5, // Monitor extra large
   // "window.zoomLevel": 1.3, // Monitor large
   // "window.zoomLevel": 0.8, // Monitor medium

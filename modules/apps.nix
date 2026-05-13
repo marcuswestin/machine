@@ -11,7 +11,8 @@
       "firefox"
       "nikitabobko/tap/aerospace"
       "raycast"
-      "handy"
+      # Local cask pins the marcuswestin fork release with menu bar mode for AeroSpace.
+      "machine/handy/handy"
       "spotify"
       "chatgpt"
       "chatgpt-atlas"
