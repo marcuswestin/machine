@@ -42,7 +42,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ["1", "2", "3", "A", "B", "C", "M", "N", "O", "X", "Y", "Z"]
+persistent-workspaces = ["1", "2", "3", "A", "B", "C", "L", "M", "N", "X", "Y", "Z"]
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -89,9 +89,9 @@ on-mode-changed = []
   A = 'dell'
   B = 'dell'
   C = 'dell'
+  L = 'built-in'
   M = 'built-in'
   N = 'built-in'
-  O = 'built-in'
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -183,16 +183,16 @@ on-mode-changed = []
   alt-shift-e = ['move-node-to-workspace C', 'workspace C']
   alt-shift-ctrl-e = ['move-node-to-workspace C']
 
-  # --- Built-in Retina: A/S/D keys -> workspaces M, N and O
-  alt-a = ['workspace M']
-  alt-shift-a = ['move-node-to-workspace M', 'workspace M']
-  alt-shift-ctrl-a = ['move-node-to-workspace M']
-  alt-s = ['workspace N']
-  alt-shift-s = ['move-node-to-workspace N', 'workspace N']
-  alt-shift-ctrl-s = ['move-node-to-workspace N']
-  alt-d = ['workspace O']
-  alt-shift-d = ['move-node-to-workspace O', 'workspace O']
-  alt-shift-ctrl-d = ['move-node-to-workspace O']
+  # --- Built-in Retina: A/S/D keys -> workspaces L, M and N
+  alt-a = ['workspace L']
+  alt-shift-a = ['move-node-to-workspace L', 'workspace L']
+  alt-shift-ctrl-a = ['move-node-to-workspace L']
+  alt-s = ['workspace M']
+  alt-shift-s = ['move-node-to-workspace M', 'workspace M']
+  alt-shift-ctrl-s = ['move-node-to-workspace M']
+  alt-d = ['workspace N']
+  alt-shift-d = ['move-node-to-workspace N', 'workspace N']
+  alt-shift-ctrl-d = ['move-node-to-workspace N']
 
   # --- Built-in Retina: Z/X/C keys -> workspaces X, Y and Z
   alt-z = ['workspace X']
