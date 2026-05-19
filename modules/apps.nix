@@ -3,6 +3,8 @@
 {
   homebrew = {
     brews = [
+      "btop"
+      "macmon"
       "displayplacer"
     ];
 
@@ -27,7 +29,9 @@
       "steipete/tap/codexbar"
       "antigravity"
       "zoom"
+      "jordanbaird-ice"
       "monitorcontrol"
+      "stats"
     ];
 
     # Mac App Store apps that can be installed with `mas install <id>` belong in

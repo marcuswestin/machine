@@ -40,6 +40,12 @@ let
       executable = "/Applications/Docker.app/Contents/MacOS/com.docker.backend";
       args = [ ];
     }
+    {
+      name = "Stats";
+      appPath = "/Applications/Stats.app";
+      executable = "/Applications/Stats.app/Contents/MacOS/Stats";
+      args = [ ];
+    }
   ];
 
   # nix-darwin builds plist paths from the agent key; spaces (e.g. "Docker Desktop") break activate(8)'s shell.
