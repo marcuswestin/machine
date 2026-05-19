@@ -1,12 +1,21 @@
 {
+  "git.enabled": true,
+  "scm.diffDecorations": "all",
+  "diffEditor.hideUnchangedRegions.enabled": false,
+  "editor.renderLineHighlight": "all",
+  "workbench.colorCustomizations": {
+    "editorGutter.modifiedBackground": "#00aaff",
+    "editorGutter.addedBackground": "#00ff66",
+    "editorGutter.deletedBackground": "#ff3355"
+  },
   // Editor (appearance)
   /////////////////////////////
-  "editor.fontSize": 11,
-  "editor.lineHeight": 14,
+  "editor.fontSize": 13.5,
+  "editor.lineHeight": 18,
   // "window.zoomLevel": 1.5, // Monitor extra large
   // "window.zoomLevel": 1.3, // Monitor large
   // "window.zoomLevel": 0.8, // Monitor medium
-  "window.zoomLevel": 0.15, // Laptop
+  // "window.zoomLevel": 0.25, // Laptop
   // Vim
   /////////////////////////////
   "vim.insertModeKeyBindings": [
@@ -110,10 +119,11 @@
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "window.confirmSaveUntitledWorkspace": false,
-  "workbench.colorTheme": "Dark Modern",
+  "workbench.colorTheme": "Cursor Dark High Contrast",
+  // "workbench.colorTheme": "Monokai",
   "workbench.secondarySideBar.defaultVisibility": "visible",
   "workbench.startupEditor": "none",
-  // Editor (general)
+  // Editor (general)kk
   /////////////////////////////
   "editor.defaultFormatter": "dprint.dprint",
   "editor.inlineSuggest.enabled": true,
@@ -188,6 +198,8 @@
   },
   // Git
   /////////////////////////////
+  "git.decorations.enabled": true,
+  "scm.diffDecorations": "all",
   "git.openRepositoryInParentFolders": "never",
   "git.suggestSmartCommit": false,
   // GitHub Copilot & inline AI
