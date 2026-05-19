@@ -42,7 +42,7 @@ automatically-unhide-macos-hidden-apps = true
 # even when they are invisible.
 # This config version is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "X", "Y", "Z"]
+persistent-workspaces = ["1", "2", "3", "A", "B", "C", "M", "N", "O", "X", "Y", "Z"]
 
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -77,21 +77,21 @@ on-mode-changed = []
 
 # Force workspaces onto monitors (case-insensitive substring / regex; AeroSpace guide "Assign workspaces to monitors").
 [workspace-to-monitor-force-assignment]
-  1 = 'dell'
-  2 = 'dell'
-  3 = 'dell'
-  4 = 'dell'
-  5 = 'dell'
-  6 = 'dell'
-  7 = 'dell'
-  8 = 'dell'
-  9 = 'dell'
-  A = 'ultrafine'
-  B = 'ultrafine'
-  C = 'ultrafine'
-  X = 'built-in'
-  Y = 'built-in'
-  Z = 'built-in'
+  1 = 'ultrafine'
+  2 = 'ultrafine'
+  3 = 'ultrafine'
+  4 = 'ultrafine'
+  5 = 'ultrafine'
+  6 = 'ultrafine'
+  7 = 'ultrafine'
+  8 = 'ultrafine'
+  9 = 'ultrafine'
+  A = 'dell'
+  B = 'dell'
+  C = 'dell'
+  M = 'built-in'
+  N = 'built-in'
+  O = 'built-in'
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -163,7 +163,7 @@ on-mode-changed = []
   alt-9 = ['workspace 9']
   alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
 
-  # --- LG UltraFine: workspaces A–C (Q/W/E mnemonics) ---
+  # --- LG UltraFine: Q/W/E keys -> workspaces A, B and C
   alt-q = ['workspace A']
   alt-shift-q = ['move-node-to-workspace A', 'workspace A']
   alt-w = ['workspace B']
@@ -171,13 +171,21 @@ on-mode-changed = []
   alt-e = ['workspace C']
   alt-shift-e = ['move-node-to-workspace C', 'workspace C']
 
-  # --- Built-in Retina: workspaces X–Z (A/S/D keys) ---
-  alt-a = ['workspace X']
-  alt-shift-a = ['move-node-to-workspace X', 'workspace X']
-  alt-s = ['workspace Y']
-  alt-shift-s = ['move-node-to-workspace Y', 'workspace Y']
-  alt-d = ['workspace Z']
-  alt-shift-d = ['move-node-to-workspace Z', 'workspace Z']
+  # --- Built-in Retina: A/S/D keys -> workspaces M, N and O
+  alt-a = ['workspace M']
+  alt-shift-a = ['move-node-to-workspace M', 'workspace M']
+  alt-s = ['workspace N']
+  alt-shift-s = ['move-node-to-workspace N', 'workspace N']
+  alt-d = ['workspace O']
+  alt-shift-d = ['move-node-to-workspace O', 'workspace O']
+
+  # --- Built-in Retina: Z/X/C keys -> workspaces X, Y and Z
+  alt-z = ['workspace X']
+  alt-shift-z = ['move-node-to-workspace X', 'workspace X']
+  alt-x = ['workspace Y']
+  alt-shift-x = ['move-node-to-workspace Y', 'workspace Y']
+  alt-c = ['workspace Z']
+  alt-shift-c = ['move-node-to-workspace Z', 'workspace Z']
 
   # --- Focused monitor: cycle workspaces (I/U) ---
   alt-i = ['workspace --wrap-around next']
