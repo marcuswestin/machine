@@ -64,7 +64,7 @@ in
       # macOS stores keyboard repeat timings in 15 ms units; this is a 150 ms
       # initial delay followed by a 15 ms repeat interval.
       InitialKeyRepeat = 10;
-      KeyRepeat = 1;
+      KeyRepeat = 15;
     };
 
     dock = {
