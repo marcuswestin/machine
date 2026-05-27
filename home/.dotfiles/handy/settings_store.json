@@ -43,6 +43,7 @@
     "keyboard_implementation": "handy_keys",
     "lazy_stream_close": false,
     "log_level": "debug",
+    "menu_bar_mode": false,
     "model_unload_timeout": "never",
     "mute_while_recording": false,
     "ort_accelerator": "auto",

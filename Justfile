@@ -18,7 +18,7 @@ apply:
 chezmoi-apply:
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
     @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live
-    @aerospace reload-config --no-gui
+    @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 # Capture machine state into inventory-tracked/ or inventory-global/ (see AGENTS.md).
 import-inventory scope="global":
@@ -109,6 +109,7 @@ _after-switch:
     @echo "Installing editor extensions (may take a while)..."
     @just _install-editor-extensions
     @just _launch-startup-apps
+    @"{{ REPO }}/scripts/aerospace-reload-config.sh"
     @just _raycast-settings-sync
 
 _git-auth:
