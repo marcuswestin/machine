@@ -86,7 +86,8 @@ prune_apply_extensions() {
   fi
 
   while IFS= read -r extension; do
-    "$cli" --uninstall-extension "$extension"
+    # User-promoted built-ins (e.g. github.copilot-chat) require --force.
+    "$cli" --uninstall-extension "$extension" --force
   done <<< "$extra"
 }
 
