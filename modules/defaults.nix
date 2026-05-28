@@ -193,6 +193,15 @@ in
       "bobko.aerospace" = {
         displayStyle = "i3Ordered"; # AeroSpace menu bar style: i3-style ordered workspace pills.
       };
+
+      "com.openai.chat" = {
+        # ChatGPT → Settings → App → Show in Menu Bar: Always.
+        # The app stores this Swift enum as a JSON string rather than a plist dictionary.
+        desktopMenuBarBehavior = ''{"always":{}}'';
+        # ChatGPT → Settings → Chat bar → Keyboard shortcut: Option-Command-Space.
+        # Carbon key code 49 is Space; modifier mask 2304 is Option (2048) + Command (256).
+        KeyboardShortcuts_toggleLauncher = ''{"carbonModifiers":2304,"carbonKeyCode":49}'';
+      };
     };
 
     WindowManager = {
