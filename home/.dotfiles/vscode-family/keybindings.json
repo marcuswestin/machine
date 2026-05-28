@@ -37,6 +37,10 @@
     "when": "textInputFocus"
   },
   {
+    "key": "cmd+w",
+    "command": "workbench.action.closeWindow"
+  },
+  {
     "key": "cmd+enter",
     "command": "editor.action.acceptCursorTabSuggestion",
     "when": "cpp.shouldAcceptTab"
