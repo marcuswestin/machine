@@ -101,22 +101,29 @@ _system-switch host=HOST:
 # After switch
 ##############
 
-# After `darwin-rebuild switch`: Xcode, auth, chezmoi, editor extensions, startup apps.
+# After `darwin-rebuild switch`: grouped interactive setup, then unattended finishing work.
 _after-switch:
-    @just _setup-xcode
-    @just git-auth
+    @just _attention-required
     @just chezmoi-apply
     @just _unquarantine-cask-apps
     @echo "Installing editor extensions (may take a while)..."
     @just _install-editor-extensions
     @just _launch-startup-apps
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
+
+_attention-required:
+    @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, and Raycast import."
+    @just _setup-xcode
+    @just git-auth
     @just _raycast-settings-sync
 
 _git-auth:
     #!/usr/bin/env bash
     set -euo pipefail
     if ! gh auth status --hostname github.com >/dev/null 2>&1; then
+      "{{ REPO }}/scripts/attention.sh" \
+        "GitHub authentication needs attention" \
+        "GitHub CLI is not authenticated; a browser login will open and Terminal will wait."
       yes | gh auth login --hostname github.com --git-protocol https --web
     fi
 

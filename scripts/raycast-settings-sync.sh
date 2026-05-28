@@ -28,5 +28,8 @@ fi
 
 gzip -cn "$json" >"$out"
 printf 'Raycast settings.json changed; opened %s for import.\n' "$out" >&2
+"$repo_root/scripts/attention.sh" \
+  "Raycast import needs attention" \
+  "Raycast settings changed; a .rayconfig import is about to open."
 open "$out"
 echo "$current" >"$state_file"

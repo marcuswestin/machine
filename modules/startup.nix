@@ -12,36 +12,42 @@ let
   startupApps = [
     {
       name = "Handy";
+      bundleIdentifier = "com.pais.handy";
       appPath = "/Applications/Handy.app";
       executable = "/Applications/Handy.app/Contents/MacOS/handy";
       args = [ "--start-hidden" ];
     }
     {
       name = "AeroSpace";
+      bundleIdentifier = "bobko.aerospace";
       appPath = "/Applications/AeroSpace.app";
       executable = "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
       args = [ ];
     }
     {
       name = "Raycast";
+      bundleIdentifier = "com.raycast.macos";
       appPath = "/Applications/Raycast.app";
       executable = "/Applications/Raycast.app/Contents/MacOS/Raycast";
       args = [ ];
     }
     {
       name = "CodexBar";
+      bundleIdentifier = "com.steipete.codexbar";
       appPath = "/Applications/CodexBar.app";
       executable = "/Applications/CodexBar.app/Contents/MacOS/CodexBar";
       args = [ ];
     }
     {
       name = "Docker Desktop";
+      bundleIdentifier = "com.docker.docker";
       appPath = "/Applications/Docker.app";
       executable = "/Applications/Docker.app/Contents/MacOS/com.docker.backend";
       args = [ ];
     }
     {
       name = "Stats";
+      bundleIdentifier = "eu.exelban.Stats";
       appPath = "/Applications/Stats.app";
       executable = "/Applications/Stats.app/Contents/MacOS/Stats";
       args = [ ];
@@ -50,12 +56,14 @@ let
 
   # nix-darwin builds plist paths from the agent key; spaces (e.g. "Docker Desktop") break activate(8)'s shell.
   agentKeyFragment = app: lib.replaceStrings [ " " ] [ "-" ] (lib.toLower app.name);
+  toPlist = lib.generators.toPlist { escape = true; };
 
   # Nix interpolates paths/args through lib.escapeShellArg(s) so spaces and metacharacters stay one shell word each.
-  launchAgentFor =
+  appLaunchCommand =
     app:
-    lib.nameValuePair "open-${agentKeyFragment app}" {
-      script = ''
+    ''
+        /bin/wait4path /nix/store
+
         process_name="$(/usr/bin/basename ${lib.escapeShellArg app.executable})"
         # -x: exact process name match (cheap guard when the binary basename is unique).
         if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1; then
@@ -74,14 +82,39 @@ let
 
         # Last resort: run the bundle’s Mach-O directly with the declared argv (same words open would use).
         exec ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args}
-      '';
-      serviceConfig = {
+    '';
+
+  launchAgentFileFor =
+    app:
+    let
+      label = "org.nixos.open-${agentKeyFragment app}";
+    in
+    lib.nameValuePair "${label}.plist" {
+      text = toPlist {
+        Label = label;
+        Program = "/bin/sh";
+        ProgramArguments = [
+          app.name
+          "-c"
+          (appLaunchCommand app)
+        ];
+        # AssociatedBundleIdentifiers is Apple’s legacy LaunchAgent hint for
+        # System Settings → Login Items & Extensions app names/icons.
+        AssociatedBundleIdentifiers = [ app.bundleIdentifier ];
         RunAtLoad = true;
       };
     };
 
-  displayLayoutAgent = {
-    script = ''
+  displayLayoutAgentFile = {
+    text = toPlist {
+      Label = "org.nixos.display-layout";
+      Program = "/bin/sh";
+      ProgramArguments = [
+        "Display Layout"
+        "-c"
+        ''
+      /bin/wait4path /nix/store
+
       display_layout_script=${lib.escapeShellArg displayLayoutScript}
       if [ ! -x "$display_layout_script" ]; then
         exit 0
@@ -96,8 +129,8 @@ let
       # displayplacer is Homebrew-managed here; nix paths cover darwin-rebuild and default profiles.
       export PATH="/opt/homebrew/bin:/usr/local/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
       "$display_layout_script" || true
-    '';
-    serviceConfig = {
+        ''
+      ];
       RunAtLoad = true;
     };
   };
@@ -109,6 +142,7 @@ in
       lib.types.submodule {
         options = {
           name = lib.mkOption { type = lib.types.str; };
+          bundleIdentifier = lib.mkOption { type = lib.types.str; };
           appPath = lib.mkOption { type = lib.types.str; };
           executable = lib.mkOption { type = lib.types.str; };
           args = lib.mkOption {
@@ -124,8 +158,8 @@ in
 
   config = {
     machine.startupApps = startupApps;
-    launchd.user.agents = lib.listToAttrs (map launchAgentFor config.machine.startupApps) // {
-      display-layout = displayLayoutAgent;
+    environment.userLaunchAgents = lib.listToAttrs (map launchAgentFileFor config.machine.startupApps) // {
+      "org.nixos.display-layout.plist" = displayLayoutAgentFile;
     };
   };
 }

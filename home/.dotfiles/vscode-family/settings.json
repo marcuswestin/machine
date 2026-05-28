@@ -255,8 +255,10 @@
   // Agent "Queue Messages": queue = send after current message; stop-and-send = interrupt.
   "cursor.composer.queueMessageDefaultBehavior": "queue",
   "cursor.cpp.disabledLanguages": [
+    "markdown",
     "scminput"
   ],
   "cursor.inlineDiff.mode": "unified",
-  "geminicodeassist.displayInlineContextHint": false
+  "geminicodeassist.displayInlineContextHint": false,
+  "window.autoDetectColorScheme": true
 }

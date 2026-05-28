@@ -99,9 +99,9 @@ in
       ApplePressAndHoldEnabled = false; # Enable key repeat instead of accent popup.
       "com.apple.swipescrolldirection" = true; # Natural scrolling.
       # macOS stores keyboard repeat timings in 15 ms units; this is a 150 ms
-      # initial delay followed by a 15 ms repeat interval.
+      # initial delay followed by a 30 ms repeat interval.
       InitialKeyRepeat = 10;
-      KeyRepeat = 15;
+      KeyRepeat = 2;
     };
 
     dock = {

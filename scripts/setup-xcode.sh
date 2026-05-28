@@ -15,6 +15,8 @@ set -euo pipefail
 # is missing, this fails loudly after nix-darwin has already converged the rest
 # of the machine; sign in via App Store.app and rerun `just apply`.
 
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
 if ! pkgutil --pkg-info=com.apple.pkg.CLTools_Executables >/dev/null 2>&1; then
   # Apple-documented sentinel that makes softwareupdate offer CLT for fresh
   # installs. Only created when CLT is actually missing — otherwise softwareupdate
@@ -38,6 +40,9 @@ if ! pkgutil --pkg-info=com.apple.pkg.CLTools_Executables >/dev/null 2>&1; then
 fi
 
 if ! mas list | awk '{ print $1 }' | grep -qx '497799835'; then
+  "$script_dir/attention.sh" \
+    "Xcode install needs attention" \
+    "Xcode is not installed from the App Store; Apple ID sign-in may be required."
   mas get 497799835
 fi
 
@@ -65,5 +70,8 @@ fi
 # `simctl list runtimes` already reports an iOS runtime once one is installed,
 # so subsequent applies skip the multi-GB download.
 if ! xcrun simctl list runtimes 2>/dev/null | grep -q '^iOS '; then
+  "$script_dir/attention.sh" \
+    "iOS Simulator runtime needs attention" \
+    "No iOS Simulator runtime is installed; Xcode may ask for an Apple ID device code."
   sudo xcodebuild -downloadPlatform iOS
 fi
