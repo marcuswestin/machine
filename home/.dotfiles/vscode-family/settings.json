@@ -118,6 +118,7 @@
   /////////////////////////////
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
+  "window.confirmBeforeClose": "never",
   "window.confirmSaveUntitledWorkspace": false,
   "workbench.colorTheme": "Cursor Dark High Contrast",
   // "workbench.colorTheme": "Monokai",
