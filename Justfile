@@ -32,6 +32,10 @@ diff-tracked:
 discover-global:
     @"{{ REPO }}/scripts/discover-global.sh"
 
+# Discover persisted app settings candidates for declared Homebrew casks.
+discover-app-settings:
+    bun "{{ REPO }}/scripts/app-settings-candidates.ts"
+
 # Merge live app JSON/JSONC into chezmoi-backed repo files (report by default; see scripts/repo-settings-import.ts).
 merge-in-settings *args:
     bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" {{ args }}
