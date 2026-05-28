@@ -50,6 +50,10 @@ sort -u "$apps_file" | while IFS= read -r app_path; do
     continue
   fi
 
+  if ! /usr/bin/xattr "$app_path" 2>/dev/null | grep -qx 'com.apple.quarantine'; then
+    continue
+  fi
+
   printf 'Clearing Gatekeeper quarantine from %s\n' "$app_path"
-  sudo /usr/bin/xattr -dr com.apple.quarantine "$app_path"
+  sudo /usr/bin/xattr -d com.apple.quarantine "$app_path"
 done
