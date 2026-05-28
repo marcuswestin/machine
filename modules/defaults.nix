@@ -189,6 +189,10 @@ in
         useFineScaleBrightness = true;
         useFineScaleVolume = false;
       };
+
+      "bobko.aerospace" = {
+        displayStyle = "i3Ordered"; # AeroSpace menu bar style: i3-style ordered workspace pills.
+      };
     };
 
     WindowManager = {
