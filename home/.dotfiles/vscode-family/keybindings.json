@@ -38,7 +38,7 @@
   },
   {
     "key": "cmd+w",
-    "command": "workbench.action.closeWindow"
+    "command": "workbench.action.closeActiveEditor"
   },
   {
     "key": "cmd+enter",
