@@ -108,5 +108,20 @@ else
   printf 'Skip: need both %s and %s.\n' "$canon_dl" "$inv_dl"
 fi
 
+section "${inv_name}/browser-extensions/*.json vs current browser extension capture"
+inv_browser_ext="${inv}/browser-extensions"
+if [[ -d "$inv_browser_ext" ]] && [[ -n "$(find "$inv_browser_ext" -maxdepth 1 -name '*.json' -print -quit 2>/dev/null)" ]]; then
+  tmp="$(mktemp -d)"
+  "${repo_dir}/scripts/browser-extensions.sh" capture "$tmp"
+  if diff -ru "$inv_browser_ext" "$tmp"; then
+    printf 'No differences.\n'
+  else
+    failed=1
+  fi
+  rm -rf "$tmp"
+else
+  printf 'Skip: %s has no captured .json files.\n' "$inv_browser_ext"
+fi
+
 printf '\nDone.\n'
 exit "$failed"

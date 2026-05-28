@@ -37,7 +37,7 @@ current_host_defaults_domains=(
   com.apple.controlcenter
 )
 
-rm -rf "${inv}/defaults" "${inv}/editor-extensions"
+rm -rf "${inv}/browser-extensions" "${inv}/defaults" "${inv}/editor-extensions"
 rm -f "${inv}/Brewfile" "${inv}/mas.json" "${inv}/display-layout.sh"
 mkdir -p "${inv}/editor-extensions"
 
@@ -62,6 +62,9 @@ printf 'Import: readable defaults sidecars → %s/defaults/*.plist.{xml,json,tom
 printf 'Import: editor extension lists → %s/editor-extensions/\n' "$inv_name"
 code --list-extensions >"${inv}/editor-extensions/code.txt"
 cursor --list-extensions >"${inv}/editor-extensions/cursor.txt"
+
+printf 'Import: browser extension lists → %s/browser-extensions/\n' "$inv_name"
+"${repo_dir}/scripts/browser-extensions.sh" capture "${inv}/browser-extensions"
 
 printf 'Import: display layout → %s/display-layout.sh (ignored if not replayable)\n' "$inv_name"
 (cd "$repo_dir" && just _display-layout-capture "${inv_name}/display-layout.sh") || true

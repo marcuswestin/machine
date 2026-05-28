@@ -35,6 +35,14 @@ fi
 printf '\n━━ Editor extensions (installed but not in vscode-family/extensions.txt) ━━\n'
 (cd "$repo_dir" && just _prune-editor-extensions-diff)
 
+printf '\n━━ Browser extensions (live vs config/browser-extensions) ━━\n'
+tmp_browser_ext="$(mktemp -d)"
+"${repo_dir}/scripts/browser-extensions.sh" capture "$tmp_browser_ext"
+if diff -ru "${repo_dir}/config/browser-extensions" "$tmp_browser_ext"; then
+  printf 'No differences.\n'
+fi
+rm -rf "$tmp_browser_ext"
+
 printf '\n━━ Chezmoi (repo vs home drift) ━━\n'
 (cd "$repo_dir" && just _prune-dotfiles-diff)
 

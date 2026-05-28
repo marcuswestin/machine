@@ -1,0 +1,12 @@
+[
+  {
+    "browser": "chrome",
+    "description": "iCloud Passwords lets you fill passwords from iCloud Keychain when signing in to websites using Chrome.",
+    "enabled": true,
+    "from_webstore": true,
+    "id": "pejdijmoenmkgeppbflobdenhhabjlaj",
+    "name": "iCloud Passwords",
+    "profile": "Default",
+    "update_url": "https://clients2.google.com/service/update2/crx"
+  }
+]
