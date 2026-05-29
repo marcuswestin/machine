@@ -54,6 +54,20 @@ sort -u "$apps_file" | while IFS= read -r app_path; do
     continue
   fi
 
-  printf 'Clearing Gatekeeper quarantine from %s\n' "$app_path"
-  sudo /usr/bin/xattr -d com.apple.quarantine "$app_path"
+  # Best-effort release for Homebrew casks that macOS still marks as quarantined.
+  # Protected app metadata may report EPERM during the recursive pass; keep that
+  # known case quiet and surface anything else.
+  if quarantine_error="$(sudo /usr/bin/xattr -rd com.apple.quarantine "$app_path" 2>&1)"; then
+    printf 'Cleared Gatekeeper quarantine from %s\n' "$app_path"
+    continue
+  fi
+
+  unexpected_error="$(printf '%s\n' "$quarantine_error" \
+    | grep -Ev "^xattr: \[Errno 1\] Operation not permitted: '.+'$" || true)"
+  if [ -z "$unexpected_error" ]; then
+    continue
+  fi
+
+  printf 'Unable to clear Gatekeeper quarantine from %s; continuing.\n' "$app_path" >&2
+  printf '%s\n' "$unexpected_error" >&2
 done
