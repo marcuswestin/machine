@@ -109,6 +109,7 @@ _system-switch host=HOST:
 _after-switch:
     @just _attention-required
     @just chezmoi-apply
+    @just _unquarantine-cask-apps
     @echo "Installing editor extensions (may take a while)..."
     @just _install-editor-extensions
     @just _launch-startup-apps
@@ -132,6 +133,9 @@ _git-auth:
 
 _setup-xcode:
     @scripts/setup-xcode.sh
+
+_unquarantine-cask-apps:
+    @scripts/unquarantine-cask-apps.sh "{{ REPO }}" "{{ HOST }}"
 
 _install-editor-extensions:
     @scripts/editor-extensions.sh install

@@ -24,7 +24,6 @@
 
   homebrew = {
     enable = true;
-    caskArgs.no_quarantine = true;
 
     # Keep Homebrew's tap/API metadata fresh enough for cask installs.
     # This does not upgrade installed packages; `onActivation.upgrade` controls
