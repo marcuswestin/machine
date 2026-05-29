@@ -202,6 +202,11 @@ in
         # Carbon key code 49 is Space; modifier mask 2304 is Option (2048) + Command (256).
         KeyboardShortcuts_toggleLauncher = ''{"carbonModifiers":2304,"carbonKeyCode":49}'';
       };
+
+      "com.googlecode.iterm2" = {
+        # iTerm2 → Settings → General → Closing → Confirm Quit iTerm2.
+        PromptOnQuit = false;
+      };
     };
 
     WindowManager = {

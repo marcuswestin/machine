@@ -108,6 +108,7 @@ _system-switch host=HOST:
 # After `darwin-rebuild switch`: grouped interactive setup, then unattended finishing work.
 _after-switch:
     @just _attention-required
+    @just _ensure-code-repos
     @just chezmoi-apply
     @just _unquarantine-cask-apps
     @echo "Installing editor extensions (may take a while)..."
@@ -133,6 +134,9 @@ _git-auth:
 
 _setup-xcode:
     @scripts/setup-xcode.sh
+
+_ensure-code-repos:
+    @scripts/ensure-code-repos.sh
 
 _unquarantine-cask-apps:
     @scripts/unquarantine-cask-apps.sh "{{ REPO }}" "{{ HOST }}"
