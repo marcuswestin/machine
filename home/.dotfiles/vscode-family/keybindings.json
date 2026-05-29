@@ -330,12 +330,12 @@
     "when": "!isSettingsPaneOpen"
   },
   {
-    "key": "alt+cmd+down",
+    "key": "ctrl+alt+down",
     "command": "search.action.focusNextSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "alt+cmd+j",
+    "key": "ctrl+alt+j",
     "command": "search.action.focusNextSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
@@ -345,12 +345,12 @@
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "alt+cmd+up",
+    "key": "ctrl+alt+up",
     "command": "search.action.focusPreviousSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "alt+cmd+k",
+    "key": "ctrl+alt+k",
     "command": "search.action.focusPreviousSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
