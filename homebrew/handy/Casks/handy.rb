@@ -14,12 +14,6 @@ cask "handy" do
 
   app "Handy.app"
 
-  postflight do
-    # The pinned fork is not notarized; remove quarantine so first launch is declarative.
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/Handy.app"]
-  end
-
   zap trash: [
     "~/Library/Application Support/com.pais.handy",
     "~/Library/Caches/com.pais.handy",
