@@ -15,6 +15,7 @@ tracked_defaults_domains=(
   com.apple.driver.AppleBluetoothMultitouch.trackpad
   app.monitorcontrol.MonitorControl
   bobko.aerospace
+  com.google.Chrome
   com.openai.chat
   com.apple.symbolichotkeys
   com.apple.universalaccess

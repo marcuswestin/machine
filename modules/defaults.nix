@@ -203,6 +203,11 @@ in
         KeyboardShortcuts_toggleLauncher = ''{"carbonModifiers":2304,"carbonKeyCode":49}'';
       };
 
+      "com.google.Chrome" = {
+        # Chrome policy: disable Chrome → Warn Before Quitting so Cmd-Q quits normally.
+        WarnBeforeQuittingEnabled = false;
+      };
+
       "com.googlecode.iterm2" = {
         # iTerm2 → Settings → General → Closing → Confirm Quit iTerm2.
         PromptOnQuit = false;
