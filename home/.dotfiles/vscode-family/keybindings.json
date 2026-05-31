@@ -1,6 +1,16 @@
 [
-  // VSCodeVim's documented wrapped-line workaround: let VS Code handle normal-mode j/k
-  // so movement tracks display lines. Counts like `10j` bypass VSCodeVim.
+  // VSCodeVim's documented wrapped-line workaround: let VS Code handle vertical
+  // movement so the cursor tracks display lines. Counts like `10j` bypass VSCodeVim.
+  {
+    "key": "up",
+    "command": "cursorUp",
+    "when": "editorTextFocus && vim.active && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
+  },
+  {
+    "key": "down",
+    "command": "cursorDown",
+    "when": "editorTextFocus && vim.active && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
+  },
   {
     "key": "j",
     "command": "cursorDown",
