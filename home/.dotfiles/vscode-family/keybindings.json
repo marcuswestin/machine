@@ -12,6 +12,16 @@
     "when": "editorTextFocus && vim.active && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
+    "key": "alt+cmd+k",
+    "command": "editor.action.insertCursorAbove",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+cmd+j",
+    "command": "editor.action.insertCursorBelow",
+    "when": "editorTextFocus"
+  },
+  {
     "key": "j",
     "command": "cursorDown",
     "when": "editorTextFocus && vim.active && !inDebugRepl && vim.mode == 'Normal' && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
@@ -340,12 +350,12 @@
     "when": "!isSettingsPaneOpen"
   },
   {
-    "key": "ctrl+alt+down",
+    "key": "alt+cmd+down",
     "command": "search.action.focusNextSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "ctrl+alt+j",
+    "key": "alt+cmd+j",
     "command": "search.action.focusNextSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
@@ -355,12 +365,12 @@
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "ctrl+alt+up",
+    "key": "alt+cmd+up",
     "command": "search.action.focusPreviousSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
   {
-    "key": "ctrl+alt+k",
+    "key": "alt+cmd+k",
     "command": "search.action.focusPreviousSearchResult",
     "when": "hasSearchResult || inSearchEditor"
   },
@@ -368,6 +378,16 @@
     "key": "shift+f4",
     "command": "-search.action.focusPreviousSearchResult",
     "when": "hasSearchResult || inSearchEditor"
+  },
+  {
+    "key": "alt+cmd+j",
+    "command": "editor.action.insertCursorBelow",
+    "when": "editorTextFocus && vim.active && vim.mode == 'Insert' && !inSearchEditor"
+  },
+  {
+    "key": "alt+cmd+k",
+    "command": "editor.action.insertCursorAbove",
+    "when": "editorTextFocus && vim.active && vim.mode == 'Insert' && !inSearchEditor"
   },
   {
     "key": "shift+cmd+t",
