@@ -187,10 +187,6 @@
     "command": "workbench.action.focusNinthEditorGroup"
   },
   {
-    "key": "ctrl+0",
-    "command": "workbench.action.focusTenthEditorGroup"
-  },
-  {
     "key": "cmd+1",
     "command": "workbench.action.openEditorAtIndex1"
   },
@@ -228,7 +224,7 @@
   },
   {
     "key": "cmd+0",
-    "command": "workbench.action.openEditorAtIndex10"
+    "command": "workbench.action.zoomReset"
   },
   {
     "key": "ctrl+shift+n",
