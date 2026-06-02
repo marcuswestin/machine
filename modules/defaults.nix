@@ -156,6 +156,11 @@ in
         AppleSpacesSwitchOnActivate = false;
         NSAutomaticCapitalizationEnabled = true;
         NSAutomaticPeriodSubstitutionEnabled = true;
+        # cmd+ctrl+enter to toggle current window to take up the full screen (without native fullscreen)
+        # - @ for Command, ^ for Control, and \r for Return/Enter.
+        NSUserKeyEquivalents = {
+          Zoom = "^@\r";
+        };
         NSQuitAlwaysKeepsWindows = true;
         NSWindowShouldDragOnGesture = true;
         "com.apple.sound.beep.feedback" = 0; # Disable volume-change feedback sounds.
