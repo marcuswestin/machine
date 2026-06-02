@@ -9,6 +9,12 @@ personality = "pragmatic"
 # https://developers.openai.com/codex/advanced-configuration/#named-permission-profiles
 default_permissions = "workspace"
 
+[desktop]
+# Codex → Settings → General → Power: prevent sleep while a chat is running.
+preventSleepWhileRunning = true
+# Codex → Settings → Notifications → Turn completion notifications: Always.
+"notifications-turn-mode" = "always"
+
 [permissions.workspace.filesystem]
 ":project_roots" = { "." = "write", "**/.env*" = "none", "**/.env.*" = "none" }
 
