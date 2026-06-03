@@ -138,6 +138,7 @@
   },
   "editor.renderWhitespace": "all",
   "editor.suggest.snippetsPreventQuickSuggestions": true,
+  "editor.wordWrap": "on",
   "editor.wordWrapColumn": 120,
   // Editor (format on save, imports, whitespace in files)
   /////////////////////////////
