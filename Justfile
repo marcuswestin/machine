@@ -56,6 +56,10 @@ prune:
     @just _prune-editor-extensions-apply
     @just chezmoi-apply
 
+# Upgrade outdated declared Homebrew casks, including self-updating casks.
+upgrade *casks:
+    @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" {{ casks }}
+
 # Format repo files with dprint. Uses `./dprint.json` at repo root (extends chezmoi-config).
 fmt:
     dprint fmt .
