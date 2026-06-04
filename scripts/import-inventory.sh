@@ -27,6 +27,8 @@ defaults_domains=(
   com.apple.driver.AppleBluetoothMultitouch.trackpad
   app.monitorcontrol.MonitorControl
   bobko.aerospace
+  com.jordanbaird.Ice
+  eu.exelban.Stats
   com.google.Chrome
   com.openai.chat
   com.apple.symbolichotkeys
