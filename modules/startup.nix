@@ -39,6 +39,13 @@ let
       args = [ ];
     }
     {
+      name = "Ice";
+      bundleIdentifier = "com.jordanbaird.Ice";
+      appPath = "/Applications/Ice.app";
+      executable = "/Applications/Ice.app/Contents/MacOS/Ice";
+      args = [ ];
+    }
+    {
       name = "Docker Desktop";
       bundleIdentifier = "com.docker.docker";
       appPath = "/Applications/Docker.app";
