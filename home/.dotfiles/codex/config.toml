@@ -15,13 +15,13 @@ approvals_reviewer = "guardian_subagent"
 # Prefer the faster service lane when the account has access to it.
 service_tier = "fast"
 
+notify = [
+  "/Users/ro/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
+  "turn-ended",
+]
+
 [permissions.workspace.filesystem]
-  ":project_roots" = { "." = "write", "**/.env*" = "none", "**/.env.*" = "none" }
-  "~/.env" = "none"
-  "~/.env.local" = "none"
-  "~/.env.development" = "none"
-  "~/.env.production" = "none"
-  "~/.env.test" = "none"
+  ":project_roots" = { "." = "write", ".env" = "none", ".env.local" = "none", ".env.development" = "none", ".env.production" = "none", ".env.test" = "none" }
 
 [permissions.workspace.network]
   enabled = true
@@ -69,10 +69,12 @@ service_tier = "fast"
 [projects."/Users/ro/code/git-star"]
   trust_level = "trusted"
 
+[projects."/Users/ro/Documents/Codex/2026-06-04/docker-is-showing-as-using-six"]
+  trust_level = "trusted"
+
 [features]
   memories = true
   multi_agent = true
-  js_repl = false
 
 [memories]
   generate_memories = true
@@ -92,3 +94,11 @@ service_tier = "fast"
 
   [desktop.open-in-target-preferences]
     global = "cursor"
+
+[marketplaces.openai-bundled]
+  last_updated = "2026-06-04T19:29:18Z"
+  source_type = "local"
+  source = "/Users/ro/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[tui.model_availability_nux]
+  "gpt-5.5" = 2
