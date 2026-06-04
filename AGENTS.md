@@ -42,7 +42,7 @@ unless asked.
   `inventory-global/defaults/`; pass explicit paths as `just _plist-sidecars path …`
   when needed. Managed config—including Antigravity,
   Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`), Codex CLI
-  (`~/.codex/config.toml` first-install template via `home/dot_codex/create_private_config.toml.tmpl`),
+  (`~/.codex/config.toml` → `home/.dotfiles/codex/config.toml`),
   Cursor (`~/.cursor/cli-config.json` and `~/.cursor/permissions.json` share one source, plus
   vscode-family `chatgpt.*` / `cursor.*` keys), GitHub CLI, and iTerm2 Dynamic Profiles—lives
   under `home/` / `home/.dotfiles/` with

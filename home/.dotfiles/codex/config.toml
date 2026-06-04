@@ -1,0 +1,94 @@
+# Repo-owned Codex config. Auth/session files are app-managed and machine-local;
+# do not commit `~/.codex/auth.json` or SQLite caches.
+
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+
+# Named sandbox profile for CLI/app/extension (OpenAI cloud APIs + workspace tools). See:
+# https://developers.openai.com/codex/advanced-configuration/#named-permission-profiles
+default_permissions = "workspace"
+
+# Automatic approval reviewer used for escalated sandbox requests.
+approvals_reviewer = "guardian_subagent"
+
+# Prefer the faster service lane when the account has access to it.
+service_tier = "fast"
+
+[permissions.workspace.filesystem]
+  ":project_roots" = { "." = "write", "**/.env*" = "none", "**/.env.*" = "none" }
+  "~/.env" = "none"
+  "~/.env.local" = "none"
+  "~/.env.development" = "none"
+  "~/.env.production" = "none"
+  "~/.env.test" = "none"
+
+[permissions.workspace.network]
+  enabled = true
+  mode = "limited"
+
+  [permissions.workspace.network.domains]
+    "api.openai.com" = "allow"
+
+[plugins."documents@openai-primary-runtime"]
+  enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+  enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+  enabled = true
+
+[plugins."google-calendar@openai-curated"]
+  enabled = true
+
+[plugins."gmail@openai-curated"]
+  enabled = true
+
+[plugins."github@openai-curated"]
+  enabled = true
+
+[plugins."browser@openai-bundled"]
+  enabled = true
+
+[plugins."chrome@openai-bundled"]
+  enabled = true
+
+[plugins."computer-use@openai-bundled"]
+  enabled = true
+
+[projects."/Users/ro/code/machine"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/code/tao-lang"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/code/tao-lang-2"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/code/git-star"]
+  trust_level = "trusted"
+
+[features]
+  memories = true
+  multi_agent = true
+  js_repl = false
+
+[memories]
+  generate_memories = true
+  use_memories = true
+
+[notice]
+  hide_full_access_warning = true
+
+[desktop]
+  # Codex app conversation detail mode: show both reasoning steps and shell commands.
+  conversationDetailMode = "STEPS_COMMANDS"
+  # Codex -> Settings -> General -> Power: prevent sleep while a chat is running.
+  preventSleepWhileRunning = true
+  keepRemoteControlAwakeWhilePluggedIn = true
+  # Codex -> Settings -> Notifications -> Turn completion notifications: Always.
+  "notifications-turn-mode" = "always"
+
+  [desktop.open-in-target-preferences]
+    global = "cursor"
