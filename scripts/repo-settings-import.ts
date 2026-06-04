@@ -10,6 +10,7 @@
  * strips all comments unless you only use report mode.
  *
  * Excluded on purpose: ~/.config/gh (secrets), Claude settings (secrets heuristics).
+ * Codex config is tracked as text; auth/session files and SQLite caches stay unmanaged.
  * Raycast: repo is the source of truth; use Raycast export UI then diff against
  * config/raycast/settings.json manually (no stable public live path here).
  *
@@ -271,6 +272,12 @@ const TARGETS: Target[] = [
     parse: parseJson,
     dict_merge: true,
     write_jsonc: false,
+  },
+  {
+    id: "codex-config",
+    repo: ["home", ".dotfiles", "codex", "config.toml"],
+    live: [[".codex", "config.toml"]],
+    kind: "text",
   },
   {
     id: "handy-settings-store",
