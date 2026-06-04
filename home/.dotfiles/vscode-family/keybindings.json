@@ -22,6 +22,26 @@
     "when": "editorTextFocus"
   },
   {
+    "key": "ctrl+k",
+    "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "editor.action.copyLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "editor.action.copyLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
     "key": "j",
     "command": "cursorDown",
     "when": "editorTextFocus && vim.active && !inDebugRepl && vim.mode == 'Normal' && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
@@ -291,12 +311,27 @@
     "when": "textInputFocus"
   },
   {
+    "key": "ctrl+l",
+    "command": "cursorWordRight",
+    "when": "textInputFocus"
+  },
+  {
     "key": "shift+alt+right",
     "command": "cursorWordRightSelect",
     "when": "textInputFocus"
   },
   {
+    "key": "ctrl+shift+l",
+    "command": "cursorWordRightSelect",
+    "when": "textInputFocus"
+  },
+  {
     "key": "alt+left",
+    "command": "cursorWordLeft",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+h",
     "command": "cursorWordLeft",
     "when": "textInputFocus"
   },
@@ -307,6 +342,11 @@
   },
   {
     "key": "shift+alt+left",
+    "command": "cursorWordLeftSelect",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+shift+h",
     "command": "cursorWordLeftSelect",
     "when": "textInputFocus"
   },
