@@ -101,4 +101,4 @@ notify = [
   source = "/Users/ro/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [tui.model_availability_nux]
-  "gpt-5.5" = 2
+"gpt-5.5" = 4

@@ -23,6 +23,9 @@ eval "$(brew shellenv)"
 fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
 
 # Direnv
+# Keep noninteractive devenv/direnv exports out of the TUI so they do not
+# orphan high-CPU processes on macOS.
+export DEVENV_TUI=false
 eval "$(direnv hook zsh)"
 
 
