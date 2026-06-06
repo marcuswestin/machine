@@ -69,6 +69,25 @@
         "k"
       ]
     },
+    // `o`: open below via insert-mode Enter so Markdown/list on-enter rules keep prefixes like `- [ ]`.
+    {
+      "after": [
+        "A",
+        "<CR>"
+      ],
+      "before": [
+        "o"
+      ]
+    },
+    // `O`: open above through VS Code so editor indentation/list rules get a chance to run.
+    {
+      "before": [
+        "O"
+      ],
+      "commands": [
+        "editor.action.insertLineBefore"
+      ]
+    },
     // Route Vim undo/redo through VS Code so the tab dirty dot tracks reverted files.
     {
       "before": [
