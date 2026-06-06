@@ -49,7 +49,7 @@ persistent-workspaces = ["1", "2", "3", "A", "B", "C", "L", "M", "N", "X", "Y", 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 on-mode-changed = []
 
-# Workspace A: Chrome + Simulator → LG UltraFine (alt-q).
+# Workspace A: Chrome + simulators → LG UltraFine (alt-q).
 # on-window-detected runs when a window is first seen (new window / AeroSpace (re)start), not on reload-config.
 # Confirm bundle ids with: aerospace list-apps (also avoid a second config at ~/.config/aerospace/aerospace.toml).
 [[on-window-detected]]
@@ -57,6 +57,10 @@ on-mode-changed = []
   run = 'move-node-to-workspace A'
 [[on-window-detected]]
   if.app-id = 'com.apple.iphonesimulator'
+  run = 'move-node-to-workspace A'
+[[on-window-detected]]
+  # Android Emulator exposes no bundle id to AeroSpace; app name is the QEMU emulator process.
+  if.app-name-regex-substring = '^qemu-system-'
   run = 'move-node-to-workspace A'
 
 # Workspace B: Spotify + Apple TV → LG UltraFine (see workspace-to-monitor-force-assignment).
