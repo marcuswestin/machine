@@ -28,6 +28,7 @@
       "codex"
       "steipete/tap/codexbar"
       "antigravity"
+      "antigravity-ide"
       "zoom"
       "jordanbaird-ice"
       "monitorcontrol"

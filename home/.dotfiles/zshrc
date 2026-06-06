@@ -28,6 +28,9 @@ fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
 export DEVENV_TUI=false
 eval "$(direnv hook zsh)"
 
+# Antigravity & Gemini CLI (adds ~/.gemini/antigravity-ide/bin to PATH for the agentapi command)
+export PATH="$HOME/.gemini/antigravity-ide/bin:$PATH"
+
 
 # Command aliases
 #################
