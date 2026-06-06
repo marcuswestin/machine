@@ -281,5 +281,6 @@
   ],
   "cursor.inlineDiff.mode": "unified",
   "geminicodeassist.displayInlineContextHint": false,
-  "window.autoDetectColorScheme": true
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "One Dark Pro Night Flat"
 }
