@@ -74,6 +74,11 @@ on-mode-changed = []
   if.app-id = 'com.apple.MobileSMS'
   run = 'move-node-to-workspace B'
 
+# FaceTime call windows should float instead of participating in tiled layout.
+[[on-window-detected]]
+  if.app-id = 'com.apple.FaceTime'
+  run = 'layout floating'
+
 # Workspace C: Activity Monitor
 [[on-window-detected]]
   if.app-id = 'com.apple.ActivityMonitor'
