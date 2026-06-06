@@ -7,6 +7,7 @@ google.geminicodeassist
 bbenoist.nix
 langium.langium-vscode
 ms-azuretools.vscode-containers
+ms-vscode-remote.remote-containers
 ms-vscode.vscode-typescript-next
 nefrob.vscode-just-syntax
 nrwl.angular-console
@@ -15,6 +16,8 @@ redhat.vscode-yaml
 ryuta46.multi-command
 saoudrizwan.claude-dev
 tamasfe.even-better-toml
+typescriptteam.native-preview
 vitest.explorer
 yzhang.markdown-all-in-one
+zhuangtongfa.material-theme
 vscodevim.vim

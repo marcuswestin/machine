@@ -282,5 +282,9 @@
   "cursor.inlineDiff.mode": "unified",
   "geminicodeassist.displayInlineContextHint": false,
   "window.autoDetectColorScheme": true,
-  "workbench.preferredDarkColorTheme": "One Dark Pro Night Flat"
+  "workbench.preferredDarkColorTheme": "One Dark Pro Night Flat",
+  // Gemini settings
+  //////////////////
+  "http.systemCertificatesNode": true,
+  "geminicodeassist.project": "fluent-lodge-bgn6m"
 }
