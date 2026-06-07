@@ -21,3 +21,5 @@ vitest.explorer
 yzhang.markdown-all-in-one
 zhuangtongfa.material-theme
 vscodevim.vim
+eamodio.gitlens
+anysphere.remote-containers
