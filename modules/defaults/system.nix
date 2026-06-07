@@ -43,7 +43,7 @@ in
       # 2 means Full Keyboard Access for all controls, not only text boxes/lists.
       AppleKeyboardUIMode = 2;
       AppleInterfaceStyle = "Dark";
-      ApplePressAndHoldEnabled = false; # Enable key repeat instead of accent popup.
+      ApplePressAndHoldEnabled = true; # Enable the press-and-hold accent popup.
       "com.apple.swipescrolldirection" = true; # Natural scrolling.
       # macOS stores keyboard repeat timings in 15 ms units; this is a 150 ms
       # initial delay followed by a 30 ms repeat interval.
