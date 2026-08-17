@@ -38,6 +38,22 @@
         "type": "github"
       }
     },
+    "homebrew-anomalyco-tap": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782460392,
+        "narHash": "sha256-YsZfG3JjeDEppECfBcrGg8TCtZUTZVK3qMoyzr4KsZQ=",
+        "ref": "refs/heads/master",
+        "rev": "99c8fa1b4fb4a47b17e3e976794602e809d42b38",
+        "revCount": 2146,
+        "type": "git",
+        "url": "https://github.com/anomalyco/homebrew-tap"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/anomalyco/homebrew-tap"
+      }
+    },
     "homebrew-cask": {
       "flake": false,
       "locked": {
@@ -144,6 +160,7 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "homebrew-anomalyco-tap": "homebrew-anomalyco-tap",
         "homebrew-cask": "homebrew-cask",
         "homebrew-nikitabobko-tap": "homebrew-nikitabobko-tap",
         "homebrew-steipete-tap": "homebrew-steipete-tap",

@@ -16,6 +16,7 @@
         mkdir -p "$out"
         cp -R ${../homebrew/local}/. "$out"
       '';
+      "anomalyco/tap" = inputs.homebrew-anomalyco-tap;
       "nikitabobko/tap" = inputs.homebrew-nikitabobko-tap;
       "steipete/tap" = inputs.homebrew-steipete-tap;
     };

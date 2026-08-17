@@ -1,0 +1,19 @@
+{
+  "global": {
+    "show_in_menu_bar": true
+  },
+  "profiles": [
+    {
+      "name": "Machine",
+      "selected": true,
+      "complex_modifications": {
+        "rules": []
+      },
+      "simple_modifications": [],
+      "fn_function_keys": [],
+      "virtual_hid_keyboard": {
+        "keyboard_type_v2": "ansi"
+      }
+    }
+  ]
+}

@@ -6,12 +6,17 @@
       "btop"
       "macmon"
       "displayplacer"
+      "gemini-cli"
+      "anomalyco/tap/opencode"
+      "ollama"
+      "worktrunk"
     ];
 
     casks = [
       "google-chrome"
       "firefox"
       "nikitabobko/tap/aerospace"
+      "karabiner-elements"
       "raycast"
       # Local cask pins the marcuswestin fork release with menu bar mode for AeroSpace.
       "machine/local/handy"
@@ -21,6 +26,7 @@
       "claude"
       "claude-code"
       "cursor"
+      "lm-studio"
       "visual-studio-code"
       "iterm2"
       "docker-desktop"
@@ -28,6 +34,7 @@
       "codex"
       "steipete/tap/codexbar"
       "antigravity"
+      "machine/local/antigravity-cli"
       "antigravity-ide"
       "zoom"
       "machine/local/thaw"
