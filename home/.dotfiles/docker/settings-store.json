@@ -1,5 +1,5 @@
 {
-  "AutoStart": true,
+  "AutoStart": false,
   "DisplayedOnboarding": true,
   "DockerAppLaunchPath": "/Applications/Docker.app",
   "EnableDockerAI": true,

@@ -18,6 +18,8 @@
   // "window.zoomLevel": 0.25, // Laptop
   // Vim
   /////////////////////////////
+  // `whichwrap`: b = Backspace, s = Space, h/l = normal/visual left/right motions, </> = normal/visual Left/Right arrows may cross line boundaries.
+  "vim.whichwrap": "b,s,h,l,<,>",
   "vim.insertModeKeyBindings": [
     {
       "after": [
@@ -29,7 +31,8 @@
       ]
     }
   ],
-  // `gj` / `gk`: move by screen line when `editor.wordWrap` is on (stay in the same visual column across wraps). Insert `jj` → Esc is unchanged.
+  // `j` / `k` / arrows: route through `gj` / `gk` so wrapped-line motion stays inside VSCodeVim.
+  // Explicit `gj` / `gk` must not be split by keybindings.json, or `g` prefixes can turn into `gg`.
   "vim.visualModeKeyBindingsNonRecursive": [
     {
       "after": [
@@ -69,6 +72,24 @@
         "k"
       ]
     },
+    {
+      "after": [
+        "g",
+        "j"
+      ],
+      "before": [
+        "down"
+      ]
+    },
+    {
+      "after": [
+        "g",
+        "k"
+      ],
+      "before": [
+        "up"
+      ]
+    },
     // `o`: open below via insert-mode Enter so Markdown/list on-enter rules keep prefixes like `- [ ]`.
     {
       "after": [
@@ -79,13 +100,14 @@
         "o"
       ]
     },
-    // `O`: open above through VS Code so editor indentation/list rules get a chance to run.
+    // `O`: open above through VS Code so editor indentation/list rules get a chance to run, then enter Insert mode.
     {
       "before": [
         "O"
       ],
       "commands": [
-        "editor.action.insertLineBefore"
+        "editor.action.insertLineBefore",
+        "extension.vim_insert"
       ]
     },
     // Route Vim undo/redo through VS Code so the tab dirty dot tracks reverted files.
@@ -143,7 +165,7 @@
   // "workbench.colorTheme": "Monokai",
   "workbench.secondarySideBar.defaultVisibility": "visible",
   "workbench.startupEditor": "none",
-  // Editor (general)kk
+  // Editor (general)
   /////////////////////////////
   "editor.defaultFormatter": "dprint.dprint",
   "editor.inlineSuggest.enabled": true,
@@ -255,7 +277,11 @@
   "files.associations": {
     "*.just": "just",
     "Justfile": "just",
-    "justfile": "just"
+    "justfile": "just",
+    // Tao TextMate grammar only (`tao-future` language id; LSP stays on `.tao` / language `tao`).
+    "*.tao-future": "tao",
+    "*.tao-northest": "tao",
+    "*.tao-north": "tao"
   },
   "json.schemaDownload.trustedDomains": {
     "https://json-schema.org/": true,
@@ -270,13 +296,26 @@
     ],
     "file:///Users/ro/.vscode/extensions/continue.continue-1.2.22-darwin-arm64/config-yaml-schema.json": [
       ".continue/**/*.yaml"
+    ],
+    "file:///Users/ro/.cursor/extensions/continue.continue-1.2.24-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///Users/ro/.cursor/extensions/continue.continue-2.0.0-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///Users/ro/.vscode/extensions/continue.continue-1.2.24-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///Users/ro/.vscode/extensions/continue.continue-2.0.0-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
     ]
   },
   "cursor.composer.shouldChimeAfterChatFinishes": true,
   // Agent "Queue Messages": queue = send after current message; stop-and-send = interrupt.
   "cursor.composer.queueMessageDefaultBehavior": "queue",
+  // Cursor Tab exclusion list. Markdown is intentionally omitted so Tab completes in README/docs.
   "cursor.cpp.disabledLanguages": [
-    "markdown",
+    "plaintext",
     "scminput"
   ],
   "cursor.inlineDiff.mode": "unified",

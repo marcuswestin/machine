@@ -4,6 +4,9 @@
     "allow": [],
     "deny": []
   },
+  "effortLevel": "medium",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true

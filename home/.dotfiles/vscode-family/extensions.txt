@@ -15,6 +15,7 @@ openai.chatgpt
 redhat.vscode-yaml
 ryuta46.multi-command
 saoudrizwan.claude-dev
+sst-dev.opencode
 tamasfe.even-better-toml
 typescriptteam.native-preview
 vitest.explorer
@@ -22,4 +23,3 @@ yzhang.markdown-all-in-one
 zhuangtongfa.material-theme
 vscodevim.vim
 eamodio.gitlens
-anysphere.remote-containers
