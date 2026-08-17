@@ -21,14 +21,14 @@
       displayStyle = "i3Ordered"; # AeroSpace menu bar style: i3-style ordered workspace pills.
     };
 
-    "com.jordanbaird.Ice" = {
-      # Imported from the live Ice domain, excluding values that match Ice 0.11.12 defaults,
-      # plus window frames, split-view frames, Sparkle keys, migration flags, null hotkeys,
-      # and the large default menu-bar appearance blob.
-      IceBarLocation = 2; # Ice Bar location: 0 = dynamic, 1 = mouse pointer, 2 = Ice icon.
-      ItemSpacingOffset = -12.0; # Menu bar item spacing/padding offset in points.
-      "NSStatusItem Preferred Position HItem" = 684.0; # HItem is Ice's hidden-section control item.
-      "NSStatusItem Preferred Position SItem" = 658.0; # SItem is Ice's own visible menu bar icon.
+    "com.stonerl.Thaw" = {
+      # Imported from the live Thaw 1.2.0 domain, excluding source defaults, window frames,
+      # Sparkle keys, migration flags, null hotkeys, menu-bar item caches, visibility caches,
+      # and the large default menu-bar appearance blob. Key names still use the Ice prefix.
+      # Data-backed icon and per-display Thaw Bar settings are written in activation.nix.
+      ItemSpacingOffset = -10.0; # Menu bar item spacing/padding offset in points.
+      "NSStatusItem Preferred Position Thaw.ControlItem.Hidden" = 669.0; # Hidden-section control item autosave X-position.
+      "NSStatusItem Preferred Position Thaw.ControlItem.Visible" = 77.0; # Visible Thaw icon autosave X-position.
     };
 
     "eu.exelban.Stats" = {

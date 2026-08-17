@@ -14,7 +14,7 @@
       "nikitabobko/tap/aerospace"
       "raycast"
       # Local cask pins the marcuswestin fork release with menu bar mode for AeroSpace.
-      "machine/handy/handy"
+      "machine/local/handy"
       "spotify"
       "chatgpt"
       "chatgpt-atlas"
@@ -30,7 +30,7 @@
       "antigravity"
       "antigravity-ide"
       "zoom"
-      "jordanbaird-ice"
+      "machine/local/thaw"
       "monitorcontrol"
       "stats"
     ];

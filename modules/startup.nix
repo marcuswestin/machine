@@ -39,10 +39,10 @@ let
       args = [ ];
     }
     {
-      name = "Ice";
-      bundleIdentifier = "com.jordanbaird.Ice";
-      appPath = "/Applications/Ice.app";
-      executable = "/Applications/Ice.app/Contents/MacOS/Ice";
+      name = "Thaw";
+      bundleIdentifier = "com.stonerl.Thaw";
+      appPath = "/Applications/Thaw.app";
+      executable = "/Applications/Thaw.app/Contents/MacOS/Thaw";
       args = [ ];
     }
     {

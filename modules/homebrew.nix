@@ -12,9 +12,9 @@
     enableRosetta = false;
     taps = {
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
-      "machine/homebrew-handy" = pkgs.runCommandLocal "homebrew-handy" { } ''
+      "machine/homebrew-local" = pkgs.runCommandLocal "homebrew-local" { } ''
         mkdir -p "$out"
-        cp -R ${../homebrew/handy}/. "$out"
+        cp -R ${../homebrew/local}/. "$out"
       '';
       "nikitabobko/tap" = inputs.homebrew-nikitabobko-tap;
       "steipete/tap" = inputs.homebrew-steipete-tap;

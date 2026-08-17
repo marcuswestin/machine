@@ -54,11 +54,19 @@ let
       asUser "/usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${id} ${lib.escapeShellArg plist}"
     ) disabledSpotlightSymbolicHotkeys
   );
-  # Ice stores General -> Ice icon as JSON-encoded UserDefaults Data.
-  # Imported value is ControlItemImageSet(name: Chevron, hidden: symbol chevron.left, visible: symbol chevron.right).
-  iceChevronIconDataHex = lib.concatStrings [
-    "7b2276697369626c65223a7b2273796d626f6c223a7b225f30223a2263686576726f6e2e7269676874227d7d2c"
-    "226e616d65223a2243686576726f6e222c2268696464656e223a7b2273796d626f6c223a7b225f30223a2263686576726f6e2e6c656674227d7d7d"
+  # Thaw stores General -> Thaw icon as JSON-encoded UserDefaults Data (key IceIcon).
+  # Imported value is ControlItemImageSet(name: Dot, hidden: catalog DotFill, visible: catalog DotStroke).
+  thawDotIconDataHex = lib.concatStrings [
+    "7b2268696464656e223a7b22636174616c6f67223a7b225f30223a22446f7446696c6c227d7d2c"
+    "226e616d65223a22446f74222c2276697369626c65223a7b22636174616c6f67223a7b225f30223a22446f745374726f6b65227d7d7d"
+  ];
+  # Thaw stores Display -> Use Thaw Bar as JSON-encoded UserDefaults Data keyed by display UUID.
+  # Imported display 37D8832A-2D66-02CA-B9F7-8F30A301B230 uses the Thaw Bar with location 1
+  # (mouse pointer) and alwaysShowHiddenItems=false.
+  thawDisplayIceBarConfigurationsDataHex = lib.concatStrings [
+    "7b2233374438383332412d324436362d303243412d423946372d384633304133303142323330223a"
+    "7b226963654261724c6f636174696f6e223a312c22616c7761797353686f7748696464656e4974656d73223a66616c73652c"
+    "22757365496365426172223a747275657d7d"
   ];
 in
 
@@ -76,9 +84,11 @@ in
     # Hide the Spotlight magnifying-glass menu bar extra: MenuItemHidden -int 1 (0 = show, 1 = hide).
     # Apple changes menu bar plumbing occasionally--verify after OS upgrades.
     ${asUser "/usr/bin/defaults -currentHost write com.apple.Spotlight MenuItemHidden -int 1"}
-    # Ice -> General -> Ice icon: Chevron. The app stores this setting as Data,
+    # Thaw -> General -> Thaw icon: Dot. The app stores this setting as Data,
     # so nix-darwin's CustomUserPreferences cannot express it directly.
-    ${asUser "/usr/bin/defaults write com.jordanbaird.Ice IceIcon -data ${iceChevronIconDataHex}"}
+    ${asUser "/usr/bin/defaults write com.stonerl.Thaw IceIcon -data ${thawDotIconDataHex}"}
+    # Thaw -> Display -> Use Thaw Bar: enabled for the imported display, located at the mouse pointer.
+    ${asUser "/usr/bin/defaults write com.stonerl.Thaw DisplayIceBarConfigurations -data ${thawDisplayIceBarConfigurationsDataHex}"}
     # Force cfprefsd to refresh its in-memory snapshot of the file we just wrote; without
     # this read, activateSettings can pick up the stale cached values (Apple SE #405937).
     ${asUser "/usr/bin/defaults read com.apple.symbolichotkeys >/dev/null"}
