@@ -29,10 +29,20 @@ while IFS= read -r cask; do
   fi
 
   jq -r '
+    def strings:
+      if type == "string" then .
+      elif type == "array" then .[] | strings
+      else empty
+      end;
+
     .uninstall_artifacts[]?
     | (
-        (.app? // empty | .[]),
-        (.uninstall? // empty | .[]?.delete? // empty | .[])
+        (.app? | strings),
+        (
+          .uninstall? // empty
+          | if type == "array" then .[] elif type == "object" then . else empty end
+          | .delete? | strings
+        )
       )
     | select(endswith(".app"))
   ' "$receipt" | while IFS= read -r artifact; do

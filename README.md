@@ -19,6 +19,12 @@ Setup a new machine:
   remapping only. The checked-in `karabiner.json` is the managed profile
   scaffold; remaps are added there as they are decided.
 
+`just apply` installs missing Homebrew packages but does not upgrade or
+downgrade apps that are already present, including those that self-update.
+`just upgrade` upgrades declared casks (greedy, so self-updating apps are
+included). `just update` bumps the Homebrew tap pins in `flake.lock`, applies,
+then upgrades declared formulae and casks.
+
 The default flow applies system/app/env layers and the repo-owned chezmoi
 dotfiles automatically. `just prune-diff` includes chezmoi drift alongside other
 undeclared state.

@@ -9,9 +9,17 @@ unless asked.
 - Run `just help` to list all recipes.
 - Fresh-machine entrypoint: `up.sh`.
 - Daily command surface: `just`.
-- Steady-state apply command: `just apply`.
+- Steady-state apply command: `just apply`. It installs missing Homebrew
+  packages but does not upgrade already-installed formulae or casks
+  (`homebrew.onActivation.upgrade = false`), so app self-updates are left
+  alone. `just upgrade` upgrades declared casks (greedy). `just update`
+  bumps Homebrew tap pins in `flake.lock`, applies, then upgrades declared
+  formulae and casks.
 - Public commands are the recipes shown by `just --list`; implementation
   recipes are prefixed with `_` and should stay private.
+  **`just _audit-login-items`** reports enabled Login Items outside
+  `machine.startupApps` plus `com.apple.*` / `org.pqrs.*`; it is not part
+  of `just verify` until the allowlist matches live helpers.
 - `up.sh` should remain minimal: install/load base Nix, ensure enough tooling to
   clone/update this repo, then hand off to `scripts/up-local.sh`.
 - `scripts/up-local.sh` should invoke the declarative apply path with minimal
@@ -44,9 +52,15 @@ unless asked.
   Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`), Codex CLI
   (`~/.codex/config.toml` → `home/.dotfiles/codex/config.toml`),
   Cursor (`~/.cursor/cli-config.json` and `~/.cursor/permissions.json` share one source, plus
-  vscode-family `chatgpt.*` / `cursor.*` keys), GitHub CLI, and iTerm2 Dynamic Profiles—lives
+  vscode-family `chatgpt.*` / `cursor.*` keys), Karabiner-Elements
+  (`~/.config/karabiner/karabiner.json` → `home/.dotfiles/karabiner/karabiner.json`),
+  GitHub CLI, and iTerm2 Dynamic Profiles—lives
   under `home/` / `home/.dotfiles/` with
-  chezmoi; use `chezmoi diff` for drift. Auth/session files (`~/.codex/auth.json`,
+  chezmoi; use `chezmoi diff` for drift. Local Homebrew casks live under
+  `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
+  replaces Ice; its Data-backed prefs are written in
+  `modules/defaults/activation.nix`. AeroSpace staggered window assignment
+  uses `scripts/aerospace-stagger-app-window.sh` from `aerospace.toml`. Auth/session files (`~/.codex/auth.json`,
   `~/.claude.json`, `~/.config/gh/hosts.yml`), caches, logs, and SQLite state stay
   unmanaged. Treat captured paths as potentially sensitive and scrub or omit before
   committing anything derived from them. When you add new declaration surfaces

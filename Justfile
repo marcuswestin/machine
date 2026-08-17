@@ -60,6 +60,14 @@ prune:
 upgrade *casks:
     @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" {{ casks }}
 
+# Bump Homebrew tap pins, apply, then upgrade declared formulae and casks.
+update:
+    {{ NIX_CMD }} flake update homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
+    @just apply
+    @scripts/update-homebrew-apps.sh "{{ HOST }}"
+    @just upgrade
+    @just _unquarantine-cask-apps
+
 # Format repo files with dprint. Uses `./dprint.json` at repo root (extends chezmoi-config).
 fmt:
     dprint fmt .
@@ -72,6 +80,10 @@ verify:
 
 # Private recipes
 #################
+
+# Report enabled Login Items / background tasks outside startupApps + known prefixes.
+_audit-login-items:
+    @"{{ REPO }}/scripts/audit-login-items.sh" "{{ REPO }}"
 
 # If config/raycast/settings.json changed, gzip + open for Raycast import (see scripts/raycast-settings-sync.sh).
 _raycast-settings-sync:
