@@ -46,13 +46,6 @@ let
       args = [ ];
     }
     {
-      name = "Docker Desktop";
-      bundleIdentifier = "com.docker.docker";
-      appPath = "/Applications/Docker.app";
-      executable = "/Applications/Docker.app/Contents/MacOS/com.docker.backend";
-      args = [ ];
-    }
-    {
       name = "Stats";
       bundleIdentifier = "eu.exelban.Stats";
       appPath = "/Applications/Stats.app";

@@ -43,7 +43,7 @@ in
       # 2 means Full Keyboard Access for all controls, not only text boxes/lists.
       AppleKeyboardUIMode = 2;
       AppleInterfaceStyle = "Dark";
-      ApplePressAndHoldEnabled = true; # Enable the press-and-hold accent popup.
+      ApplePressAndHoldEnabled = false; # Disable accent popup so held keys repeat.
       "com.apple.swipescrolldirection" = true; # Natural scrolling.
       # macOS stores keyboard repeat timings in 15 ms units; this is a 150 ms
       # initial delay followed by a 30 ms repeat interval.
@@ -120,11 +120,18 @@ in
       "com.apple.AppleMultitouchTrackpad" = trackpadPreferences;
       "com.apple.driver.AppleBluetoothMultitouch.trackpad" = trackpadPreferences;
 
-      # Human Interface Toolbox - Globe/FN key action (Settings -> Keyboard -> Press Globe key to).
+      # Human Interface Toolbox - Globe/Fn key action (Settings -> Keyboard -> Press Globe key to).
       # 0 = Do Nothing; 1 = Change Input Source; 2 = Show Emoji & Symbols; 3 = Start Dictation (press Globe twice).
-      # Single-press emoji steals Fn from apps (e.g. Handy transcribe bound to fn).
+      # Keep Fn available as a Karabiner modifier for international text entry.
       "com.apple.HIToolbox" = {
         AppleFnUsageType = 0;
+      };
+
+      # Stop macOS from relaunching every app that was open at shutdown/logout.
+      # NSQuitAlwaysKeepsWindows (above) still restores windows when you open an app yourself.
+      "com.apple.loginwindow" = {
+        TALLogoutSavesState = false;
+        LoginwindowLaunchesRelaunchApps = false;
       };
     };
 
