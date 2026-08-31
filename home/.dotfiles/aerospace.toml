@@ -105,9 +105,9 @@ on-mode-changed = []
   ]
 
 # Workspace layout (monitor force-assignment + alt-key bindings):
-#   Project slots (sync alt-1…5 → Dell + Retina qwert + LG asdfg):
-#     1/q/a -> 1/A/L   2/w/s -> 2/B/M   3/e/d -> 3/C/N   4/r/f -> 4/D/O   5/t/g -> 5/E/P
-#     alt-1…5 sync order: Retina, LG, then Dell (Dell focused last)
+#   Project slots (sync alt-1…5 → Dell + Retina qwert only):
+#     1/q -> 1/A   2/w -> 2/B   3/e -> 3/C   4/r -> 4/D   5/t -> 5/E
+#     alt-1…5 sync order: Retina, then Dell (Dell focused last)
 #   DELL S3225QC:      1–9 (alt-1…9); alt-ctrl-1…5 = Dell-only (non-sync)
 #   Built-in Retina:   A–E QWERT (alt-q…t); X–Z NM, (alt-n,m,comma) — non-project
 #   LG UltraFine:      L–P ASDFG (alt-a…g); Q–U ZXCVB (alt-z,x,c,v,b) — apps on ZXCV
@@ -180,25 +180,25 @@ on-mode-changed = []
   alt-minus = ['resize smart -75']
   alt-equal = ['resize smart +75']
 
-  # --- Project sync: alt-1…5 → Retina + LG + Dell (Dell focused last); alt-ctrl-1…5 = Dell-only ---
-  alt-1 = ['workspace A', 'workspace L', 'workspace 1']
-  alt-shift-1 = ['move-node-to-workspace 1', 'workspace A', 'workspace L', 'workspace 1']
+  # --- Project sync: alt-1…5 → Retina + Dell (Dell focused last); alt-ctrl-1…5 = Dell-only ---
+  alt-1 = ['workspace A', 'workspace 1']
+  alt-shift-1 = ['move-node-to-workspace 1', 'workspace A', 'workspace 1']
   alt-shift-ctrl-1 = ['move-node-to-workspace 1']
   alt-ctrl-1 = ['workspace 1']
-  alt-2 = ['workspace B', 'workspace M', 'workspace 2']
-  alt-shift-2 = ['move-node-to-workspace 2', 'workspace B', 'workspace M', 'workspace 2']
+  alt-2 = ['workspace B', 'workspace 2']
+  alt-shift-2 = ['move-node-to-workspace 2', 'workspace B', 'workspace 2']
   alt-shift-ctrl-2 = ['move-node-to-workspace 2']
   alt-ctrl-2 = ['workspace 2']
-  alt-3 = ['workspace C', 'workspace N', 'workspace 3']
-  alt-shift-3 = ['move-node-to-workspace 3', 'workspace C', 'workspace N', 'workspace 3']
+  alt-3 = ['workspace C', 'workspace 3']
+  alt-shift-3 = ['move-node-to-workspace 3', 'workspace C', 'workspace 3']
   alt-shift-ctrl-3 = ['move-node-to-workspace 3']
   alt-ctrl-3 = ['workspace 3']
-  alt-4 = ['workspace D', 'workspace O', 'workspace 4']
-  alt-shift-4 = ['move-node-to-workspace 4', 'workspace D', 'workspace O', 'workspace 4']
+  alt-4 = ['workspace D', 'workspace 4']
+  alt-shift-4 = ['move-node-to-workspace 4', 'workspace D', 'workspace 4']
   alt-shift-ctrl-4 = ['move-node-to-workspace 4']
   alt-ctrl-4 = ['workspace 4']
-  alt-5 = ['workspace E', 'workspace P', 'workspace 5']
-  alt-shift-5 = ['move-node-to-workspace 5', 'workspace E', 'workspace P', 'workspace 5']
+  alt-5 = ['workspace E', 'workspace 5']
+  alt-shift-5 = ['move-node-to-workspace 5', 'workspace E', 'workspace 5']
   alt-shift-ctrl-5 = ['move-node-to-workspace 5']
   alt-ctrl-5 = ['workspace 5']
 
