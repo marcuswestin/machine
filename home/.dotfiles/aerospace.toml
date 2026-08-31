@@ -87,6 +87,15 @@ on-mode-changed = []
   if.app-id = 'com.apple.Safari'
   run = 'move-node-to-workspace T'
 
+# alt-b -> workspace U (LG UltraFine): Tao Studio, Netflix (Safari Web App).
+[[on-window-detected]]
+  if.app-id = 'dev.tao-lang.studio'
+  run = 'move-node-to-workspace U'
+[[on-window-detected]]
+  # Bundle id is the installed Safari Web App; name is "Home - Netflix".
+  if.app-id = 'com.apple.Safari.WebApp.127FB006-77AB-4A58-B61C-4FBAED3C4C06'
+  run = 'move-node-to-workspace U'
+
 # FaceTime call windows should float instead of participating in tiled layout.
 [[on-window-detected]]
   if.app-id = 'com.apple.FaceTime'
@@ -111,7 +120,7 @@ on-mode-changed = []
 #   DELL S3225QC:      1–9 (alt-1…9); alt-ctrl-1…5 = Dell-only (non-sync)
 #   Built-in Retina:   A–E QWERT (alt-q…t); X–Z NM, (alt-n,m,comma) — non-project
 #   LG UltraFine:      L–P ASDFG (alt-a…g); Q–U ZXCVB (alt-z,x,c,v,b) — apps on ZXCV
-#   App auto-assign:   z->Q Chrome/sim; x->R Spotify/SMS; c->S Apple TV; v->T Safari
+#   App auto-assign:   z->Q Chrome/sim; x->R Spotify/SMS; c->S Apple TV; v->T Safari; b->U Tao Studio/Netflix
 [workspace-to-monitor-force-assignment]
   1 = 'DELL S3225QC'
   2 = 'DELL S3225QC'
