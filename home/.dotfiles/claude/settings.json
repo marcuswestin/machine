@@ -2,12 +2,28 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [],
-    "deny": []
+    "deny": [],
+    "defaultMode": "auto"
   },
   "effortLevel": "medium",
+  "fastMode": true,
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "environment": [
+      "$defaults",
+      "Organization: an independent solo developer working on a personal macOS workstation. Primary use of Claude Code: programming-language and UI-framework development (the Tao language, its compiler, runtime, IDE tooling, and demo apps).",
+      "Source control: GitHub at github.com/marcuswestin. The working repository is github.com/marcuswestin/tao-lang-2; treat its branches, pull requests, and linked git worktrees under .claude/worktrees as inside the trust boundary.",
+      "Repository visibility: github.com/marcuswestin/tao-lang-2 is a PUBLIC repository. Only that repository's own work belongs in it; content ported, repointed, or first read from outside it is not its own work, and no secret or personal data is ever cleared into it by any visibility.",
+      "Trusted repo: ~/code/tao-lang-2 and its linked worktrees. ~/code/tao-lang is the previous iteration of the same project, kept as read-only reference material.",
+      "Key internal services: everything is local. Expo/Metro dev servers on loopback port 8081, Tao Studio and its Electrobun shell, a self-hosted InstantDB stack run through Docker Compose on loopback ports 9020 and 3000, an Android emulator, and the iOS Simulator. Starting, querying, and stopping these loopback services is routine development work, not deployment.",
+      "Internal package registry: the public npm registry, reached through Bun. Nix and devenv pull from cache.nixos.org and Cachix.",
+      "Network posture: a single developer workstation. There is no staging or production infrastructure, no cloud account, no shared cluster, and no CI/CD deploy target attached to this work.",
+      "Secrets management: no secrets live in these repositories. .env files, ~/.ssh, ~/.aws, and ~/.config/gh are denied to the file tools and should never be read, copied, or transmitted.",
+      "Protected deployment namespaces / environments: none exist; no host, namespace, or branch in this environment is production."
+    ]
+  }
 }

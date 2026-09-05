@@ -2,9 +2,11 @@
 # Authentication and session files remain app-managed and machine-local.
 
 model = "gpt-5.6-sol"
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "medium"
 personality = "pragmatic"
-service_tier = "default"
+# Subagents do fan-out work: the fast, cheap tier at the same effort.
+default_subagent_model = "gpt-5.6-luna"
+default_subagent_reasoning_effort = "medium"
 
 # Allow routine commands and edits inside the active workspace.
 # Requests outside that boundary are automatically reviewed.
@@ -19,10 +21,12 @@ notify = [
   "/Users/ro/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
   "turn-ended",
 ]
+# "fast" is the documented tier name; Codex sends it as `priority` (1.5x speed, more usage).
+service_tier = "fast"
 
 [features]
   memories = true
-  js_repl = false
+js_repl = false
 
 [memories]
   generate_memories = true
@@ -55,20 +59,20 @@ notify = [
 [plugins."github@openai-curated"]
   enabled = true
 
-[plugins."chrome@openai-bundled"]
-  enabled = true
-
 [plugins."sites@openai-bundled"]
-  enabled = true
+enabled = true
 
-[plugins."visualize@openai-bundled"]
-  enabled = true
+[plugins."chrome@openai-bundled"]
+enabled = true
 
 [plugins."computer-use@openai-bundled"]
-  enabled = true
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
 
 [plugins."browser@openai-bundled"]
-  enabled = true
+enabled = true
 
 
   # Trusted projects
@@ -84,6 +88,21 @@ notify = [
 
 [projects."/Users/ro/code/git-star"]
   trust_level = "trusted"
+
+[projects."/Users/ro/.codex/.chatgpt-projects/g-p-6a8225f94e7c8191a5a4a889e29edeae"]
+trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-01/i-need-a-standing-desk-set"]
+trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-02/progress-report-please-with-estimated-percentage-2"]
+trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-02/progress-report-please-with-estimated-percentage"]
+trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-02/progress-report-please-with-estimated-percentage-3"]
+trust_level = "trusted"
 
 
   # Useful desktop preferences
@@ -109,12 +128,43 @@ notify = [
   url = "https://developers.openai.com/mcp"
 
 [mcp_servers.node_repl]
-  args = []
-  command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
-  startup_timeout_sec = 120
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/ro/.codex"
+CODEX_HOME = "/Users/ro/.codex"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.715.72359"
+SKY_CUA_SERVICE_PATH = "/Users/ro/.codex/plugins/cache/openai-bundled/computer-use/1.0.1000451/Codex Computer Use.app"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 [mcp_servers.computer-use]
-  command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
-  args = ["mcp"]
-  cwd = "."
-  enabled = false
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
+[marketplaces.openai-bundled]
+last_updated = "2026-09-04T23:22:11Z"
+source_type = "local"
+source = "/Users/ro/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-09-04T03:00:06Z"
+source_type = "local"
+source = "/Users/ro/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[shell_environment_policy.set]
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/ro/.codex"
