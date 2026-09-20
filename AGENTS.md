@@ -51,7 +51,10 @@ unless asked.
   when needed. Managed config—including Antigravity,
   Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`), Codex CLI
   (`~/.codex/config.toml` → `home/.dotfiles/codex/config.toml`),
-  Cursor (`~/.cursor/cli-config.json` and `~/.cursor/permissions.json` share one source, plus
+  Cursor (`~/.cursor/cli-config.json` → `home/.dotfiles/cursor/cli-config.json`,
+  `~/.cursor/permissions.json` → `home/.dotfiles/cursor/permissions.json`; the
+  permissions file must not define `terminalAllowlist` or `approvalMode` or it
+  locks the IDE out of Auto-review, plus
   vscode-family `chatgpt.*` / `cursor.*` keys), Karabiner-Elements
   (`~/.config/karabiner/karabiner.json` → `home/.dotfiles/karabiner/karabiner.json`),
   GitHub CLI, and iTerm2 Dynamic Profiles—lives

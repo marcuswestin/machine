@@ -1,0 +1,13 @@
+{
+  "autoRun": {
+    "allow_instructions": [
+      "Allow ordinary read-only shell commands used to inspect files, source code, git state, logs, test output, build artifacts, dependencies, and local environment information.",
+      "Allow read-only web Fetch requests to public internet resources for research, documentation, source code, package information, issue trackers, and technical references."
+    ],
+    "block_instructions": [
+      "Require review for commands that delete or substantially overwrite user or repository data.",
+      "Require review for actions that transmit secrets, credentials, tokens, private keys, or other sensitive local data to external services.",
+      "Require review for publishing, deployment, package publication, or other externally visible mutations."
+    ]
+  }
+}
