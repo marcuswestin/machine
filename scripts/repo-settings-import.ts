@@ -18,6 +18,12 @@
  * (the backend crashes). Use `--push-docker-live` to merge repo keys onto the
  * live file: merged = { ...live, ...repo } (same as merge-in-settings writes to
  * repo, but applied to disk where Docker reads it). Invoked from `just chezmoi-apply`.
+ *
+ * That live path sits under `~/Library/Group Containers/`, which macOS TCC
+ * protects. Cursor/agent shells often lack Full Disk Access, so open/read/write
+ * returns EPERM. Treat that as a soft skip (warn, exit 0) so `just apply` still
+ * finishes; re-run from Terminal.app (or grant FDA to the IDE) when a push is
+ * actually needed.
  */
 
 import { createHash } from "node:crypto";
@@ -346,6 +352,17 @@ function anyLiveFile(livePaths: string[]): boolean {
   return false;
 }
 
+function isPermissionError(e: unknown): boolean {
+  if (e && typeof e === "object" && "code" in e) {
+    const code = (e as { code?: string }).code;
+    if (code === "EPERM" || code === "EACCES") {
+      return true;
+    }
+  }
+  const msg = e instanceof Error ? e.message : String(e);
+  return /\bEPERM\b|\bEACCES\b|operation not permitted/i.test(msg);
+}
+
 /** Merge repo Docker settings onto the live Group Container file (never a symlink). */
 function pushDockerLiveSettings(repoRoot: string): { status: string; live?: string; error?: string } {
   const repo = joinRepo(repoRoot, ["home", ".dotfiles", "docker", "settings-store.json"]);
@@ -366,47 +383,72 @@ function pushDockerLiveSettings(repoRoot: string): { status: string; live?: stri
   }
   const rd = dictOnly(repoData);
 
-  if (fs.existsSync(livePath)) {
-    const st = fs.lstatSync(livePath);
-    if (st.isSymbolicLink()) {
-      return {
-        status: "symlink_blocked",
-        live: livePath,
-        error: "remove symlink; Docker Desktop crashes when this path is symlinked",
-      };
+  try {
+    if (fs.existsSync(livePath)) {
+      const st = fs.lstatSync(livePath);
+      if (st.isSymbolicLink()) {
+        return {
+          status: "symlink_blocked",
+          live: livePath,
+          error: "remove symlink; Docker Desktop crashes when this path is symlinked",
+        };
+      }
+      if (!st.isFile()) {
+        return { status: "not_a_file", live: livePath };
+      }
     }
-    if (!st.isFile()) {
-      return { status: "not_a_file", live: livePath };
-    }
-  }
 
-  let ld: Record<string, unknown> = {};
-  if (fs.existsSync(livePath)) {
-    try {
-      ld = dictOnly(parseJson(livePath));
-    } catch (e) {
+    let ld: Record<string, unknown> = {};
+    if (fs.existsSync(livePath)) {
+      try {
+        ld = dictOnly(parseJson(livePath));
+      } catch (e) {
+        if (isPermissionError(e)) {
+          return {
+            status: "permission_denied",
+            live: livePath,
+            error: e instanceof Error ? e.message : String(e),
+          };
+        }
+        return {
+          status: "parse_error",
+          live: livePath,
+          error: e instanceof Error ? e.message : String(e),
+        };
+      }
+    }
+
+    const merged = { ...ld, ...rd };
+    if (fs.existsSync(livePath)) {
+      try {
+        if (jsonStableStringify(merged) === jsonStableStringify(dictOnly(parseJson(livePath)))) {
+          return { status: "identical", live: livePath };
+        }
+      } catch (e) {
+        if (isPermissionError(e)) {
+          return {
+            status: "permission_denied",
+            live: livePath,
+            error: e instanceof Error ? e.message : String(e),
+          };
+        }
+        /* fall through to write */
+      }
+    }
+
+    fs.mkdirSync(path.dirname(livePath), { recursive: true });
+    writeJson(livePath, merged);
+    return { status: "wrote_live", live: livePath };
+  } catch (e) {
+    if (isPermissionError(e)) {
       return {
-        status: "parse_error",
+        status: "permission_denied",
         live: livePath,
         error: e instanceof Error ? e.message : String(e),
       };
     }
+    throw e;
   }
-
-  const merged = { ...ld, ...rd };
-  if (fs.existsSync(livePath)) {
-    try {
-      if (jsonStableStringify(merged) === jsonStableStringify(dictOnly(parseJson(livePath)))) {
-        return { status: "identical", live: livePath };
-      }
-    } catch {
-      /* fall through to write */
-    }
-  }
-
-  fs.mkdirSync(path.dirname(livePath), { recursive: true });
-  writeJson(livePath, merged);
-  return { status: "wrote_live", live: livePath };
 }
 
 function processTarget(
@@ -603,6 +645,15 @@ function main(): number {
       console.log(`docker-settings-store: wrote merged JSON → ${r.live}`);
     } else if (r.status === "identical") {
       console.log(`docker-settings-store: identical (${r.live})`);
+    } else if (r.status === "permission_denied") {
+      // Group Containers is TCC-protected; Cursor/agent shells often cannot open it.
+      // Soft-skip so `just chezmoi-apply` / `just apply` still succeed.
+      console.warn(
+        `docker-settings-store: skipped (permission denied on Group Containers)${r.error ? `: ${r.error}` : ""}`,
+      );
+      console.warn(
+        "docker-settings-store: re-run from Terminal.app, or grant Full Disk Access to the IDE, when a Docker settings push is needed.",
+      );
     } else if (r.status === "symlink_blocked" || r.status === "not_a_file") {
       console.error(
         `docker-settings-store: ${r.status}${r.live ? ` (${r.live})` : ""}${r.error ? `: ${r.error}` : ""}`,
