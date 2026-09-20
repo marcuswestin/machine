@@ -10,6 +10,10 @@ PROMPT='%F{240}[%D{%-m/%d-%H:%M}${vcs_info_msg_0_}%F{240}]%f %F{248}%~%f %B%F{15
 # Tool loaders and Completions
 ##############################
 
+# Homebrew (before compinit so brew completions are on fpath)
+eval "$(brew shellenv)"
+fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
+
 # ZSH completions
 fpath=("$HOME/.zsh-completions" $fpath)
 autoload -U compinit
@@ -17,10 +21,6 @@ compinit
 
 # Home Manager
 . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
-
-# Homebrew
-eval "$(brew shellenv)"
-fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
 
 # Direnv
 # Keep noninteractive devenv/direnv exports out of the TUI so they do not
@@ -36,6 +36,8 @@ export PATH="$HOME/.gemini/antigravity-ide/bin:$PATH"
 #################
 
 alias j="just"
+alias gs="gitst-status"
+alias da="direnv allow"
 
 iterm() {
   local dir="${1:-.}"
@@ -55,3 +57,7 @@ alias ot="cd ~/code/tao-lang && sleep 1 && aerospace move-node-to-workspace 3 &&
 alias e2="cd ~/code/tao-lang-2"
 
 eval "$(wt config shell init zsh)"
+
+# tao shell completion
+# source <(tao complete zsh)
+# compdef _tao ./tao
