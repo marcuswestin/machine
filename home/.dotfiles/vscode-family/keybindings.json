@@ -45,121 +45,219 @@
   {
     "key": "shift+left",
     "command": "vim.remap",
-    "args": { "after": ["v", "h"] },
+    "args": {
+      "after": [
+        "v",
+        "h"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+right",
     "command": "vim.remap",
-    "args": { "after": ["v", "l"] },
+    "args": {
+      "after": [
+        "v",
+        "l"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+up",
     "command": "vim.remap",
-    "args": { "after": ["v", "g", "k"] },
+    "args": {
+      "after": [
+        "v",
+        "g",
+        "k"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+down",
     "command": "vim.remap",
-    "args": { "after": ["v", "g", "j"] },
+    "args": {
+      "after": [
+        "v",
+        "g",
+        "j"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+h",
     "command": "vim.remap",
-    "args": { "after": ["v", "h"] },
+    "args": {
+      "after": [
+        "v",
+        "h"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+l",
     "command": "vim.remap",
-    "args": { "after": ["v", "l"] },
+    "args": {
+      "after": [
+        "v",
+        "l"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+k",
     "command": "vim.remap",
-    "args": { "after": ["v", "g", "k"] },
+    "args": {
+      "after": [
+        "v",
+        "g",
+        "k"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+j",
     "command": "vim.remap",
-    "args": { "after": ["v", "g", "j"] },
+    "args": {
+      "after": [
+        "v",
+        "g",
+        "j"
+      ]
+    },
     "when": "editorTextFocus && vim.active && vim.mode == 'Normal' && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+left",
     "command": "vim.remap",
-    "args": { "after": ["h"] },
+    "args": {
+      "after": [
+        "h"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+right",
     "command": "vim.remap",
-    "args": { "after": ["l"] },
+    "args": {
+      "after": [
+        "l"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+up",
     "command": "vim.remap",
-    "args": { "after": ["g", "k"] },
+    "args": {
+      "after": [
+        "g",
+        "k"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+down",
     "command": "vim.remap",
-    "args": { "after": ["g", "j"] },
+    "args": {
+      "after": [
+        "g",
+        "j"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+h",
     "command": "vim.remap",
-    "args": { "after": ["h"] },
+    "args": {
+      "after": [
+        "h"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+l",
     "command": "vim.remap",
-    "args": { "after": ["l"] },
+    "args": {
+      "after": [
+        "l"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+k",
     "command": "vim.remap",
-    "args": { "after": ["g", "k"] },
+    "args": {
+      "after": [
+        "g",
+        "k"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "shift+j",
     "command": "vim.remap",
-    "args": { "after": ["g", "j"] },
+    "args": {
+      "after": [
+        "g",
+        "j"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "left",
     "command": "vim.remap",
-    "args": { "after": ["h"] },
+    "args": {
+      "after": [
+        "h"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "right",
     "command": "vim.remap",
-    "args": { "after": ["l"] },
+    "args": {
+      "after": [
+        "l"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "up",
     "command": "vim.remap",
-    "args": { "after": ["g", "k"] },
+    "args": {
+      "after": [
+        "g",
+        "k"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
     "key": "down",
     "command": "vim.remap",
-    "args": { "after": ["g", "j"] },
+    "args": {
+      "after": [
+        "g",
+        "j"
+      ]
+    },
     "when": "editorTextFocus && vim.active && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock') && !inDebugRepl && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible"
   },
   {
@@ -199,7 +297,14 @@
   },
   {
     "key": "cmd+shift+b",
-    "command": "multiCommand.buildExtensionThenRestartHost"
+    "command": "extension.multiCommand.execute",
+    "args": {
+      "interval": 4000,
+      "sequence": [
+        "workbench.action.tasks.build",
+        "workbench.action.restartExtensionHost"
+      ]
+    }
   },
   {
     "key": "ctrl+[ArrowUp]",
@@ -656,5 +761,15 @@
     "key": "ctrl+o",
     "command": "-lineBreakInsert",
     "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+cmd+d",
+    "command": "workbench.view.debug",
+    "when": "viewContainer.workbench.view.debug.enabled"
+  },
+  {
+    "key": "shift+cmd+d",
+    "command": "-workbench.view.debug",
+    "when": "viewContainer.workbench.view.debug.enabled"
   }
 ]
