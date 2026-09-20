@@ -1,5 +1,6 @@
 {
   inputs,
+  lib,
   pkgs,
   user,
   ...
@@ -26,6 +27,13 @@
   homebrew = {
     enable = true;
 
+    # Homebrew requires explicit trust for non-official tap code. nix-darwin
+    # does not yet expose Brewfile trust options, so declare the narrow cask
+    # trust through its supported verbatim Brewfile escape hatch.
+    extraConfig = ''
+      tap "nikitabobko/tap", trusted: { cask: "aerospace" }
+    '';
+
     # Keep Homebrew's tap/API metadata fresh enough for cask installs.
     # This does not upgrade installed packages; `onActivation.upgrade` controls
     # that separately below.
@@ -49,4 +57,24 @@
       upgrade = false;
     };
   };
+
+  # nix-homebrew sets HOMEBREW_REPOSITORY to a marker under Library/, so brew's
+  # own shell completions never land at $HOMEBREW_PREFIX/completions where the
+  # share/zsh/site-functions/_brew symlink points. Relink from the brew package
+  # after each activation so zsh compinit does not hit a dangling symlink.
+  system.activationScripts.postActivation.text = lib.mkAfter ''
+    brew_lib="$(readlink /opt/homebrew/Library/Homebrew 2>/dev/null || true)"
+    if [ -n "$brew_lib" ]; then
+      brew_completions="$(cd "$(dirname "$brew_lib")/../completions" && pwd)"
+      if [ -d "$brew_completions" ]; then
+        echo "linking Homebrew shell completions from $brew_completions"
+        mkdir -p /opt/homebrew/completions
+        for shell in bash fish zsh; do
+          if [ -d "$brew_completions/$shell" ]; then
+            ln -sfn "$brew_completions/$shell" "/opt/homebrew/completions/$shell"
+          fi
+        done
+      fi
+    fi
+  '';
 }

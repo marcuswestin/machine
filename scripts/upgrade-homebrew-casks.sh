@@ -26,8 +26,8 @@ else
     | jq -r '.[] | .name | ., split("/")[-1]' \
     | sort -fu >"$desired_casks"
 
-  HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1 brew update
-  HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1 brew outdated --cask --greedy \
+  HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1 HOMEBREW_NO_INSTALL_FROM_API=1 brew update
+  HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1 HOMEBREW_NO_INSTALL_FROM_API=1 brew outdated --cask --greedy \
     | sort -fu >"$outdated_casks"
 
   while IFS= read -r cask; do
@@ -43,4 +43,7 @@ fi
 
 printf 'Upgrading Homebrew casks:\n'
 printf '  %s\n' "${upgrade_casks[@]}"
-HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1 brew upgrade --cask --greedy "${upgrade_casks[@]}"
+# Match nix-darwin Homebrew activation: Homebrew 5.1.7 can crash on JSON API
+# cask definitions (`generate_completions_from_executable` / `to_sym` nil).
+HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1 HOMEBREW_NO_INSTALL_FROM_API=1 \
+  brew upgrade --cask --greedy "${upgrade_casks[@]}"

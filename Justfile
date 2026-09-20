@@ -60,9 +60,9 @@ prune:
 upgrade *casks:
     @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" {{ casks }}
 
-# Bump Homebrew tap pins, apply, then upgrade declared formulae and casks.
+# Bump Homebrew and tap pins, apply, then upgrade declared formulae and casks.
 update:
-    {{ NIX_CMD }} flake update homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
+    {{ NIX_CMD }} flake update nix-homebrew homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
     @just apply
     @scripts/update-homebrew-apps.sh "{{ HOST }}"
     @just upgrade
