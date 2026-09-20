@@ -48,7 +48,7 @@
     ],
     "deny": []
   },
-  "approvalMode": "allowlist",
+  "approvalMode": "auto-review",
   "terminalAllowlist": [
     "./agent",
     "cd",
