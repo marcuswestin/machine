@@ -69,6 +69,11 @@ on-mode-changed = []
   if.app-name-regex-substring = '^qemu-system-'
   run = 'move-node-to-workspace Q'
 
+# alt-a -> workspace L (LG UltraFine): Tao Studio.
+[[on-window-detected]]
+  if.app-id = 'dev.tao-lang.studio'
+  run = 'move-node-to-workspace L'
+
 # alt-x -> workspace R (LG UltraFine): Spotify, Messages.
 [[on-window-detected]]
   if.app-id = 'com.spotify.client'
@@ -87,10 +92,7 @@ on-mode-changed = []
   if.app-id = 'com.apple.Safari'
   run = 'move-node-to-workspace T'
 
-# alt-b -> workspace U (LG UltraFine): Tao Studio, Netflix (Safari Web App).
-[[on-window-detected]]
-  if.app-id = 'dev.tao-lang.studio'
-  run = 'move-node-to-workspace U'
+# alt-b -> workspace U (LG UltraFine): Netflix (Safari Web App).
 [[on-window-detected]]
   # Bundle id is the installed Safari Web App; name is "Home - Netflix".
   if.app-id = 'com.apple.Safari.WebApp.127FB006-77AB-4A58-B61C-4FBAED3C4C06'
@@ -120,7 +122,7 @@ on-mode-changed = []
 #   DELL S3225QC:      1–9 (alt-1…9); alt-ctrl-1…5 = Dell-only (non-sync)
 #   Built-in Retina:   A–E QWERT (alt-q…t); X–Z NM, (alt-n,m,comma) — non-project
 #   LG UltraFine:      L–P ASDFG (alt-a…g); Q–U ZXCVB (alt-z,x,c,v,b) — apps on ZXCV
-#   App auto-assign:   z->Q Chrome/sim; x->R Spotify/SMS; c->S Apple TV; v->T Safari; b->U Tao Studio/Netflix
+#   App auto-assign:   a->L Tao Studio; z->Q Chrome/sim; x->R Spotify/SMS; c->S Apple TV; v->T Safari; b->U Netflix
 [workspace-to-monitor-force-assignment]
   1 = 'DELL S3225QC'
   2 = 'DELL S3225QC'
