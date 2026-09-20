@@ -2,7 +2,7 @@
 # Authentication and session files remain app-managed and machine-local.
 
 model = "gpt-5.6-sol"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 personality = "pragmatic"
 # Subagents do fan-out work: the fast, cheap tier at the same effort.
 default_subagent_model = "gpt-5.6-luna"
