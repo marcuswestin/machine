@@ -5,8 +5,21 @@
     "deny": [],
     "defaultMode": "auto"
   },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/code/machine/home/.dotfiles/claude/stop-notify.sh\"",
+            "timeout": 10,
+            "statusMessage": "Notifying..."
+          }
+        ]
+      }
+    ]
+  },
   "effortLevel": "medium",
-  "fastMode": true,
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
