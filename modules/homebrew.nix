@@ -28,10 +28,12 @@
     enable = true;
 
     # Homebrew requires explicit trust for non-official tap code. nix-darwin
-    # does not yet expose Brewfile trust options, so declare the narrow cask
-    # trust through its supported verbatim Brewfile escape hatch.
+    # does not yet expose Brewfile trust options, so declare narrow item trust
+    # through its supported verbatim Brewfile escape hatch.
     extraConfig = ''
+      tap "anomalyco/tap", trusted: { formula: "opencode" }
       tap "nikitabobko/tap", trusted: { cask: "aerospace" }
+      tap "steipete/tap", trusted: { cask: "codexbar" }
     '';
 
     # Keep Homebrew's tap/API metadata fresh enough for cask installs.
