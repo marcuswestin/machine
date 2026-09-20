@@ -26,7 +26,7 @@ service_tier = "fast"
 
 [features]
   memories = true
-js_repl = false
+  js_repl = false
 
 [memories]
   generate_memories = true
@@ -59,20 +59,23 @@ js_repl = false
 [plugins."github@openai-curated"]
   enabled = true
 
-[plugins."sites@openai-bundled"]
-enabled = true
-
 [plugins."chrome@openai-bundled"]
-enabled = true
+  enabled = true
 
 [plugins."computer-use@openai-bundled"]
-enabled = true
+  enabled = true
 
 [plugins."visualize@openai-bundled"]
-enabled = true
+  enabled = true
 
 [plugins."browser@openai-bundled"]
-enabled = true
+  enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+  enabled = true
+
+[plugins."unified-computer-use@openai-bundled"]
+  enabled = true
 
 
   # Trusted projects
@@ -90,19 +93,37 @@ enabled = true
   trust_level = "trusted"
 
 [projects."/Users/ro/.codex/.chatgpt-projects/g-p-6a8225f94e7c8191a5a4a889e29edeae"]
-trust_level = "trusted"
+  trust_level = "trusted"
 
 [projects."/Users/ro/Documents/Codex/2026-09-01/i-need-a-standing-desk-set"]
-trust_level = "trusted"
+  trust_level = "trusted"
 
 [projects."/Users/ro/Documents/Codex/2026-09-02/progress-report-please-with-estimated-percentage-2"]
-trust_level = "trusted"
+  trust_level = "trusted"
 
 [projects."/Users/ro/Documents/Codex/2026-09-02/progress-report-please-with-estimated-percentage"]
-trust_level = "trusted"
+  trust_level = "trusted"
 
 [projects."/Users/ro/Documents/Codex/2026-09-02/progress-report-please-with-estimated-percentage-3"]
-trust_level = "trusted"
+  trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-11/tel"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-12/n"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-12/n-2"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/.codex/.chatgpt-projects/g-p-6a2af793e2388191a208882f746ec014"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-13/in-x20"]
+  trust_level = "trusted"
+
+[projects."/Users/ro/Documents/Codex/2026-09-13/i-wnt-to-x20"]
+  trust_level = "trusted"
 
 
   # Useful desktop preferences
@@ -128,43 +149,49 @@ trust_level = "trusted"
   url = "https://developers.openai.com/mcp"
 
 [mcp_servers.node_repl]
-args = []
-command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
-startup_timeout_sec = 120
+  args = []
+  command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+  startup_timeout_sec = 120
 
-[mcp_servers.node_repl.env]
-NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
-NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
-NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
-NODE_REPL_TRUSTED_CODE_PATHS = "/Users/ro/.codex"
-CODEX_HOME = "/Users/ro/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
-BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
-NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
-NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
-NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
-BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.715.72359"
-SKY_CUA_SERVICE_PATH = "/Users/ro/.codex/plugins/cache/openai-bundled/computer-use/1.0.1000451/Codex Computer Use.app"
-CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+  [mcp_servers.node_repl.env]
+    NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+    NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+    NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+    NODE_REPL_TRUSTED_CODE_PATHS = "/Users/ro/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+    CODEX_HOME = "/Users/ro/.codex"
+    BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+    BROWSER_USE_TINYSKY_ENABLED = "1"
+    NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
+    NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
+    NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
+    BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+    BROWSER_USE_CODEX_APP_VERSION = "26.915.31945"
+    NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/ro/.codex/plugins/cache/openai-bundled/browser/26.915.31945/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+    SKY_CUA_SERVICE_PATH = "/Users/ro/.codex/computer-use/Codex Computer Use.app"
+    CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 [mcp_servers.computer-use]
-command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
-args = ["mcp"]
-cwd = "."
-enabled = false
+  command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+  args = ["mcp"]
+  cwd = "."
+  enabled = false
 
 [marketplaces.openai-bundled]
-last_updated = "2026-09-04T23:22:11Z"
 source_type = "local"
 source = "/Users/ro/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-09-04T03:00:06Z"
-source_type = "local"
-source = "/Users/ro/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+  last_updated = "2026-09-12T12:47:24Z"
+  source_type = "local"
+  source = "/Users/ro/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [shell_environment_policy.set]
-BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
-NODE_REPL_TRUSTED_CODE_PATHS = "/Users/ro/.codex"
+  NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,d0b55a8f9e8e7e9c88421416ea4ce9542c302abf43aa7fc871be4553ea70dd26"
+
+[hooks.state]
+
+  [hooks.state."/Users/ro/code/tao-lang-2/.codex/hooks.json:session_start:0:0"]
+    trusted_hash = "sha256:89b2ad00a3b2fc25c7825e343b33f24591c32c94b74317a22a4e71ed14ed6c05"
+
+[tui.model_availability_nux]
+gpt-6-astra = 3
