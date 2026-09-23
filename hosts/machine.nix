@@ -1,9 +1,19 @@
 {
+  config,
+  lib,
   pkgs,
   user,
   ...
 }:
 
+let
+  bootProgram = "/usr/local/libexec/machine-nix-boot";
+  bootScript = pkgs.writeText "machine-nix-boot" ''
+    #!/bin/sh
+    /bin/wait4path /nix/store
+    exec ${config.launchd.daemons.activate-system.command}
+  '';
+in
 {
   imports = [
     ../modules/apps.nix
@@ -16,6 +26,20 @@
 
   # Determinate Nix manages the daemon itself; nix-darwin must not.
   nix.enable = false;
+
+  # Keep nix-darwin's boot activation, but give macOS Background App Activity a
+  # stable, recognizable executable instead of its default /bin/sh wrapper.
+  # This root-owned copy is available before the Nix store is mounted.
+  launchd.daemons.activate-system.serviceConfig = {
+    Program = bootProgram;
+    ProgramArguments = lib.mkForce [ bootProgram ];
+  };
+  system.activationScripts.preActivation.text = lib.mkAfter ''
+    mkdir -p /usr/local/libexec
+    if ! cmp -s ${bootScript} ${bootProgram}; then
+      install -o root -g wheel -m 0555 ${bootScript} ${bootProgram}
+    fi
+  '';
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
