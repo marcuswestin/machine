@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   user,
   ...
 }:
@@ -8,7 +9,7 @@
 let
   # Repo-local script; applied at login only if it already contains a real displayplacer line.
   displayLayoutScript = "/Users/${user}/code/machine/scripts/display-layout.sh";
-  # Each entry drives a user LaunchAgent: try the .app bundle first, fall back to the bundle binary + args.
+  # One user LaunchAgent starts these apps and applies the display layout.
   startupApps = [
     {
       name = "Handy";
@@ -54,86 +55,59 @@ let
     }
   ];
 
-  # nix-darwin builds plist paths from the agent key; spaces (e.g. "Docker Desktop") break activate(8)'s shell.
   agentKeyFragment = app: lib.replaceStrings [ " " ] [ "-" ] (lib.toLower app.name);
   toPlist = lib.generators.toPlist { escape = true; };
+  loginProgram = "/usr/local/libexec/machine-login-startup";
 
-  # Nix interpolates paths/args through lib.escapeShellArg(s) so spaces and metacharacters stay one shell word each.
+  # Each subshell exits independently, so an already-running app cannot skip
+  # the remaining apps or display layout. Paths and args remain shell-quoted.
   appLaunchCommand =
     app:
     ''
-        /bin/wait4path /nix/store
-
+      (
         process_name="$(/usr/bin/basename ${lib.escapeShellArg app.executable})"
-        # -x: exact process name match (cheap guard when the binary basename is unique).
-        if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1; then
+        if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1 \
+          || /usr/bin/pgrep -f ${lib.escapeShellArg app.executable} >/dev/null 2>&1; then
           exit 0
         fi
 
-        # -f: full command line match on the executable path (catches renamed helpers sharing a basename).
-        if /usr/bin/pgrep -f ${lib.escapeShellArg app.executable} >/dev/null 2>&1; then
-          exit 0
-        fi
-
-        # Prefer Launch Services: -g do not foreground, -j start hidden (when the app supports it).
         if /usr/bin/open -gj ${lib.escapeShellArg app.appPath}; then
           exit 0
         fi
 
-        # Last resort: run the bundle’s Mach-O directly with the declared argv (same words open would use).
-        exec ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args}
+        # Launch Services failed; start the declared binary without blocking the next app.
+        nohup ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args} >/dev/null 2>&1 &
+      )
     '';
 
-  launchAgentFileFor =
-    app:
-    let
-      label = "org.nixos.open-${agentKeyFragment app}";
-    in
-    lib.nameValuePair "${label}.plist" {
-      text = toPlist {
-        Label = label;
-        Program = "/bin/sh";
-        ProgramArguments = [
-          app.name
-          "-c"
-          (appLaunchCommand app)
-        ];
-        # AssociatedBundleIdentifiers is Apple’s legacy LaunchAgent hint for
-        # System Settings → Login Items & Extensions app names/icons.
-        AssociatedBundleIdentifiers = [ app.bundleIdentifier ];
-        RunAtLoad = true;
-      };
-    };
+  loginScript = pkgs.writeText "machine-login-startup" ''
+    #!/bin/sh
+    set -eu
+    /bin/wait4path /nix/store
+    ${lib.concatMapStringsSep "\n" appLaunchCommand config.machine.startupApps}
 
-  displayLayoutAgentFile = {
-    text = toPlist {
-      Label = "org.nixos.display-layout";
-      Program = "/bin/sh";
-      ProgramArguments = [
-        "Display Layout"
-        "-c"
-        ''
-      /bin/wait4path /nix/store
-
+    # The captured layout is a no-op until it contains a displayplacer command.
       display_layout_script=${lib.escapeShellArg displayLayoutScript}
-      if [ ! -x "$display_layout_script" ]; then
-        exit 0
-      fi
-
-      # Captured layouts contain an exec displayplacer command. The initial
-      # placeholder stays a no-op so login is clean before a layout is captured.
-      if ! /usr/bin/grep -Eq '^[[:space:]]*exec[[:space:]]+displayplacer[[:space:]]+' "$display_layout_script"; then
-        exit 0
-      fi
-
-      # displayplacer is Homebrew-managed here; nix paths cover darwin-rebuild and default profiles.
-      export PATH="/opt/homebrew/bin:/usr/local/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
+    if [ -x "$display_layout_script" ] \
+      && /usr/bin/grep -Eq '^[[:space:]]*exec[[:space:]]+displayplacer[[:space:]]+' "$display_layout_script"; then
+      PATH="/opt/homebrew/bin:/usr/local/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
+      export PATH
       "$display_layout_script" || true
-        ''
-      ];
+    fi
+  '';
+
+  loginAgentFile = {
+    text = toPlist {
+      Label = "org.nixos.machine-login-startup";
+      Program = loginProgram;
+      ProgramArguments = [ loginProgram ];
       RunAtLoad = true;
     };
   };
+
+  legacyAgentFiles = (map (app: "org.nixos.open-${agentKeyFragment app}.plist") startupApps) ++ [
+    "org.nixos.display-layout.plist"
+  ];
 in
 
 {
@@ -158,8 +132,29 @@ in
 
   config = {
     machine.startupApps = startupApps;
-    environment.userLaunchAgents = lib.listToAttrs (map launchAgentFileFor config.machine.startupApps) // {
-      "org.nixos.display-layout.plist" = displayLayoutAgentFile;
+    environment.userLaunchAgents = {
+      "org.nixos.machine-login-startup.plist" = loginAgentFile;
     };
+
+    # A fixed, root-owned path keeps the Background App Activity identity stable
+    # even when the Nix store derivation changes on a later apply.
+    system.activationScripts.preActivation.text = lib.mkAfter ''
+      mkdir -p /usr/local/libexec
+      if ! cmp -s ${loginScript} ${loginProgram}; then
+        install -o root -g wheel -m 0555 ${loginScript} ${loginProgram}
+      fi
+    '';
+
+    # /run/current-system is missing when boot activation was disallowed, so
+    # nix-darwin cannot discover these retired agents through its usual diff.
+    system.activationScripts.userLaunchd.text = lib.mkAfter ''
+      for name in ${lib.escapeShellArgs legacyAgentFiles}; do
+        legacy="/Users/${user}/Library/LaunchAgents/$name"
+        if [ -e "$legacy" ]; then
+          launchctl asuser "$(id -u -- ${user})" sudo --user=${user} -- launchctl unload "$legacy" || true
+          rm -f "$legacy"
+        fi
+      done
+    '';
   };
 }
