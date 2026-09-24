@@ -32,7 +32,7 @@ else
   printf '%s\n' "${extra_mas[@]}"
 fi
 
-printf '\n━━ Editor extensions (installed but not in vscode-family/extensions.txt) ━━\n'
+printf '\n━━ Editor extensions (installed but not in vscode-family extension lists) ━━\n'
 (cd "$repo_dir" && just _prune-editor-extensions-diff)
 
 printf '\n━━ Browser extensions (live vs config/browser-extensions) ━━\n'

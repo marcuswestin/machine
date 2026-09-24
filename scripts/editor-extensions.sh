@@ -8,7 +8,9 @@ fi
 
 mode="$1"
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-desired_file="$repo_dir/home/.dotfiles/vscode-family/extensions.txt"
+common_file="$repo_dir/home/.dotfiles/vscode-family/extensions.txt"
+code_file="$repo_dir/home/.dotfiles/vscode-family/extensions.code.txt"
+cursor_file="$repo_dir/home/.dotfiles/vscode-family/extensions.cursor.txt"
 prune_ignore_extensions="$(printf '%s\n' 'tao.tao-ide-extension')"
 
 case "$mode" in
@@ -20,7 +22,7 @@ case "$mode" in
 esac
 
 desired_extensions() {
-  grep -Ev '^\s*(#|$)' "$desired_file" | sort -fu
+  cat "$common_file" "$1" | grep -Ev '^\s*(#|$)' | sort -fu
 }
 
 list_extensions() {
@@ -41,16 +43,18 @@ list_extensions() {
 
 extra_extensions() {
   local cli="$1"
+  local editor_file="$2"
   local installed=""
 
   installed="$(list_extensions "$cli" | grep -vxFf <(printf '%s' "$prune_ignore_extensions") || true)"
   comm -23 \
     <(printf '%s\n' "$installed") \
-    <(desired_extensions)
+    <(desired_extensions "$editor_file")
 }
 
 install_extensions() {
   local cli="$1"
+  local editor_file="$2"
   local output=""
   local status=0
 
@@ -62,15 +66,16 @@ install_extensions() {
     status="$?"
     printf '%s\n' "$output" >&2
     return "$status"
-  done < <(desired_extensions)
+  done < <(desired_extensions "$editor_file")
 }
 
 prune_diff_extensions() {
   local name="$1"
   local cli="$2"
+  local editor_file="$3"
   local extra=""
 
-  extra="$(extra_extensions "$cli")"
+  extra="$(extra_extensions "$cli" "$editor_file")"
   if [ -n "$extra" ]; then
     printf 'Undeclared %s extensions:\n%s\n' "$name" "$extra"
   fi
@@ -78,9 +83,10 @@ prune_diff_extensions() {
 
 prune_apply_extensions() {
   local cli="$1"
+  local editor_file="$2"
   local extra=""
 
-  extra="$(extra_extensions "$cli")"
+  extra="$(extra_extensions "$cli" "$editor_file")"
   if [ -z "$extra" ]; then
     return
   fi
@@ -92,15 +98,15 @@ prune_apply_extensions() {
 }
 
 run_for_editors() {
-  "$@" "VS Code" "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
-  "$@" "Cursor" "/Applications/Cursor.app/Contents/Resources/app/bin/cursor"
+  "$@" "VS Code" "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "$code_file"
+  "$@" "Cursor" "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "$cursor_file"
 }
 
 case "$mode" in
   install)
-    install_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" &
+    install_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "$code_file" &
     code_pid="$!"
-    install_extensions "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" &
+    install_extensions "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "$cursor_file" &
     cursor_pid="$!"
     status=0
     wait "$code_pid" || status="$?"
@@ -111,7 +117,7 @@ case "$mode" in
     run_for_editors prune_diff_extensions
     ;;
   prune-apply)
-    prune_apply_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
-    prune_apply_extensions "/Applications/Cursor.app/Contents/Resources/app/bin/cursor"
+    prune_apply_extensions "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "$code_file"
+    prune_apply_extensions "/Applications/Cursor.app/Contents/Resources/app/bin/cursor" "$cursor_file"
     ;;
 esac

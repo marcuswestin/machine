@@ -7,7 +7,6 @@ google.geminicodeassist
 bbenoist.nix
 langium.langium-vscode
 ms-azuretools.vscode-containers
-ms-vscode-remote.remote-containers
 ms-vscode.vscode-typescript-next
 nefrob.vscode-just-syntax
 nrwl.angular-console
