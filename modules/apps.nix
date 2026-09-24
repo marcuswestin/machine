@@ -8,7 +8,9 @@
       "displayplacer"
       "gemini-cli"
       "anomalyco/tap/opencode"
+      "mobile-dev-inc/tap/maestro"
       "ollama"
+      "openjdk@17"
       "worktrunk"
     ];
 

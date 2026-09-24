@@ -21,6 +21,10 @@
       url = "git+https://github.com/anomalyco/homebrew-tap";
       flake = false;
     };
+    homebrew-mobile-dev-inc-tap = {
+      url = "git+https://github.com/mobile-dev-inc/homebrew-tap";
+      flake = false;
+    };
     homebrew-steipete-tap = {
       url = "git+https://github.com/steipete/homebrew-tap";
       flake = false;

@@ -18,6 +18,7 @@
         cp -R ${../homebrew/local}/. "$out"
       '';
       "anomalyco/tap" = inputs.homebrew-anomalyco-tap;
+      "mobile-dev-inc/tap" = inputs.homebrew-mobile-dev-inc-tap;
       "nikitabobko/tap" = inputs.homebrew-nikitabobko-tap;
       "steipete/tap" = inputs.homebrew-steipete-tap;
     };
@@ -32,6 +33,7 @@
     # through its supported verbatim Brewfile escape hatch.
     extraConfig = ''
       tap "anomalyco/tap", trusted: { formula: "opencode" }
+      tap "mobile-dev-inc/tap", trusted: { formula: "maestro" }
       tap "nikitabobko/tap", trusted: { cask: "aerospace" }
       tap "steipete/tap", trusted: { cask: "codexbar" }
     '';

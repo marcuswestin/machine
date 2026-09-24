@@ -70,6 +70,22 @@
         "type": "github"
       }
     },
+    "homebrew-mobile-dev-inc-tap": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789554279,
+        "narHash": "sha256-R4lhRQ0aAWQAgsUZ8lMaVc85BixeetrFBlNHm6VDBIQ=",
+        "ref": "refs/heads/master",
+        "rev": "f9291aa40c8f74baa0beb28641384b0e2ddbb9a4",
+        "revCount": 205,
+        "type": "git",
+        "url": "https://github.com/mobile-dev-inc/homebrew-tap"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/mobile-dev-inc/homebrew-tap"
+      }
+    },
     "homebrew-nikitabobko-tap": {
       "flake": false,
       "locked": {
@@ -162,6 +178,7 @@
         "home-manager": "home-manager",
         "homebrew-anomalyco-tap": "homebrew-anomalyco-tap",
         "homebrew-cask": "homebrew-cask",
+        "homebrew-mobile-dev-inc-tap": "homebrew-mobile-dev-inc-tap",
         "homebrew-nikitabobko-tap": "homebrew-nikitabobko-tap",
         "homebrew-steipete-tap": "homebrew-steipete-tap",
         "nix-darwin": "nix-darwin",
