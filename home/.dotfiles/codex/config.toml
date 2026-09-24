@@ -59,9 +59,6 @@ service_tier = "default"
 [plugins."github@openai-curated"]
   enabled = true
 
-[plugins."chrome@openai-bundled"]
-  enabled = true
-
 [plugins."computer-use@openai-bundled"]
   enabled = true
 
