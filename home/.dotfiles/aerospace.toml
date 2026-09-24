@@ -14,7 +14,7 @@ start-at-login = false
 # Re-stagger Codex/Cursor windows after AeroSpace starts (e.g. restored windows).
 #after-startup-command = [
 #  'exec-and-forget ${HOME}/code/machine/scripts/aerospace-stagger-app-window.sh --app-id com.openai.codex --workspaces 1,2,3,4,5,6,7,8,9',
-#  'exec-and-forget ${HOME}/code/machine/scripts/aerospace-stagger-app-window.sh --app-id com.todesktop.230313mzl4w4u92 --workspaces A,B,C',
+#  'exec-and-forget ${HOME}/code/machine/scripts/aerospace-stagger-app-window.sh --app-id com.todesktop.230313mzl4w4u92 --workspaces Q,W,E',
 #]
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
@@ -57,53 +57,53 @@ on-mode-changed = []
 
 # on-window-detected runs when a window is first seen (new window / AeroSpace (re)start), not on reload-config.
 # Confirm bundle ids with: aerospace list-apps (also avoid a second config at ~/.config/aerospace/aerospace.toml).
-# alt-z -> workspace Q (LG UltraFine): Chrome, iPhone/Android simulators.
+# alt-z -> workspace Z (LG UltraFine): Chrome, iPhone/Android simulators.
 [[on-window-detected]]
   if.app-id = 'com.google.Chrome'
-  run = 'move-node-to-workspace Q'
+  run = 'move-node-to-workspace Z'
 [[on-window-detected]]
   if.app-id = 'com.apple.iphonesimulator'
-  run = 'move-node-to-workspace Q'
+  run = 'move-node-to-workspace Z'
 [[on-window-detected]]
   # Android Emulator exposes no bundle id to AeroSpace; app name is the QEMU emulator process.
   if.app-name-regex-substring = '^qemu-system-'
-  run = 'move-node-to-workspace Q'
+  run = 'move-node-to-workspace Z'
 
-# alt-a -> workspace L (LG UltraFine): Tao Studio.
+# alt-a -> workspace A (LG UltraFine): Tao Studio.
 [[on-window-detected]]
   if.app-id = 'dev.tao-lang.studio'
-  run = 'move-node-to-workspace L'
+  run = 'move-node-to-workspace A'
 
-# alt-x -> workspace R (LG UltraFine): Spotify, Messages.
+# alt-x -> workspace X (LG UltraFine): Spotify, Messages.
 [[on-window-detected]]
   if.app-id = 'com.spotify.client'
-  run = 'move-node-to-workspace R'
+  run = 'move-node-to-workspace X'
 [[on-window-detected]]
   if.app-id = 'com.apple.MobileSMS'
-  run = 'move-node-to-workspace R'
+  run = 'move-node-to-workspace X'
 
-# alt-c -> workspace S (LG UltraFine): Apple TV.
+# alt-c -> workspace C (LG UltraFine): Apple TV.
 [[on-window-detected]]
   if.app-id = 'com.apple.TV'
-  run = 'move-node-to-workspace S'
+  run = 'move-node-to-workspace C'
 
-# alt-v -> workspace T (LG UltraFine): Safari.
+# alt-v -> workspace V (LG UltraFine): Safari.
 [[on-window-detected]]
   if.app-id = 'com.apple.Safari'
-  run = 'move-node-to-workspace T'
+  run = 'move-node-to-workspace V'
 
-# alt-b -> workspace U (LG UltraFine): Netflix (Safari Web App).
+# alt-b -> workspace B (LG UltraFine): Netflix (Safari Web App).
 [[on-window-detected]]
   # Bundle id is the installed Safari Web App; name is "Home - Netflix".
   if.app-id = 'com.apple.Safari.WebApp.127FB006-77AB-4A58-B61C-4FBAED3C4C06'
-  run = 'move-node-to-workspace U'
+  run = 'move-node-to-workspace B'
 
 # FaceTime call windows should float instead of participating in tiled layout.
 [[on-window-detected]]
   if.app-id = 'com.apple.FaceTime'
   run = 'layout floating'
 
-# Codex: 1st window → workspace 1, 2nd → 2, … (DELL S3225QC 1–9). Cursor: A,B,C,… (Retina Q/W/E project row).
+# Codex: 1st window → workspace 1, 2nd → 2, … (DELL S3225QC 1–9). Cursor: Q,W,E,… (Retina Q/W/E project row).
 [[on-window-detected]]
   if.app-id = 'com.openai.codex'
   run = [
@@ -112,17 +112,17 @@ on-mode-changed = []
 [[on-window-detected]]
   if.app-id = 'com.todesktop.230313mzl4w4u92'
   run = [
-    'exec-and-forget ${HOME}/code/machine/scripts/aerospace-stagger-app-window.sh --app-id com.todesktop.230313mzl4w4u92 --workspaces A,B,C',
+    'exec-and-forget ${HOME}/code/machine/scripts/aerospace-stagger-app-window.sh --app-id com.todesktop.230313mzl4w4u92 --workspaces Q,W,E',
   ]
 
-# Workspace layout (monitor force-assignment + alt-key bindings):
+# Workspace names match the alt-key that focuses them. Rows stay on the same monitors:
 #   Project slots (sync alt-1…5 → Dell + Retina qwert only):
-#     1/q -> 1/A   2/w -> 2/B   3/e -> 3/C   4/r -> 4/D   5/t -> 5/E
+#     1/q -> 1/Q   2/w -> 2/W   3/e -> 3/E   4/r -> 4/R   5/t -> 5/T
 #     alt-1…5 sync order: Retina, then Dell (Dell focused last)
 #   DELL S3225QC:      1–9 (alt-1…9); alt-ctrl-1…5 = Dell-only (non-sync)
-#   Built-in Retina:   A–E QWERT (alt-q…t); X–Z NM, (alt-n,m,comma) — non-project
-#   LG UltraFine:      L–P ASDFG (alt-a…g); Q–U ZXCVB (alt-z,x,c,v,b) — apps on ZXCV
-#   App auto-assign:   a->L Tao Studio; z->Q Chrome/sim; x->R Spotify/SMS; c->S Apple TV; v->T Safari; b->U Netflix
+#   Built-in Retina:   Q,W,E,R,T (alt-q…t); N,M,comma (alt-n,m,comma) — non-project
+#   LG UltraFine:      A,S,D,F,G (alt-a…g); Z,X,C,V,B (alt-z,x,c,v,b) — apps on ZXCVB
+#   App auto-assign:   a->A Tao Studio; z->Z Chrome/sim; x->X Spotify/SMS; c->C Apple TV; v->V Safari; b->B Netflix
 [workspace-to-monitor-force-assignment]
   1 = 'DELL S3225QC'
   2 = 'DELL S3225QC'
@@ -133,24 +133,25 @@ on-mode-changed = []
   7 = 'DELL S3225QC'
   8 = 'DELL S3225QC'
   9 = 'DELL S3225QC'
-  A = 'Built-in Retina Display'
-  B = 'Built-in Retina Display'
-  C = 'Built-in Retina Display'
-  D = 'Built-in Retina Display'
+  Q = 'Built-in Retina Display'
+  W = 'Built-in Retina Display'
   E = 'Built-in Retina Display'
-  X = 'Built-in Retina Display'
-  Y = 'Built-in Retina Display'
-  Z = 'Built-in Retina Display'
-  L = 'LG UltraFine'
-  M = 'LG UltraFine'
-  N = 'LG UltraFine'
-  O = 'LG UltraFine'
-  P = 'LG UltraFine'
-  Q = 'LG UltraFine'
-  R = 'LG UltraFine'
+  R = 'Built-in Retina Display'
+  T = 'Built-in Retina Display'
+  N = 'Built-in Retina Display'
+  M = 'Built-in Retina Display'
+  # alt-comma; AeroSpace key name, not a letter.
+  comma = 'Built-in Retina Display'
+  A = 'LG UltraFine'
   S = 'LG UltraFine'
-  T = 'LG UltraFine'
-  U = 'LG UltraFine'
+  D = 'LG UltraFine'
+  F = 'LG UltraFine'
+  G = 'LG UltraFine'
+  Z = 'LG UltraFine'
+  X = 'LG UltraFine'
+  C = 'LG UltraFine'
+  V = 'LG UltraFine'
+  B = 'LG UltraFine'
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -192,24 +193,24 @@ on-mode-changed = []
   alt-equal = ['resize smart +75']
 
   # --- Project sync: alt-1…5 → Retina + Dell (Dell focused last); alt-ctrl-1…5 = Dell-only ---
-  alt-1 = ['workspace A', 'workspace 1']
-  alt-shift-1 = ['move-node-to-workspace 1', 'workspace A', 'workspace 1']
+  alt-1 = ['workspace Q', 'workspace 1']
+  alt-shift-1 = ['move-node-to-workspace 1', 'workspace Q', 'workspace 1']
   alt-shift-ctrl-1 = ['move-node-to-workspace 1']
   alt-ctrl-1 = ['workspace 1']
-  alt-2 = ['workspace B', 'workspace 2']
-  alt-shift-2 = ['move-node-to-workspace 2', 'workspace B', 'workspace 2']
+  alt-2 = ['workspace W', 'workspace 2']
+  alt-shift-2 = ['move-node-to-workspace 2', 'workspace W', 'workspace 2']
   alt-shift-ctrl-2 = ['move-node-to-workspace 2']
   alt-ctrl-2 = ['workspace 2']
-  alt-3 = ['workspace C', 'workspace 3']
-  alt-shift-3 = ['move-node-to-workspace 3', 'workspace C', 'workspace 3']
+  alt-3 = ['workspace E', 'workspace 3']
+  alt-shift-3 = ['move-node-to-workspace 3', 'workspace E', 'workspace 3']
   alt-shift-ctrl-3 = ['move-node-to-workspace 3']
   alt-ctrl-3 = ['workspace 3']
-  alt-4 = ['workspace D', 'workspace 4']
-  alt-shift-4 = ['move-node-to-workspace 4', 'workspace D', 'workspace 4']
+  alt-4 = ['workspace R', 'workspace 4']
+  alt-shift-4 = ['move-node-to-workspace 4', 'workspace R', 'workspace 4']
   alt-shift-ctrl-4 = ['move-node-to-workspace 4']
   alt-ctrl-4 = ['workspace 4']
-  alt-5 = ['workspace E', 'workspace 5']
-  alt-shift-5 = ['move-node-to-workspace 5', 'workspace E', 'workspace 5']
+  alt-5 = ['workspace T', 'workspace 5']
+  alt-shift-5 = ['move-node-to-workspace 5', 'workspace T', 'workspace 5']
   alt-shift-ctrl-5 = ['move-node-to-workspace 5']
   alt-ctrl-5 = ['workspace 5']
 
@@ -234,69 +235,69 @@ on-mode-changed = []
   alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
   alt-shift-ctrl-9 = ['move-node-to-workspace 9']
 
-  # --- Built-in Retina Display: QWERT row -> project workspaces A–E
+  # --- Built-in Retina Display: QWERT row -> workspaces Q,W,E,R,T
   # Y/U/I/O keep monitor and workspace-cycle controls below.
-  alt-q = ['workspace A']
-  alt-shift-q = ['move-node-to-workspace A', 'workspace A']
-  alt-shift-ctrl-q = ['move-node-to-workspace A']
-  alt-w = ['workspace B']
-  alt-shift-w = ['move-node-to-workspace B', 'workspace B']
-  alt-shift-ctrl-w = ['move-node-to-workspace B']
-  alt-e = ['workspace C']
-  alt-shift-e = ['move-node-to-workspace C', 'workspace C']
-  alt-shift-ctrl-e = ['move-node-to-workspace C']
-  alt-r = ['workspace D']
-  alt-shift-r = ['move-node-to-workspace D', 'workspace D']
-  alt-shift-ctrl-r = ['move-node-to-workspace D']
-  alt-t = ['workspace E']
-  alt-shift-t = ['move-node-to-workspace E', 'workspace E']
-  alt-shift-ctrl-t = ['move-node-to-workspace E']
+  alt-q = ['workspace Q']
+  alt-shift-q = ['move-node-to-workspace Q', 'workspace Q']
+  alt-shift-ctrl-q = ['move-node-to-workspace Q']
+  alt-w = ['workspace W']
+  alt-shift-w = ['move-node-to-workspace W', 'workspace W']
+  alt-shift-ctrl-w = ['move-node-to-workspace W']
+  alt-e = ['workspace E']
+  alt-shift-e = ['move-node-to-workspace E', 'workspace E']
+  alt-shift-ctrl-e = ['move-node-to-workspace E']
+  alt-r = ['workspace R']
+  alt-shift-r = ['move-node-to-workspace R', 'workspace R']
+  alt-shift-ctrl-r = ['move-node-to-workspace R']
+  alt-t = ['workspace T']
+  alt-shift-t = ['move-node-to-workspace T', 'workspace T']
+  alt-shift-ctrl-t = ['move-node-to-workspace T']
 
-  # --- LG UltraFine: ASDFG row -> project workspaces L–P
+  # --- LG UltraFine: ASDFG row -> workspaces A,S,D,F,G
   # H/J/K/L keep directional focus and move controls above.
-  alt-a = ['workspace L']
-  alt-shift-a = ['move-node-to-workspace L', 'workspace L']
-  alt-shift-ctrl-a = ['move-node-to-workspace L']
-  alt-s = ['workspace M']
-  alt-shift-s = ['move-node-to-workspace M', 'workspace M']
-  alt-shift-ctrl-s = ['move-node-to-workspace M']
-  alt-d = ['workspace N']
-  alt-shift-d = ['move-node-to-workspace N', 'workspace N']
-  alt-shift-ctrl-d = ['move-node-to-workspace N']
-  alt-f = ['workspace O']
-  alt-shift-f = ['move-node-to-workspace O', 'workspace O']
-  alt-shift-ctrl-f = ['move-node-to-workspace O']
-  alt-g = ['workspace P']
-  alt-shift-g = ['move-node-to-workspace P', 'workspace P']
-  alt-shift-ctrl-g = ['move-node-to-workspace P']
+  alt-a = ['workspace A']
+  alt-shift-a = ['move-node-to-workspace A', 'workspace A']
+  alt-shift-ctrl-a = ['move-node-to-workspace A']
+  alt-s = ['workspace S']
+  alt-shift-s = ['move-node-to-workspace S', 'workspace S']
+  alt-shift-ctrl-s = ['move-node-to-workspace S']
+  alt-d = ['workspace D']
+  alt-shift-d = ['move-node-to-workspace D', 'workspace D']
+  alt-shift-ctrl-d = ['move-node-to-workspace D']
+  alt-f = ['workspace F']
+  alt-shift-f = ['move-node-to-workspace F', 'workspace F']
+  alt-shift-ctrl-f = ['move-node-to-workspace F']
+  alt-g = ['workspace G']
+  alt-shift-g = ['move-node-to-workspace G', 'workspace G']
+  alt-shift-ctrl-g = ['move-node-to-workspace G']
 
-  # --- LG UltraFine: ZXCVB row -> app workspaces Q–U
-  alt-z = ['workspace Q']
-  alt-shift-z = ['move-node-to-workspace Q', 'workspace Q']
-  alt-shift-ctrl-z = ['move-node-to-workspace Q']
-  alt-x = ['workspace R']
-  alt-shift-x = ['move-node-to-workspace R', 'workspace R']
-  alt-shift-ctrl-x = ['move-node-to-workspace R']
-  alt-c = ['workspace S']
-  alt-shift-c = ['move-node-to-workspace S', 'workspace S']
-  alt-shift-ctrl-c = ['move-node-to-workspace S']
-  alt-v = ['workspace T']
-  alt-shift-v = ['move-node-to-workspace T', 'workspace T']
-  alt-shift-ctrl-v = ['move-node-to-workspace T']
-  alt-b = ['workspace U']
-  alt-shift-b = ['move-node-to-workspace U', 'workspace U']
-  alt-shift-ctrl-b = ['move-node-to-workspace U']
+  # --- LG UltraFine: ZXCVB row -> workspaces Z,X,C,V,B
+  alt-z = ['workspace Z']
+  alt-shift-z = ['move-node-to-workspace Z', 'workspace Z']
+  alt-shift-ctrl-z = ['move-node-to-workspace Z']
+  alt-x = ['workspace X']
+  alt-shift-x = ['move-node-to-workspace X', 'workspace X']
+  alt-shift-ctrl-x = ['move-node-to-workspace X']
+  alt-c = ['workspace C']
+  alt-shift-c = ['move-node-to-workspace C', 'workspace C']
+  alt-shift-ctrl-c = ['move-node-to-workspace C']
+  alt-v = ['workspace V']
+  alt-shift-v = ['move-node-to-workspace V', 'workspace V']
+  alt-shift-ctrl-v = ['move-node-to-workspace V']
+  alt-b = ['workspace B']
+  alt-shift-b = ['move-node-to-workspace B', 'workspace B']
+  alt-shift-ctrl-b = ['move-node-to-workspace B']
 
-  # --- Built-in Retina Display: NM, row -> non-project workspaces X–Z
-  alt-n = ['workspace X']
-  alt-shift-n = ['move-node-to-workspace X', 'workspace X']
-  alt-shift-ctrl-n = ['move-node-to-workspace X']
-  alt-m = ['workspace Y']
-  alt-shift-m = ['move-node-to-workspace Y', 'workspace Y']
-  alt-shift-ctrl-m = ['move-node-to-workspace Y']
-  alt-comma = ['workspace Z']
-  alt-shift-comma = ['move-node-to-workspace Z', 'workspace Z']
-  alt-shift-ctrl-comma = ['move-node-to-workspace Z']
+  # --- Built-in Retina Display: NM, row -> workspaces N, M, comma
+  alt-n = ['workspace N']
+  alt-shift-n = ['move-node-to-workspace N', 'workspace N']
+  alt-shift-ctrl-n = ['move-node-to-workspace N']
+  alt-m = ['workspace M']
+  alt-shift-m = ['move-node-to-workspace M', 'workspace M']
+  alt-shift-ctrl-m = ['move-node-to-workspace M']
+  alt-comma = ['workspace comma']
+  alt-shift-comma = ['move-node-to-workspace comma', 'workspace comma']
+  alt-shift-ctrl-comma = ['move-node-to-workspace comma']
 
   # --- Focused monitor: cycle workspaces (I/U) ---
   alt-i = ['workspace --wrap-around next']
