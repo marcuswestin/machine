@@ -49,10 +49,12 @@ fi
 title="Claude Code · $feature"
 subtitle="$project"
 
-osascript - "$title" "$subtitle" "$summary" <<'APPLESCRIPT' >/dev/null 2>&1 || true
-on run argv
-  display notification (item 3 of argv) with title (item 1 of argv) subtitle (item 2 of argv) sound name "Glass"
-end run
-APPLESCRIPT
+# macOS draws the posting app's icon on banners; osascript always shows Script Editor.
+# Claude Notify.app is a tiny UserNotifications helper (LSUIElement — no Dock tile)
+# with the Claude mark plus a gold bell badge so it is distinct from Claude.app.
+# Rebuild with notify/build.sh if the icon drifts.
+notify_bin=$(CDPATH= cd -- "$(dirname "$0")" && pwd)/notify/Claude\ Notify.app/Contents/MacOS/claude-notify
+# Background so the Stop hook does not wait on Notification Center / TCC.
+"$notify_bin" -title "$title" -subtitle "$subtitle" -message "$summary" -sound Glass >/dev/null 2>&1 &
 
 exit 0
