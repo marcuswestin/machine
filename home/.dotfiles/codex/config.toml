@@ -1,7 +1,7 @@
 # Personal Codex defaults.
 # Authentication and session files remain app-managed and machine-local.
 
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 model_reasoning_effort = "high"
 personality = "pragmatic"
 # Subagents do fan-out work: the fast, cheap tier at the same effort.
@@ -21,8 +21,8 @@ notify = [
   "/Users/ro/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
   "turn-ended",
 ]
-# "fast" is the documented tier name; Codex sends it as `priority` (1.5x speed, more usage).
-service_tier = "fast"
+# Use the standard service tier for everyday work.
+service_tier = "default"
 
 [features]
   memories = true
