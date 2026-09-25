@@ -1,18 +1,16 @@
 cask "thaw" do
-  version "1.2.0"
-  sha256 "d67f4d31ef9fa057849a98540b810cfa42e0bc66019d3605abd08e45c69aa06f"
+  version "3.0.0-alpha.6"
+  sha256 "ac52e66360dbe2a57eed3f729642a3448aaab04c0a58bca004f320223aabeda3"
 
-  url "https://github.com/stonerl/Thaw/releases/download/#{version}/Thaw_#{version}.zip",
-      verified: "github.com/stonerl/Thaw/"
+  url "https://github.com/thaw-app/Thaw/releases/download/#{version}/Thaw_#{version}.zip",
+      verified: "github.com/thaw-app/Thaw/"
   name "Thaw"
   desc "Menu bar manager"
-  homepage "https://github.com/stonerl/Thaw/"
+  homepage "https://github.com/thaw-app/Thaw/"
 
   auto_updates true
-  # Upstream homebrew-cask uses `depends_on macos: :sonoma`, which rejects macOS 15+.
-  # nix-homebrew installs from tapped cask files (HOMEBREW_NO_INSTALL_FROM_API), so
-  # that restriction blocks apply on newer macOS even though Thaw runs fine there.
-  depends_on macos: ">= :sonoma"
+  # This alpha's app bundle declares LSMinimumSystemVersion 27.0 (Golden Gate).
+  depends_on macos: :golden_gate
 
   app "Thaw.app"
 
