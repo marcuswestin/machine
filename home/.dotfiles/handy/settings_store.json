@@ -47,6 +47,7 @@
     "log_level": "debug",
     "model_unload_timeout": "never",
     "mute_while_recording": false,
+    "onboarding_completed": true,
     "ort_accelerator": "auto",
     "overlay_position": "bottom",
     "overlay_style": "live",
@@ -180,6 +181,7 @@
     "update_checks_enabled": true,
     "vad_backend": "silero",
     "vad_enabled": true,
+    "whats_new_last_seen_version": "0.9.7",
     "word_correction_threshold": 0.18
   }
 }
