@@ -160,7 +160,7 @@
     "recording_retention_period": "preserve_limit",
     "selected_language": "auto",
     "selected_microphone": "MacBook Pro Microphone",
-    "selected_model": "parakeet-tdt-0.6b-v3",
+    "selected_model": "handy-computer/parakeet-tdt-0.6b-v3-gguf/parakeet-tdt-0.6b-v3-Q8_0.gguf",
     "selected_output_device": null,
     "show_tray_icon": true,
     "sound_theme": "marimba",

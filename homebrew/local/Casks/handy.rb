@@ -1,16 +1,16 @@
 cask "handy" do
-  version "0.8.3-aerospace.1"
-  sha256 "851eb3c187c2eb3f5f63583193d8dea13f6ebada9d7fb75a8e1c11370644bbdd"
+  version "0.9.7"
+  sha256 "f8a2ed7bbc8f6e814ae620609a184212fc9f49dac19a8921bd80ab0f4bd5783c"
 
-  url "https://github.com/marcuswestin/Handy/releases/download/v#{version}/Handy_0.8.3_aarch64.dmg",
-      verified: "github.com/marcuswestin/Handy/"
+  url "https://github.com/cjpais/Handy/releases/download/v#{version}/Handy_#{version}_aarch64.dmg",
+      verified: "github.com/cjpais/Handy/"
   name "Handy"
   desc "Speech to text application"
   homepage "https://handy.computer/"
 
   auto_updates true
   depends_on arch: :arm64
-  depends_on macos: ">= :ventura"
+  depends_on macos: :ventura
 
   app "Handy.app"
 

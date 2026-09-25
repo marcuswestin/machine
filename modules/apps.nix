@@ -20,7 +20,7 @@
       "nikitabobko/tap/aerospace"
       "karabiner-elements"
       "raycast"
-      # Local cask pins the marcuswestin fork release with menu bar mode for AeroSpace.
+      # Local cask pins upstream Handy with Metal-backed GGUF transcription.
       "machine/local/handy"
       "spotify"
       "chatgpt"
