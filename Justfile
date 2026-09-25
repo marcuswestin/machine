@@ -56,7 +56,7 @@ prune:
     @just _prune-editor-extensions-apply
     @just chezmoi-apply
 
-# Upgrade outdated declared Homebrew casks, including self-updating casks.
+# Upgrade outdated declared Homebrew casks. Name a self-updating cask to upgrade it deliberately.
 upgrade *casks:
     @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" {{ casks }}
 

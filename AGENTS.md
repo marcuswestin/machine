@@ -12,9 +12,12 @@ unless asked.
 - Steady-state apply command: `just apply`. It installs missing Homebrew
   packages but does not upgrade already-installed formulae or casks
   (`homebrew.onActivation.upgrade = false`), so app self-updates are left
-  alone. `just upgrade` upgrades declared casks (greedy). `just update`
-  bumps Homebrew tap pins in `flake.lock`, applies, then upgrades declared
-  formulae and casks.
+  alone. `just upgrade` upgrades outdated Homebrew-managed casks; name a
+  self-updating cask explicitly for a deliberate Homebrew upgrade. It preserves
+  tap-qualified cask names and skips targets older than installed receipts.
+  `just update` bumps Homebrew tap pins in `flake.lock`, applies, then upgrades
+  declared formulae and Homebrew-managed casks. Local cask versions and checksums
+  are verified fresh-install baselines, not copies of self-updated live versions.
 - Public commands are the recipes shown by `just --list`; implementation
   recipes are prefixed with `_` and should stay private.
   **`just _audit-login-items`** reports enabled Login Items outside

@@ -21,9 +21,19 @@ Setup a new machine:
 
 `just apply` installs missing Homebrew packages but does not upgrade or
 downgrade apps that are already present, including those that self-update.
-`just upgrade` upgrades declared casks (greedy, so self-updating apps are
-included). `just update` bumps the Homebrew tap pins in `flake.lock`, applies,
-then upgrades declared formulae and casks.
+The Homebrew tap commits in `flake.lock` supply install versions for ordinary
+casks. Local casks under `homebrew/local/` pin a verified release and checksum
+for fresh installs. An app that updates itself may run a newer version than its
+Homebrew receipt or local cask; that difference is reported during review, not
+automatically copied into a pin. Advance a local pin after checking the upstream
+release, download, and compatibility with this Mac.
+
+`just upgrade` upgrades outdated declared casks that Homebrew manages. It leaves
+self-updating apps to their own updaters; name one explicitly to upgrade it
+through Homebrew. `just update` bumps the Homebrew tap pins in `flake.lock`,
+applies, then upgrades declared formulae and Homebrew-managed casks. The upgrade
+script keeps declared tap-qualified names and skips targets older than their
+installed Homebrew receipts.
 
 The default flow applies system/app/env layers and the repo-owned chezmoi
 dotfiles automatically. `just prune-diff` includes chezmoi drift alongside other
