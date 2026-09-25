@@ -26,7 +26,7 @@
       "chatgpt"
       "chatgpt-atlas"
       "claude"
-      "claude-code"
+      "claude-code@latest"
       "cursor"
       "lm-studio"
       "visual-studio-code"
