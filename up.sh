@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Required macOS major for this setup; minor and patch releases are allowed.
+# Keep this here so the single-file bootstrap can check before installing Nix.
+readonly TARGET_MACOS_MAJOR=27
+
 REPO_URL="${MACHINE_REPO_URL:-https://github.com/marcuswestin/machine.git}"
 REPO_DIR="${MACHINE_REPO_DIR:-$HOME/code/machine}"
 REPO_REF="${MACHINE_REPO_REF:-main}"
@@ -9,6 +13,31 @@ NIX_INSTALL_URL="${NIX_INSTALL_URL:-https://install.determinate.systems/nix}"
 
 info() {
   printf '\n==> %s\n' "$*"
+}
+
+check_macos() {
+  local platform version
+  platform="$(uname -s)"
+  if [ "$platform" != Darwin ]; then
+    printf 'This setup requires macOS %s; detected %s.\n' "$TARGET_MACOS_MAJOR" "$platform" >&2
+    return 1
+  fi
+
+  version="$(sw_vers -productVersion)"
+  if [ "${version%%.*}" = "$TARGET_MACOS_MAJOR" ]; then
+    return
+  fi
+
+  if [ "${MACHINE_ALLOW_UNSUPPORTED_MACOS:-}" = 1 ]; then
+    printf 'Warning: overriding macOS requirement (target %s, detected %s). Package requirements still apply.\n' \
+      "$TARGET_MACOS_MAJOR" "$version" >&2
+    return
+  fi
+
+  printf 'This setup targets macOS %s; detected macOS %s. Stopping before setup changes.\n' \
+    "$TARGET_MACOS_MAJOR" "$version" >&2
+  printf 'Upgrade macOS, or explicitly override for this invocation with MACHINE_ALLOW_UNSUPPORTED_MACOS=1.\n' >&2
+  return 1
 }
 
 load_nix() {
@@ -95,6 +124,12 @@ setup_machine() {
 }
 
 main() {
+  check_macos
+  # Read-only entrypoint shared by local setup and just recipes.
+  if [ "${1:-}" = --check-os ]; then
+    return
+  fi
+
   start_sudo_keepalive
   load_nix
   install_nix

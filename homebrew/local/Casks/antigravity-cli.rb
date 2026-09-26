@@ -25,7 +25,8 @@ cask "antigravity-cli" do
   end
 
   auto_updates true
-  depends_on macos: ">= :monterey"
+  # Monterey is macOS 12; the symbol declares a minimum, not an exact version.
+  depends_on macos: :monterey
 
   preflight do
     File.rename("#{staged_path}/antigravity", "#{staged_path}/agy")

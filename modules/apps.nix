@@ -9,7 +9,11 @@
       "gemini-cli"
       "anomalyco/tap/opencode"
       "mobile-dev-inc/tap/maestro"
-      "ollama"
+      {
+        name = "ollama";
+        # Continue's declared local models need the Ollama server at login.
+        start_service = true;
+      }
       "openjdk@17"
       "worktrunk"
     ];
@@ -24,7 +28,7 @@
       "machine/local/handy"
       "spotify"
       "chatgpt"
-      "chatgpt-atlas"
+      # Atlas was discontinued; the pinned cask is disabled as of 2026-08-26.
       "claude"
       "claude-code@latest"
       "cursor"
@@ -34,7 +38,12 @@
       "docker-desktop"
       "codex-app"
       "codex"
-      "steipete/tap/codexbar"
+      {
+        name = "steipete/tap/codexbar";
+        # Brew 6.0's mixed install batches lose the cask/formula distinction.
+        # An explicit app destination keeps this on Bundle's --cask path.
+        args.appdir = "/Applications";
+      }
       "antigravity"
       "machine/local/antigravity-cli"
       "antigravity-ide"

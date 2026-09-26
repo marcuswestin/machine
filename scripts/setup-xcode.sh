@@ -2,13 +2,12 @@
 set -euo pipefail
 
 # Provisions macOS developer tools that nix-darwin cannot manage directly:
-#   1) Installs the Command Line Tools via softwareupdate (no-op once the CLT
-#      package receipt is present).
-#   2) Installs Xcode.app from the Mac App Store via `mas get` (Xcode's App
+# Command Line Tools are installed before the system switch by setup-clt.sh.
+#   1) Installs Xcode.app from the Mac App Store via `mas get` (Xcode's App
 #      Store ID is 497799835).
-#   3) Points xcode-select at Xcode.app, accepts the license, and finishes
+#   2) Points xcode-select at Xcode.app, accepts the license, and finishes
 #      Xcode's first-launch component install.
-#   4) Downloads an iOS Simulator runtime so Simulator actually has a device to
+#   3) Downloads an iOS Simulator runtime so Simulator actually has a device to
 #      boot (Expo's `expo run:ios` and CocoaPods builds need this).
 #
 # Mac App Store sign-in is required for `mas get` to succeed. If App Store auth
@@ -16,28 +15,6 @@ set -euo pipefail
 # of the machine; sign in via App Store.app and rerun `just apply`.
 
 script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-
-if ! pkgutil --pkg-info=com.apple.pkg.CLTools_Executables >/dev/null 2>&1; then
-  # Apple-documented sentinel that makes softwareupdate offer CLT for fresh
-  # installs. Only created when CLT is actually missing — otherwise softwareupdate
-  # will re-offer (and reinstall) CLT on every run.
-  sentinel="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
-  sudo touch "$sentinel"
-  trap 'sudo rm -f "$sentinel"' EXIT
-
-  clt_label="$(softwareupdate --list 2>/dev/null \
-    | awk -F'Label: ' '/\*.*Command Line Tools/ { print $2 }' \
-    | sed 's/[[:space:]]*$//' \
-    | sort -V \
-    | tail -n 1)"
-
-  if [ -n "$clt_label" ]; then
-    sudo softwareupdate --install "$clt_label" --verbose
-  fi
-
-  trap - EXIT
-  sudo rm -f "$sentinel"
-fi
 
 if ! mas list | awk '{ print $1 }' | grep -qx '497799835'; then
   "$script_dir/attention.sh" \

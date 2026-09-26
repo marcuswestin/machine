@@ -11,7 +11,7 @@ help:
     @just --list
 
 # Update system/app/env/dotfile layers and install editor extensions.
-apply:
+apply: _check-macos
     @scripts/with-sudo-keepalive.sh just _apply
 
 # Apply dotfile changes with chezmoi
@@ -57,11 +57,11 @@ prune:
     @just chezmoi-apply
 
 # Upgrade outdated declared Homebrew casks. Name a self-updating cask to upgrade it deliberately.
-upgrade *casks:
+upgrade *casks: _check-macos
     @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" {{ casks }}
 
 # Bump Homebrew and tap pins, apply, then upgrade declared formulae and casks.
-update:
+update: _check-macos
     {{ NIX_CMD }} flake update nix-homebrew homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
     @just apply
     @scripts/update-homebrew-apps.sh "{{ HOST }}"
@@ -80,6 +80,10 @@ verify:
 
 # Private recipes
 #################
+
+# Check the same macOS baseline as the single-file bootstrap, without applying.
+_check-macos:
+    @bash "{{ REPO }}/up.sh" --check-os
 
 # Report enabled Login Items / background tasks outside startupApps + known prefixes.
 _audit-login-items:
@@ -105,6 +109,7 @@ _raycast-import-force:
 #####
 
 _apply:
+    @bash "{{ REPO }}/scripts/setup-clt.sh"
     @just _system-switch
     @just _after-switch
     @echo "Machine setup complete."
@@ -145,7 +150,7 @@ _git-auth:
       "{{ REPO }}/scripts/attention.sh" \
         "GitHub authentication needs attention" \
         "GitHub CLI is not authenticated; a browser login will open and Terminal will wait."
-      yes | gh auth login --hostname github.com --git-protocol https --web
+      gh auth login --hostname github.com --git-protocol https --web
     fi
 
 _setup-xcode:
