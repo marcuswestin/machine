@@ -25,6 +25,10 @@ chezmoi-apply:
 import-inventory scope="global":
     @"{{ REPO }}/scripts/import-inventory.sh" "{{ scope }}"
 
+# Guide a Thaw profile export and save its JSON in the repo (optional file path).
+export-thaw source="":
+    @bash "{{ REPO }}/scripts/export-thaw.sh" {{ quote(source) }}
+
 # Run tracked inventory import, then report drift for currently managed surfaces.
 diff-tracked:
     @"{{ REPO }}/scripts/diff-tracked.sh"
@@ -94,6 +98,10 @@ _audit-login-items:
 _raycast-settings-sync:
     @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}"
 
+# Guide native Thaw import/apply when its saved profile changes; use force to repeat.
+_thaw-profile-sync mode="apply":
+    @bash "{{ REPO }}/scripts/thaw-profile-sync.sh" {{ quote(mode) }}
+
 # Diff captured files under inventory-tracked/ or inventory-global/ vs current machine.
 _snapshot-diff scope="global":
     @"{{ REPO }}/scripts/snapshot-diff.sh" "{{ scope }}"
@@ -149,10 +157,11 @@ _after-switch:
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 _attention-required:
-    @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, and Raycast import."
+    @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, Raycast, and Thaw profiles."
     @just _setup-xcode
     @just git-auth
     @just _raycast-settings-sync
+    @just _thaw-profile-sync
 
 _git-auth:
     #!/usr/bin/env bash
