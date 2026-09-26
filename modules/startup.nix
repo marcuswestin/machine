@@ -61,29 +61,35 @@ let
 
   # Each subshell exits independently, so an already-running app cannot skip
   # the remaining apps or display layout. Paths and args remain shell-quoted.
-  appLaunchCommand =
-    app:
-    ''
-      (
-        process_name="$(/usr/bin/basename ${lib.escapeShellArg app.executable})"
-        if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1 \
-          || /usr/bin/pgrep -f ${lib.escapeShellArg app.executable} >/dev/null 2>&1; then
-          exit 0
-        fi
+  appLaunchCommand = app: ''
+    (
+      process_name="$(/usr/bin/basename ${lib.escapeShellArg app.executable})"
+      if /usr/bin/pgrep -x "$process_name" >/dev/null 2>&1 \
+        || /usr/bin/pgrep -f ${lib.escapeShellArg app.executable} >/dev/null 2>&1; then
+        exit 0
+      fi
 
-        if /usr/bin/open -gj ${lib.escapeShellArg app.appPath}; then
-          exit 0
-        fi
+      if /usr/bin/open -gj ${lib.escapeShellArg app.appPath}; then
+        exit 0
+      fi
 
-        # Launch Services failed; start the declared binary without blocking the next app.
-        nohup ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args} >/dev/null 2>&1 &
-      )
-    '';
+      # Launch Services failed; start the declared binary without blocking the next app.
+      nohup ${lib.escapeShellArg app.executable} ${lib.escapeShellArgs app.args} >/dev/null 2>&1 &
+    )
+  '';
 
   loginScript = pkgs.writeText "machine-login-startup" ''
     #!/bin/sh
     set -eu
     /bin/wait4path /nix/store
+    # nix-darwin loads this RunAtLoad agent during apply, before Homebrew and
+    # post-switch quarantine/settings steps. Let just launch the apps afterward.
+    # A dead PID is ignored so a killed apply cannot disable future login startup.
+    startup_marker="/Users/${user}/.local/state/machine/apply-in-progress"
+    if [ -r "$startup_marker" ] \
+      && /bin/kill -0 "$(/bin/cat "$startup_marker")" 2>/dev/null; then
+      exit 0
+    fi
     ${lib.concatMapStringsSep "\n" appLaunchCommand config.machine.startupApps}
 
     # The captured layout is a no-op until it contains a displayplacer command.

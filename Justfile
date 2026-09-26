@@ -16,6 +16,7 @@ apply: _check-macos
 
 # Apply dotfile changes with chezmoi
 chezmoi-apply:
+    @bash "{{ REPO }}/scripts/setup-handy.sh" "{{ REPO }}"
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
     @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
@@ -109,12 +110,21 @@ _raycast-import-force:
 #####
 
 _apply:
-    @bash "{{ REPO }}/scripts/setup-clt.sh"
-    @just _system-switch
-    @just _after-switch
-    @echo "Machine setup complete."
-    @echo "opening apps"
-    @just _prune-check
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # The login LaunchAgent is loaded during the system switch. Defer it until
+    # this apply has cleared quarantine and installed settings; apps are opened
+    # explicitly at the end of _after-switch. The PID lets login ignore a stale
+    # marker left by an interrupted/killed apply.
+    startup_marker="$HOME/.local/state/machine/apply-in-progress"
+    mkdir -p "$(dirname "$startup_marker")"
+    printf '%s\n' "$$" > "$startup_marker"
+    trap 'rm -f "$startup_marker"' EXIT
+    bash "{{ REPO }}/scripts/setup-clt.sh"
+    just _system-switch
+    just _after-switch
+    echo "Machine setup complete."
+    just _prune-check
 
 # System switch
 ###############
@@ -126,14 +136,15 @@ _system-switch host=HOST:
 # After switch
 ##############
 
-# After `darwin-rebuild switch`: grouped interactive setup, then unattended finishing work.
+# Clear quarantine before settings reloads or app launches; apply settings before Xcode.
 _after-switch:
+    @just _unquarantine-cask-apps
+    @just chezmoi-apply
     @just _attention-required
     @just _ensure-code-repos
-    @just chezmoi-apply
-    @just _unquarantine-cask-apps
     @echo "Installing editor extensions (may take a while)..."
     @just _install-editor-extensions
+    @echo "Opening startup apps..."
     @just _launch-startup-apps
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 

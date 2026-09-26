@@ -1,0 +1,7 @@
+{
+  "handy-computer/parakeet-tdt-0.6b-v3-gguf/parakeet-tdt-0.6b-v3-Q8_0.gguf": {
+    "revision": "85ac09ea12fc4b1112fa76810059364bc6adc9de",
+    "sha256": "5859f77944efcd8eafa23a6350731960b2b55b2203df51f319665c807d802cc7",
+    "source": "https://github.com/cjpais/Handy/blob/v0.9.7/src-tauri/src/catalog/catalog.json"
+  }
+}

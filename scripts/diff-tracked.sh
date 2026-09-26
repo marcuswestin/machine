@@ -48,3 +48,6 @@ printf '\n━━ Chezmoi (repo vs home drift) ━━\n'
 
 printf '\n━━ Live app JSON vs repo (merge-in-settings report) ━━\n'
 bun "${repo_dir}/scripts/repo-settings-import.ts" "${repo_dir}"
+
+printf '\n━━ Handy transcription model (configured download pin) ━━\n'
+bash "${repo_dir}/scripts/setup-handy.sh" "${repo_dir}" check
