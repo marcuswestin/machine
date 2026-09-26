@@ -33,9 +33,10 @@ in
 
 {
   system.keyboard = {
-    # Use nix-darwin's official hidutil-backed key mapping support.
+    # Keep hidutil mappings cleared: Karabiner needs the original Caps Lock event
+    # to send Escape on a tap and Control while held with another key.
     enableKeyMapping = true;
-    remapCapsLockToControl = true;
+    remapCapsLockToControl = false;
   };
 
   system.defaults = {

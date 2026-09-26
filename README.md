@@ -90,8 +90,12 @@ proof of functionality; import confirmation is not proof of live app settings.
 - `chezmoi`: actual dotfiles and app config files.
 - AeroSpace: window management and workspace navigation only.
 - Karabiner-Elements: keyboard semantics, physical key behavior, and key
-  remapping only. The checked-in `karabiner.json` is the managed profile
-  scaffold; remaps are added there as they are decided.
+  remapping only. The managed `Machine` profile maps Caps Lock to Escape when
+  tapped alone and Control while held with another key. Escape is sent on release
+  (Karabiner's default tap timeout is one second). nix-darwin clears its older
+  Caps-to-Control mapping so Karabiner receives the original key. Enable
+  Karabiner's requested macOS permissions on each Mac; test both a tap and a
+  Control shortcut after `just apply`. No Mac restart is needed for the rule.
 
 `just apply` installs missing Homebrew packages but does not upgrade or
 downgrade apps that are already present, including those that self-update.
