@@ -25,13 +25,14 @@ elif [[ -e "$user" ]]; then
         .[0] as $system | .[1] as $user |
         $system | paths(scalars) as $path |
         select((try ($user | getpath($path)) catch null) != null) |
+        select(($system | getpath($path)) != ($user | getpath($path))) |
         $path | map(tostring) | join(".")
       ' <(taplo get -o json -f "$system") <(taplo get -o json -f "$user")
     )"
     if [[ -n "$overlaps" ]]; then
       printf 'User config overrides tracked defaults:\n%s\n' "$overlaps"
     else
-      printf 'Writable user config has no tracked-setting overrides.\n'
+      printf 'Writable user config has no differing tracked-setting overrides (matching local entries currently agree).\n'
     fi
   fi
 else
