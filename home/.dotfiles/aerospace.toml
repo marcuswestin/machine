@@ -41,8 +41,8 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 on-focused-monitor-changed = []
 
-# Disable macOS "Hide application" (cmd-h).
-automatically-unhide-macos-hidden-apps = true
+# Keep apps hidden when using macOS "Hide application" (Cmd-H).
+automatically-unhide-macos-hidden-apps = false
 
 # List of workspaces that should stay alive even when they contain no windows,
 # even when they are invisible.
