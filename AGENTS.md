@@ -9,6 +9,11 @@ unless asked.
 - Run `just help` to list all recipes.
 - Fresh-machine entrypoint: `up.sh`.
 - Daily command surface: `just`.
+- `just doctor` is the read-only operational health summary (`--json` for structured
+  results). Exit 1 means a detected failure; exit 2 means warnings or unverified
+  checks. It does not replace the `review-machine-repo` security/upgrade review.
+  Validate changes with `bun test scripts/doctor.test.ts` and a live `just doctor`;
+  access failures must remain unverified, never healthy.
 - Steady-state apply command: `just apply`. It installs missing Homebrew
   packages but does not upgrade already-installed formulae or casks
   (`homebrew.onActivation.upgrade = false`), so app self-updates are left

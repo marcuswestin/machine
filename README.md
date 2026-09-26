@@ -59,6 +59,29 @@ through the existing prune review; setup does not grant them trust or delete
 their application data. Upstream cask deprecation notices and Zoom's optional
 post-install quit warning do not require local cleanup.
 
+## Machine health
+
+Run `just doctor` for a read-only operational health summary, or
+`just doctor --json` for structured output. It checks Nix activation and required
+background permissions, declared startup apps and package paths, keyboard
+mapping, managed editor/Handy/Karabiner configs, Handy's model checksum, AeroSpace,
+Codex drift, Thaw's last confirmation, and Time Machine destination configuration.
+
+Results distinguish `OK`, `WARN` (attention needed), `FAIL` (detected problem),
+and `UNKNOWN` (not verified, including access failures). Exit codes are 0 for all
+OK, 1 if any check fails, and 2 for warnings/unverified checks without a failure.
+Checks continue after individual failures. `MACHINE_HOST` selects the Nix host;
+Nix evaluates cached locked inputs offline and does not update the lock file.
+The command does not apply, upgrade, restart apps, prompt for sudo, grant
+permissions, mount backups, or write inventory snapshots. Tools may use their
+normal read/evaluation caches. It reports suggested actions without executing them.
+
+This is not a security advisory scan or full installed-version audit. Use the
+`review-machine-repo` skill for that, `just diff-tracked` for tracked drift and
+inventory capture, and `just verify` for repository validation. An active Nix
+generation is not proof it matches the current Git tree; running apps are not
+proof of functionality; import confirmation is not proof of live app settings.
+
 ## Ownership
 
 - `nix-darwin`: system configuration, macOS defaults, Nix packages.

@@ -10,6 +10,10 @@ NIX_CMD := "nix --extra-experimental-features 'nix-command flakes'"
 help:
     @just --list
 
+# Read-only machine health summary; --json emits structured results (no repairs).
+doctor *args:
+    @bun "{{ REPO }}/scripts/doctor.ts" {{ args }}
+
 # Update system/app/env/dotfile layers and install editor extensions.
 apply: _check-macos
     @scripts/with-sudo-keepalive.sh just _apply
