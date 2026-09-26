@@ -133,4 +133,15 @@ preferences before startup. This does not grant macOS privacy permissions or
 sign into app accounts. Raycast's separate settings import may still ask for
 confirmation. If a setup window was already open during an apply, close or
 restart the app to load its declared preferences.
+
+Stats' module selection and menu bar widgets are declared in
+`modules/defaults/apps.nix`: Battery, CPU, Disk, GPU, Network, RAM, and Sensors.
+Chart labels, numeric values, and the selected display styles are tracked too.
+On another Mac, quit Stats before `just apply`, then reopen Stats; no Mac restart
+is needed. Stats can omit modules that the hardware does not support. If its
+items are still absent, check System Settings → Menu Bar → Stats and Thaw's
+visibility settings. `just diff-tracked` compares the declared preferences with
+saved Stats preferences; run `bash scripts/check-stats-config.sh` for that check
+alone. Remote pairing, updater state, and window state remain local.
+
 `just prune-diff` includes chezmoi drift alongside other undeclared state.

@@ -26,6 +26,18 @@
       # but omit transient open-panel, window, toolbar, updater, version, and keychain state.
       # Stats widget ids used here: battery, line_chart, mini, and network_chart.
       CombinedModules = false;
+      pause = false; # Keep the selected menu bar modules running.
+      # Explicit module switches override choices already saved on another Mac.
+      # Stats still omits modules unsupported by that Mac's hardware.
+      Battery_state = true;
+      Bluetooth_state = false;
+      CPU_state = true;
+      Clock_state = false;
+      Disk_state = true;
+      Network_state = true;
+      RAM_state = true;
+      Remote_state = false;
+      Sensors_state = true;
       # Stats 3.0.17 checks for this key's existence before showing its setup
       # assistant (Stats/helpers.swift). Module choices below replace that wizard.
       setupProcess = true;
@@ -45,6 +57,12 @@
       CPU_lineChart_position = 0;
       CPU_line_chart_color = "blue"; # Stats built-in blue chart color token.
       CPU_line_chart_historyCount = 30;
+      CPU_line_chart_box = true;
+      CPU_line_chart_frame = false;
+      CPU_line_chart_label = true;
+      CPU_line_chart_value = true;
+      CPU_line_chart_valueColor = false; # Keep the numeric value independent of the chart color.
+      CPU_line_chart_scale = "none"; # Stats' unscaled utilization chart (fixed full-scale range).
       CPU_mini_position = 1;
       CPU_pieChart_position = 4;
       CPU_tachometer_position = 5;
@@ -61,6 +79,7 @@
       Disk_speed_position = 5;
       Disk_text_position = 7;
       Disk_widget = "mini";
+      SSD_mini_color = "monochrome"; # The Disk mini widget uses the title SSD in its preference keys.
 
       # GPU module. updateInterval is seconds; line_chart_historyCount is retained chart samples.
       GPU_barChart_position = 3;
@@ -68,6 +87,9 @@
       GPU_lineChart_position = 0;
       GPU_line_chart_color = "secondBlue"; # Stats built-in secondary blue chart color token.
       GPU_line_chart_historyCount = 30;
+      GPU_line_chart_label = true;
+      GPU_line_chart_value = true;
+      GPU_line_chart_scale = "none"; # Stats' unscaled utilization chart (fixed full-scale range).
       GPU_mini_position = 1;
       GPU_state = true;
       GPU_tachometer_position = 4;
@@ -90,6 +112,8 @@
       RAM_lineChart_position = 0;
       RAM_line_chart_color = "teal"; # Stats built-in teal chart color token.
       RAM_line_chart_historyCount = 30;
+      RAM_line_chart_label = true;
+      RAM_line_chart_value = true;
       RAM_memory_position = 5;
       RAM_mini_position = 1;
       RAM_pieChart_position = 4;
@@ -98,6 +122,14 @@
       RAM_text_position = 7;
       RAM_updateInterval = 3;
       RAM_widget = "line_chart";
+
+      # Sensors' compact numeric widget; Stats calls its display title "Sensor".
+      Sensors_widget = "mini";
+      Sensor_mini_label = true;
+      Sensors_barChart_position = 3;
+      Sensors_label_position = 2;
+      Sensors_mini_position = 0;
+      Sensors_stack_position = 1;
 
       # macOS status-item autosave positions for the individual Stats menu bar modules.
       "NSStatusItem Preferred Position Battery" = 612.0;

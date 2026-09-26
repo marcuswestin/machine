@@ -55,5 +55,8 @@ bash "${repo_dir}/scripts/setup-handy.sh" "${repo_dir}" check
 printf '\n━━ Codex system defaults and local overlay ━━\n'
 "${repo_dir}/scripts/check-codex-config.sh" "${repo_dir}"
 
+printf '\n━━ Stats menu bar preferences ━━\n'
+bash "${repo_dir}/scripts/check-stats-config.sh" "${repo_dir}" "$host"
+
 printf '\n━━ Thaw saved profile confirmation ━━\n'
 bash "${repo_dir}/scripts/thaw-profile-sync.sh" check
