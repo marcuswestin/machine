@@ -35,7 +35,9 @@
       # but omit transient open-panel, window, toolbar, updater, version, and keychain state.
       # Stats widget ids used here: battery, line_chart, mini, and network_chart.
       CombinedModules = false;
-      setupProcess = true; # Setup assistant completed; skips first-run onboarding.
+      # Stats 3.0.17 checks for this key's existence before showing its setup
+      # assistant (Stats/helpers.swift). Module choices below replace that wizard.
+      setupProcess = true;
 
       # Battery module. *_position values are Stats widget-picker order indices.
       Battery_barChart_position = 1;
