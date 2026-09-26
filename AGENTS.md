@@ -69,8 +69,15 @@ unless asked.
   `scripts/check-codex-config.sh` reports system drift and user overrides.
   Local Homebrew casks live under
   `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
-  replaces Ice; its Data-backed prefs are written in
-  `modules/defaults/activation.nix`. AeroSpace staggered window assignment
+  replaces Ice; `just export-thaw` saves one native export in
+  `config/thaw/profile.json`. `just apply` opens a guided native import/apply step
+  when that file changes and records completion only after the user confirms.
+  Thaw 3.0.0-alpha.6 has no supported full-profile import/apply URI; do not replace
+  this with writes to its private database or permission grants. Use
+  `just _thaw-profile-sync force` to repeat the step for an unchanged export.
+  Tracked drift reports the last confirmation, not live layout equivalence.
+  Keep Thaw settings in the profile rather than competing macOS defaults writes.
+  AeroSpace staggered window assignment
   uses `scripts/aerospace-stagger-app-window.sh` from `aerospace.toml`. Auth/session files (`~/.codex/auth.json`,
   `~/.claude.json`, `~/.config/gh/hosts.yml`), caches, logs, and SQLite state stay
   unmanaged. Treat captured paths as potentially sensitive and scrub or omit before

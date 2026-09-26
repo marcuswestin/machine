@@ -21,15 +21,6 @@
       displayStyle = "i3Ordered"; # AeroSpace menu bar style: i3-style ordered workspace pills.
     };
 
-    "com.stonerl.Thaw" = {
-      # Imported from the live Thaw 1.2.0 domain, excluding source defaults, window frames,
-      # Sparkle keys, migration flags, null hotkeys, menu-bar item caches, visibility caches,
-      # and the large default menu-bar appearance blob. Key names still use the Ice prefix.
-      # Data-backed icon and per-display Thaw Bar settings are written in activation.nix.
-      # Thaw 3 owns profile layout and divider positions; do not reassert old positions on apply.
-      ItemSpacingOffset = -10.0; # Menu bar item spacing/padding offset in points.
-    };
-
     "eu.exelban.Stats" = {
       # Imported from /Users/ro/Desktop/Stats.plist. Keep the exported app/module settings,
       # but omit transient open-panel, window, toolbar, updater, version, and keychain state.
