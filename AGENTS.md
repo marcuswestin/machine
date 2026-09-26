@@ -52,8 +52,7 @@ unless asked.
   `.error.txt` files when a conversion fails). With no paths it reads
   `inventory-global/defaults/`; pass explicit paths as `just _plist-sidecars path …`
   when needed. Managed config—including Antigravity,
-  Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`), Codex CLI
-  (`~/.codex/config.toml` → `home/.dotfiles/codex/config.toml`),
+  Continue, Claude Code (`~/.claude/settings.json` → `home/.dotfiles/claude/`),
   Cursor (`~/.cursor/cli-config.json` → `home/.dotfiles/cursor/cli-config.json`,
   `~/.cursor/permissions.json` → `home/.dotfiles/cursor/permissions.json`; the
   permissions file must not define `terminalAllowlist` or `approvalMode` or it
@@ -62,7 +61,13 @@ unless asked.
   (`~/.config/karabiner/karabiner.json` → `home/.dotfiles/karabiner/karabiner.json`),
   GitHub CLI, and iTerm2 Dynamic Profiles—lives
   under `home/` / `home/.dotfiles/` with
-  chezmoi; use `chezmoi diff` for drift. Local Homebrew casks live under
+  chezmoi; use `chezmoi diff` for drift. Codex durable defaults live in
+  `config/codex/config.toml` and nix-darwin exposes them as
+  `/etc/codex/config.toml`. Codex owns the regular, writable
+  `~/.codex/config.toml` for project trust, hook trust, app-generated paths,
+  and local state; never symlink it into this repo or import it wholesale.
+  `scripts/check-codex-config.sh` reports system drift and user overrides.
+  Local Homebrew casks live under
   `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
   replaces Ice; its Data-backed prefs are written in
   `modules/defaults/activation.nix`. AeroSpace staggered window assignment
@@ -137,6 +142,8 @@ bash -n scripts/plist-sidecars.sh
 bash -n scripts/import-inventory.sh
 bash -n scripts/diff-tracked.sh
 bun scripts/repo-settings-import.ts . --json >/dev/null
+bash -n scripts/check-codex-config.sh
+scripts/check-codex-config.sh
 just --list
 just --dry-run apply
 just verify

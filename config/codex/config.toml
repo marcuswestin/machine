@@ -1,0 +1,65 @@
+# Durable Codex defaults. Codex keeps trust decisions, hooks, app-generated
+# paths, and session state in the writable ~/.codex/config.toml overlay.
+model = "gpt-6-sol"
+model_reasoning_effort = "high"
+personality = "pragmatic"
+default_permissions = ":workspace"
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+service_tier = "default"
+
+[agents]
+  default_subagent_model = "gpt-5.6-luna"
+  default_subagent_reasoning_effort = "medium"
+
+[features]
+  memories = true
+  js_repl = false
+
+[memories]
+  generate_memories = true
+  use_memories = true
+
+[plugins."documents@openai-primary-runtime"]
+  enabled = true
+[plugins."spreadsheets@openai-primary-runtime"]
+  enabled = true
+[plugins."presentations@openai-primary-runtime"]
+  enabled = true
+[plugins."pdf@openai-primary-runtime"]
+  enabled = true
+[plugins."template-creator@openai-primary-runtime"]
+  enabled = true
+[plugins."google-calendar@openai-curated"]
+  enabled = true
+[plugins."gmail@openai-curated"]
+  enabled = true
+[plugins."github@openai-curated"]
+  enabled = true
+[plugins."visualize@openai-bundled"]
+  enabled = true
+[plugins."codex-app-tools@openai-bundled"]
+  enabled = true
+[plugins."browser@openai-bundled"]
+  enabled = true
+[plugins."unified-computer-use@openai-bundled"]
+  enabled = true
+[plugins."computer-use@openai-bundled"]
+  enabled = true
+
+[desktop]
+  conversationDetailMode = "STEPS_COMMANDS"
+  preventSleepWhileRunning = true
+  keepRemoteControlAwakeWhilePluggedIn = true
+  "notifications-turn-mode" = "always"
+  followUpQueueMode = "queue"
+  git-branch-prefix = "feat/"
+  git-pull-request-merge-method = "squash"
+  defaultTerminalLocation = "bottom"
+  show-context-window-usage = true
+
+  [desktop.open-in-target-preferences]
+    global = "cursor"
+
+[mcp_servers.openaiDeveloperDocs]
+  url = "https://developers.openai.com/mcp"

@@ -280,12 +280,6 @@ const TARGETS: Target[] = [
     write_jsonc: false,
   },
   {
-    id: "codex-config",
-    repo: ["home", ".dotfiles", "codex", "config.toml"],
-    live: [[".codex", "config.toml"]],
-    kind: "text",
-  },
-  {
     id: "handy-settings-store",
     repo: ["home", ".dotfiles", "handy", "settings_store.json"],
     live: [["Library", "Application Support", "com.pais.handy", "settings_store.json"]],

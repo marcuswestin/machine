@@ -48,3 +48,6 @@ printf '\n━━ Chezmoi (repo vs home drift) ━━\n'
 
 printf '\n━━ Live app JSON vs repo (merge-in-settings report) ━━\n'
 bun "${repo_dir}/scripts/repo-settings-import.ts" "${repo_dir}"
+
+printf '\n━━ Codex system defaults and local overlay ━━\n'
+"${repo_dir}/scripts/check-codex-config.sh" "${repo_dir}"
