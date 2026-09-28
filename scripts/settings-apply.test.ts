@@ -47,6 +47,9 @@ fi
     PATH: bin + ":" + process.env.PATH,
     TEST_LOG: log,
     TEST_ROOT: root,
+    MACHINE_SKIP_DOCKER: "0",
+    MACHINE_APPLY_MODE: "basic",
+    MACHINE_RESTART_STRICT: "0",
     MACHINE_SETTINGS_INTERACTIVE: "1",
     TERM_PROGRAM: "Apple_Terminal",
   };
