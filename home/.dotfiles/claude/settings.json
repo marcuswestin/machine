@@ -38,5 +38,7 @@
       "Secrets management: no secrets live in these repositories. .env files, ~/.ssh, ~/.aws, and ~/.config/gh are denied to the file tools and should never be read, copied, or transmitted.",
       "Protected deployment namespaces / environments: none exist; no host, namespace, or branch in this environment is production."
     ]
+  },
+  "outputStyle": "Concise"
   }
 }
