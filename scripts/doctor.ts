@@ -321,11 +321,22 @@ function main() {
     join(repo, "home/.dotfiles/handy/settings_store.json"),
   );
   script("Handy model", "setup-handy.sh", [repo, "check"], "Run just chezmoi-apply, then reopen Handy.");
-  symlink(
-    "Karabiner settings",
-    join(home, ".config/karabiner/karabiner.json"),
-    join(repo, "home/.dotfiles/karabiner/karabiner.json"),
-  );
+  check("Karabiner settings", () => {
+    const live = join(home, ".config/karabiner/karabiner.json");
+    const source = join(repo, "home/.dotfiles/karabiner/karabiner.json");
+    try {
+      if (lstatSync(live).isFile() && readFileSync(live).equals(readFileSync(source))) {
+        return { status: "OK", detail: "regular config file matches the repository" };
+      }
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+    }
+    return {
+      status: "FAIL",
+      detail: "regular config file is missing, is a symlink, or differs from the repository",
+      action: "Run just chezmoi-apply so Karabiner can detect future config changes.",
+    };
+  });
   check("AeroSpace config", () => {
     const active = required("aerospace", ["config", "--config-path"]);
     return realpathSync(active) === realpathSync(join(repo, "home/.dotfiles/aerospace.toml"))
@@ -338,13 +349,13 @@ function main() {
   });
   check("Codex configuration", () => {
     const output = required("bash", ["scripts/check-codex-config.sh", repo]);
-    const drift = /System defaults (are absent|differ)|User config is still a symlink/.test(output);
-    const overrides = output.includes("User config overrides tracked defaults:");
+    const conflicts = /^  CONFLICT /m.test(output);
+    const missing = /^  MISSING /m.test(output);
     return {
-      status: drift ? "FAIL" : overrides ? "WARN" : "OK",
+      status: conflicts || missing ? "WARN" : "OK",
       detail: output,
-      ...(drift || overrides
-        ? { action: "Review scripts/check-codex-config.sh output; keep local trust state intact." }
+      ...(conflicts || missing
+        ? { action: "Review with just save-machine-settings; run just apply for missing managed keys." }
         : {}),
     };
   });
@@ -354,7 +365,7 @@ function main() {
     return {
       status: pending ? "WARN" : "OK",
       detail: output,
-      ...(pending ? { action: "Run just _thaw-profile-sync and complete or confirm the native profile apply." } : {}),
+      ...(pending ? { action: "Run just apply-full and complete or confirm the native Thaw profile apply." } : {}),
     };
   });
   check("Time Machine", () => {

@@ -205,16 +205,24 @@ function plistPathsForDomain(domain: string): string[] {
   ].filter((path) => existsSync(path));
 }
 
-function plistTopLevelKeys(path: string): string[] {
-  const result = run("/usr/bin/plutil", ["-convert", "json", "-o", "-", path]);
-  if (!result.ok || !result.stdout) return [];
-  try {
-    const parsed = JSON.parse(result.stdout) as unknown;
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return [];
-    return Object.keys(parsed as Record<string, unknown>).sort((a, b) => a.localeCompare(b));
-  } catch {
+function plistTopLevelKeys(path: string, warnings: string[]): string[] {
+  // plutil's JSON conversion fails on Data/date values. Enumerate keys directly
+  // so mixed preference plists do not silently appear to have no settings.
+  const result = run("/usr/bin/python3", [
+    "-c",
+    `
+import json, plistlib, sys
+with open(sys.argv[1], "rb") as stream:
+    value = plistlib.load(stream)
+print(json.dumps(sorted(value.keys()) if isinstance(value, dict) else []))
+`,
+    path,
+  ]);
+  if (!result.ok) {
+    warnings.push(`Cannot read preference keys from ${path}: ${result.stderr}`);
     return [];
   }
+  return JSON.parse(result.stdout) as string[];
 }
 
 function shouldIgnorePath(path: string): string | undefined {
@@ -276,14 +284,15 @@ function looksLikeConfigFile(path: string): string | undefined {
   return undefined;
 }
 
-function walkFiles(root: string, maxDepth: number): string[] {
+function walkFiles(root: string, maxDepth: number, warnings: string[]): string[] {
   const files: string[] = [];
   function visit(path: string, depth: number) {
     if (depth > maxDepth || !existsSync(path)) return;
     let stat;
     try {
       stat = lstatSync(path);
-    } catch {
+    } catch (error) {
+      warnings.push(`Cannot inspect ${path}: ${(error as NodeJS.ErrnoException).code ?? String(error)}`);
       return;
     }
     if (stat.isSymbolicLink()) return;
@@ -294,7 +303,14 @@ function walkFiles(root: string, maxDepth: number): string[] {
     if (!stat.isDirectory()) return;
     const ignored = shouldIgnorePath(`${path}/`);
     if (ignored) return;
-    for (const child of readdirSync(path)) visit(join(path, child), depth + 1);
+    let children: string[];
+    try {
+      children = readdirSync(path);
+    } catch (error) {
+      warnings.push(`Cannot list ${path}: ${(error as NodeJS.ErrnoException).code ?? String(error)}`);
+      return;
+    }
+    for (const child of children) visit(join(path, child), depth + 1);
   }
   visit(root, 0);
   return files.sort((a, b) => a.localeCompare(b));
@@ -323,11 +339,14 @@ function supportRoots(caskName: string, paths: string[], bundleIds: string[], ap
   return [...deduped.values()].sort((a, b) => a.localeCompare(b));
 }
 
-function candidateFiles(roots: string[]): { candidates: CandidateFile[]; ignored: CandidateFile[] } {
+function candidateFiles(
+  roots: string[],
+  warnings: string[],
+): { candidates: CandidateFile[]; ignored: CandidateFile[] } {
   const candidates: CandidateFile[] = [];
   const ignored: CandidateFile[] = [];
   for (const root of roots) {
-    for (const file of walkFiles(root, 3)) {
+    for (const file of walkFiles(root, 3, warnings)) {
       const ignoredReason = shouldIgnorePath(file);
       if (ignoredReason) {
         ignored.push({ path: file, reason: ignoredReason });
@@ -396,13 +415,15 @@ const apps: AppReport[] = declaredCasks().map((caskName) => {
       const match = domainMatches(domain, appNames, bundleIds, quitIds);
       if (!match) return undefined;
       const plists = plistPathsForDomain(domain);
-      const keys = [...new Set(plists.flatMap(plistTopLevelKeys))].sort((a, b) => a.localeCompare(b));
+      const keys = [...new Set(plists.flatMap(path => plistTopLevelKeys(path, warnings)))].sort((a, b) =>
+        a.localeCompare(b)
+      );
       return { domain, match, plistPaths: plists, keys } satisfies DefaultsDomain;
     })
     .filter((domain): domain is DefaultsDomain => Boolean(domain));
   const zaps = zapPaths(cask);
   const roots = supportRoots(caskName, zaps, bundleIds, appNames);
-  const files = candidateFiles(roots);
+  const files = candidateFiles(roots, warnings);
 
   return {
     cask: caskName,

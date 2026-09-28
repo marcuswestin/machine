@@ -21,9 +21,8 @@
  *
  * That live path sits under `~/Library/Group Containers/`, which macOS TCC
  * protects. Cursor/agent shells often lack Full Disk Access, so open/read/write
- * returns EPERM. Treat that as a soft skip (warn, exit 0) so `just apply` still
- * finishes; re-run from Terminal.app (or grant FDA to the IDE) when a push is
- * actually needed.
+ * returns EPERM. Report failure on apply so incomplete settings are not mistaken
+ * for success; re-run from an authorized Terminal when a push is needed.
  */
 
 import { createHash } from "node:crypto";
@@ -249,6 +248,14 @@ type TargetText = TargetBase & {
 type Target = TargetJson | TargetText;
 
 const TARGETS: Target[] = [
+  {
+    id: "antigravity-ide-settings",
+    repo: ["home", ".dotfiles", "antigravity-ide", "settings.json"],
+    live: [["Library", "Application Support", "Antigravity IDE", "User", "settings.json"]],
+    parse: parseJsonc,
+    dict_merge: true,
+    write_jsonc: true,
+  },
   {
     id: "vscode-family-settings",
     repo: ["home", ".dotfiles", "vscode-family", "settings.json"],
@@ -515,8 +522,12 @@ function processTarget(
     repoData = parse(repo);
     liveData = parse(live);
   } catch (e) {
-    out.status = "parse_error";
-    out.error = e instanceof Error ? e.message : String(e);
+    out.status = isPermissionError(e) ? "permission_denied" : "parse_error";
+    out.error = e instanceof SyntaxError
+      ? "Invalid JSON; contents omitted"
+      : e instanceof Error
+      ? e.message
+      : String(e);
     return out;
   }
 
@@ -641,13 +652,13 @@ function main(): number {
       console.log(`docker-settings-store: identical (${r.live})`);
     } else if (r.status === "permission_denied") {
       // Group Containers is TCC-protected; Cursor/agent shells often cannot open it.
-      // Soft-skip so `just chezmoi-apply` / `just apply` still succeed.
       console.warn(
         `docker-settings-store: skipped (permission denied on Group Containers)${r.error ? `: ${r.error}` : ""}`,
       );
       console.warn(
         "docker-settings-store: re-run from Terminal.app, or grant Full Disk Access to the IDE, when a Docker settings push is needed.",
       );
+      return 1;
     } else if (r.status === "symlink_blocked" || r.status === "not_a_file") {
       console.error(
         `docker-settings-store: ${r.status}${r.live ? ` (${r.live})` : ""}${r.error ? `: ${r.error}` : ""}`,
@@ -687,11 +698,13 @@ function main(): number {
     if (st === "symlink_ok") {
       console.log(`${sid}: OK (live resolves to repo canonical file)`);
     } else if (st === "missing_live") {
-      console.log(`${sid}: no live file on this Mac (skip)`);
+      console.log(`${sid}: MISSING live file; declared settings are not applied`);
     } else if (st === "missing_repo") {
       console.log(`${sid}: missing repo file ${row.repo}`);
     } else if (st === "parse_error") {
       console.log(`${sid}: parse error: ${row.error}`);
+    } else if (st === "permission_denied") {
+      console.log(`${sid}: UNVERIFIED (permission denied); no match assumed`);
     } else if (st === "identical") {
       console.log(`${sid}: identical`);
     } else if (st === "json_differs") {
