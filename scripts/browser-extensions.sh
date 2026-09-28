@@ -27,9 +27,16 @@ capture_chrome() {
   local output_file="$1"
   local chrome_root="${HOME}/Library/Application Support/Google/Chrome"
   local tmp
+  local found
 
   tmp="$(mktemp)"
+  found="$(mktemp)"
   if [[ -d "$chrome_root" ]]; then
+    if ! find "$chrome_root" -maxdepth 2 -name 'Secure Preferences' -type f -print0 >"$found"; then
+      rm -f "$tmp" "$found"
+      printf 'UNVERIFIED Chrome extensions: cannot read Chrome profiles under %s. Run from a Terminal with access to that folder.\n' "$chrome_root" >&2
+      return 1
+    fi
     while IFS= read -r -d '' secure_prefs; do
       profile_dir="$(dirname "$secure_prefs")"
       profile="$(basename "$profile_dir")"
@@ -51,20 +58,27 @@ capture_chrome() {
             update_url: (.value.manifest.update_url // null)
           }
       ' "$secure_prefs" >>"$tmp"
-    done < <(find "$chrome_root" -maxdepth 2 -name 'Secure Preferences' -type f -print0 2>/dev/null)
+    done < "$found"
   fi
 
   write_json_array "$output_file" "$tmp"
-  rm -f "$tmp"
+  rm -f "$tmp" "$found"
 }
 
 capture_firefox() {
   local output_file="$1"
   local firefox_root="${HOME}/Library/Application Support/Firefox/Profiles"
   local tmp
+  local found
 
   tmp="$(mktemp)"
+  found="$(mktemp)"
   if [[ -d "$firefox_root" ]]; then
+    if ! find "$firefox_root" -maxdepth 2 -name extensions.json -type f -print0 >"$found"; then
+      rm -f "$tmp" "$found"
+      printf 'UNVERIFIED Firefox extensions: cannot read profiles under %s.\n' "$firefox_root" >&2
+      return 1
+    fi
     while IFS= read -r -d '' extensions_json; do
       profile="$(basename "$(dirname "$extensions_json")")"
       jq -cS --arg profile "$profile" '
@@ -85,23 +99,30 @@ capture_firefox() {
             source_uri: (.sourceURI // null)
           }
       ' "$extensions_json" >>"$tmp"
-    done < <(find "$firefox_root" -maxdepth 2 -name extensions.json -type f -print0 2>/dev/null)
+    done < "$found"
   fi
 
   write_json_array "$output_file" "$tmp"
-  rm -f "$tmp"
+  rm -f "$tmp" "$found"
 }
 
 capture_safari() {
   local output_file="$1"
   local tmp
   local point
+  local plugin_rows
 
   tmp="$(mktemp)"
+  plugin_rows="$(mktemp)"
   for point in \
     com.apple.Safari.web-extension \
     com.apple.Safari.content-blocker \
     com.apple.Safari.extension; do
+    if ! pluginkit -m -A -D -v -p "$point" >"$plugin_rows"; then
+      rm -f "$tmp" "$plugin_rows"
+      printf 'UNVERIFIED Safari extensions: pluginkit could not list %s.\n' "$point" >&2
+      return 1
+    fi
     while IFS= read -r line; do
       [[ "$line" =~ plug-in\)$ ]] && continue
       [[ "$line" =~ ^[[:space:]]*([+\-=!?])?[[:space:]]*([^[:space:](]+)\(([^)]*)\)[[:space:]]+([A-F0-9-]+)[[:space:]]+([0-9-]+[[:space:]][0-9:]+[[:space:]][+-][0-9]+)[[:space:]]+(.+)$ ]] || continue
@@ -134,11 +155,11 @@ capture_safari() {
           registered_at: $registered_at,
           path: $path
         }' >>"$tmp"
-    done < <(pluginkit -m -A -D -v -p "$point" 2>/dev/null || true)
+    done < "$plugin_rows"
   done
 
   write_json_array "$output_file" "$tmp"
-  rm -f "$tmp"
+  rm -f "$tmp" "$plugin_rows"
 }
 
 capture_all() {

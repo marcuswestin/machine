@@ -8,20 +8,8 @@ if [ "$mode" != apply ] && [ "$mode" != check ]; then
   exit 2
 fi
 
-if [ "$mode" = apply ] && pgrep -x handy >/dev/null; then
-  # Stop the running instance before replacing its settings symlink. Otherwise
-  # its in-memory defaults can overwrite the repo-owned shortcut/model choice.
-  printf 'Stopping Handy before provisioning its model and settings...\n'
-  pkill -TERM -x handy
-  for _ in {1..30}; do
-    if ! pgrep -x handy >/dev/null; then break; fi
-    sleep 1
-  done
-  if pgrep -x handy >/dev/null; then
-    printf 'Handy did not exit; leaving its settings untouched.\n' >&2
-    exit 1
-  fi
-fi
+# The guided full apply closes Handy when its declared settings changed.
+# Model provisioning itself does not require quitting the app.
 
 model_id="$(jq -er '.settings.selected_model | select(length > 0)' \
   "$repo_dir/home/.dotfiles/handy/settings_store.json")"

@@ -1,0 +1,5 @@
+# Installed locally from the Tao repository, not from an extension marketplace.
+# Preserve these IDs in VS Code and Cursor during prune; do not install them
+# from the marketplace on a fresh machine.
+devtao.tao
+tao.tao-ide-extension

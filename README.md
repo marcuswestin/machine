@@ -51,6 +51,9 @@ targets outside the Nix store), so migrated files do not trigger `compinit`
 security prompts. The old Codex CLI 0.130.0 is upgraded to the pinned cask because
 macOS rejects that release's signature; other versions retain the normal
 no-upgrade behavior. This does not disable Gatekeeper or XProtect.
+The `chatgpt` cask installs the current ChatGPT/Codex desktop app on fresh Macs;
+the separate terminal Codex CLI comes from the `codex` cask. Homebrew's old
+`codex-app` cask is deprecated and expects a separate `Codex.app`.
 
 Thaw has verified install baselines for several macOS generations: 1.x
 for macOS 14/15, 2.x for macOS 26, and 3.x for macOS 27. Discontinued Atlas is no
@@ -77,8 +80,9 @@ permissions, mount backups, or write inventory snapshots. Tools may use their
 normal read/evaluation caches. It reports suggested actions without executing them.
 
 This is not a security advisory scan or full installed-version audit. Use the
-`review-machine-repo` skill for that, `just diff-tracked` for tracked drift and
-inventory capture, and `just verify` for repository validation. An active Nix
+`review-machine-repo` skill for that, `just diff` for read-only tracked drift,
+`just import-inventory tracked` for an optional local snapshot, and `just verify`
+for repository validation. An active Nix
 generation is not proof it matches the current Git tree; running apps are not
 proof of functionality; import confirmation is not proof of live app settings.
 
@@ -88,6 +92,13 @@ proof of functionality; import confirmation is not proof of live app settings.
 - `nix-homebrew`/Homebrew: GUI apps and Brew-specific packages.
 - `home-manager`: PATH/env/session variables only.
 - `chezmoi`: actual dotfiles and app config files.
+- Global Codex and Claude instructions share
+  `home/.dotfiles/agents/global-instructions.md`. Chezmoi renders it into
+  `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`; edit the shared source and run
+  `just chezmoi-apply` to distribute changes. These are regular files because
+  Claude Cowork skips global instruction symlinks outside its working directory.
+  New sessions load the rule to keep automation windows in the background when
+  supported. These instructions do not change either tool's writable local state.
 - AeroSpace: window management and workspace navigation only.
 - Karabiner-Elements: keyboard semantics, physical key behavior, and key
   remapping only. The managed `Machine` profile maps Caps Lock to Escape when
@@ -95,7 +106,10 @@ proof of functionality; import confirmation is not proof of live app settings.
   (Karabiner's default tap timeout is one second). nix-darwin clears its older
   Caps-to-Control mapping so Karabiner receives the original key. Enable
   Karabiner's requested macOS permissions on each Mac; test both a tap and a
-  Control shortcut after `just apply`. No Mac restart is needed for the rule.
+  Control shortcut after `just apply`. Chezmoi renders a regular
+  `~/.config/karabiner/karabiner.json` from the tracked source because Karabiner
+  does not reload changes when that file is a symlink. No Mac restart is needed
+  for the rule.
 
 `just apply` installs missing Homebrew packages but does not upgrade or
 downgrade apps that are already present, including those that self-update.
@@ -137,11 +151,85 @@ restart the app to load its declared preferences.
 Stats' module selection and menu bar widgets are declared in
 `modules/defaults/apps.nix`: Battery, CPU, Disk, GPU, Network, RAM, and Sensors.
 Chart labels, numeric values, and the selected display styles are tracked too.
+Stats combines these widgets into one menu bar item, ordered left to right:
+**GPU → Network → Disk → Sensors → RAM → CPU → Battery**. Clicking a metric still
+opens its own popup. Stats owns this internal order; Thaw owns the position of
+the whole group. Hardware-unavailable modules are omitted without reordering
+the others. After switching from separate items, place the single group in Thaw
+if necessary; a previously exported profile can still contain obsolete individual
+Stats entries. Use `just export-thaw` after adjusting the overall layout.
 On another Mac, quit Stats before `just apply`, then reopen Stats; no Mac restart
 is needed. Stats can omit modules that the hardware does not support. If its
 items are still absent, check System Settings → Menu Bar → Stats and Thaw's
 visibility settings. `just diff-tracked` compares the declared preferences with
 saved Stats preferences; run `bash scripts/check-stats-config.sh` for that check
 alone. Remote pairing, updater state, and window state remain local.
+
+CodexBar's menu appearance is declared in `modules/defaults/apps.nix`. Its enabled
+providers are declared in `config/codexbar/providers.json` and applied through
+CodexBar's public CLI, preserving local account credentials. Quit CodexBar before
+applying preference changes and reopen it afterward. The highest-usage provider
+selection can show a different provider icon on each Mac because usage and
+authenticated accounts differ.
+
+Thaw's saved profile pins Handy, ChatGPT/Codex, and Cursor to the hidden section
+by bundle ID. New items use the visible section's default placement, avoiding a
+workspace-dependent AeroSpace anchor. Import and apply the updated native profile
+when prompted; adjust display associations on another Mac. Profiles position
+existing items; they do not enable Weather or other macOS controls. Sound visibility
+is declared through nix-darwin. macOS has no declared Weather menu control in this
+repo: `just apply-full` asks you to confirm System Settings > Menu Bar > Weather
+and its visible menu bar item. The former UI script could not reliably read that
+control even with iTerm's permissions enabled, so apply no longer runs it.
+Weather's first location determines the displayed city; location permissions
+and list order stay local.
+Raycast imports now record completion only after you confirm the native import;
+older stamps that recorded merely opening the export are not accepted as proof.
+
+`just settings-check` reports saved custom app-defaults drift, CodexBar provider
+toggles, managed JSON/file drift, and Codex overrides and Thaw/Raycast confirmations.
+It prints a manual Weather check instead of claiming to read that UI state. It does not write settings and
+prints preference key names, not private values. A successful command means the
+report ran; it does not mean every app is configured. It excludes first-class
+macOS defaults, other live UI layout, permissions, and untracked settings. See the
+[configuration coverage review](docs/reviews/2026-09-26-configuration-sync.md)
+for remaining gaps and verification steps. `just discover-app-settings` inventories
+candidate paths and preference keys locally; it does not import those settings.
+
+Additional portable settings are managed for Claude Desktop (a narrow recursive
+JSON merge), Antigravity IDE (chezmoi), iTerm2 (visual Dynamic Profile and default
+profile GUID), and the current ChatGPT launcher helper (custom defaults).
+Claude's account/session/permission fields remain writable and local; quit Claude
+before applying differing preferences. iTerm's Machine profile now explicitly
+contains the colors/fonts from this Mac instead of inheriting its entire appearance.
+Chrome's iCloud Passwords extension is declared for review; the guided full apply
+asks you to install it from its Chrome Web Store page. Browser accounts and bookmarks
+remain owned by browser sync. Docker settings access failures now fail the apply
+step instead of reporting success with skipped settings.
+`just diff` reports a declared browser extension missing on the Mac in words;
+the raw `-`/`+` diff is no longer used for that section. The repo still keeps
+iCloud Passwords. `just save-machine-settings` reviews browser extensions one
+at a time, and refuses to interpret an unreadable browser profile as empty.
+
+Use the [single-pass verification checklist](docs/reviews/2026-09-27-settings-acceptance.md)
+after applying on each Mac. These declarations do not replace app credentials,
+privacy permission prompts, or per-display Thaw associations.
+
+Use `just diff` for a read-only comparison. `just apply` installs and applies
+declarations without intentionally quitting desktop apps; it prints apps with
+pending restart work. `just apply-full` is the guided pass: it lists affected
+running apps, waits for Enter, then quits only those apps, applies settings,
+reopens them in the background, and walks through native imports and visual
+verification. Docker containers may be interrupted when Docker needs restarting.
+Ctrl-C/EOF leaves a native import confirmation pending. Neither command reboots
+the Mac. `just save-machine-settings` reviews portable values changed in the UI
+and selectively promotes them into the repo. See
+[configuration commands](docs/configuration-workflow.md) for scope and limits.
+
+Codex's `config/codex/config.toml` is a per-user key allowlist. Apply merges
+missing declared keys into writable `~/.codex/config.toml`, leaving project
+trust, app state, and unlisted keys alone. If a declared key changed in the UI,
+apply stops before the system switch and asks for review through
+`just save-machine-settings`. The repo file is never silently overwritten.
 
 `just prune-diff` includes chezmoi drift alongside other undeclared state.
