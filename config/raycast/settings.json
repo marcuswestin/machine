@@ -1,57 +1,42 @@
 {
-  "builtin_package_default": {
-    "didMigrateQuicklinkFallbackSearch": true,
-    "disabledSiriShortcutIds": [],
-    "disabledSiriShortcutNames": [],
-    "didMigrateWebSearches": true,
-    "enabledFallbackSearchIdentifiers": [],
-    "installedNativeExtensionIdentifiers": [],
-    "provider_schemaVersion": 1
-  },
   "builtin_package_raycastPreferences": {
+    "provider_schemaVersion": 1,
     "preferencesAdvanced": {
-      "keepWindowVisibleOnResignKey": false,
-      "mainWindowCaptureCopyToClipboard": true,
-      "mainWindowCaptureOpenQuickAccessOverlay": false,
       "mainWindowCaptureShowInFinder": false,
-      "navigationCommandStyleIdentifierKey": "macos",
+      "raycastWindowEscapeKeyBehavior": 0,
+      "pageNavigationCommandKeysIdentifierKey": "squareBrackets",
+      "mainWindowCaptureOpenQuickAccessOverlay": false,
       "popToRootTimeout": 90,
+      "useHyperKeyIcon": false,
+      "mainWindowCaptureCopyToClipboard": true,
       "raycastAPIOptions": 0,
+      "keepWindowVisibleOnResignKey": false,
       "raycastWindowPresentationMode": 0,
-      "useHyperKeyIcon": false
-    },
-    "preferencesAppearance": {
-      "raycastPreferredWindowMode": "default",
-      "raycastUI_preferredTextSize": "medium",
-      "showFavoritesInCompactMode": true,
-      "statusBarIsVisible": false
+      "navigationCommandStyleIdentifierKey": "macos"
     },
     "preferencesGeneral": {
-      "raycastAlternativeEscape": false,
-      "raycastGlobalHotkey": "Command-49"
+      "raycastGlobalHotkey": "Command-49",
+      "raycastAlternativeEscape": false
     },
-    "provider_schemaVersion": 1
+    "preferencesAppearance": {
+      "statusBarIsVisible": false,
+      "raycastShouldFollowSystemAppearance": true,
+      "raycastPreferredWindowMode": "default",
+      "showFavoritesInCompactMode": true,
+      "raycastUI_preferredTextSize": "medium"
+    }
   },
-  "builtin_package_snippets": {
+  "builtin_package_default": {
+    "enabledFallbackSearchIdentifiers": [],
+    "installedNativeExtensionIdentifiers": [],
+    "didMigrateWebSearches": true,
     "provider_schemaVersion": 1,
-    "snippets": []
+    "didMigrateQuicklinkFallbackSearch": true
   },
-  "raycast_app_defaults": {
-    "anonymousId": "00000000-0000-0000-0000-000000000000",
-    "firstKnownVersion": "1.104.16",
-    "installationDate": "2026-05-10T00:00:00Z",
+  "builtin_package_raycastExtensions": {
+    "localExtensions": [],
+    "extensions": [],
     "provider_schemaVersion": 1
   },
-  "raycast_onboarding": {
-    "completedTaskIdentifiers": [],
-    "provider_schemaVersion": 1,
-    "showOnboardingItem": false
-  },
-  "raycast_user_activity": {
-    "activities": [],
-    "activityInfo": [],
-    "aiChatActivities": [],
-    "provider_schemaVersion": 1
-  },
-  "raycast_version": "1.104.16"
+  "raycast_version": "1.104.29"
 }

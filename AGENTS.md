@@ -66,12 +66,14 @@ unless asked.
   (`~/.config/karabiner/karabiner.json` → `home/.dotfiles/karabiner/karabiner.json`),
   GitHub CLI, and iTerm2 Dynamic Profiles—lives
   under `home/` / `home/.dotfiles/` with
-  chezmoi; use `chezmoi diff` for drift. Codex durable defaults live in
-  `config/codex/config.toml` and nix-darwin exposes them as
-  `/etc/codex/config.toml`. Codex owns the regular, writable
-  `~/.codex/config.toml` for project trust, hook trust, app-generated paths,
-  and local state; never symlink it into this repo or import it wholesale.
-  `scripts/check-codex-config.sh` reports system drift and user overrides.
+  chezmoi; use `chezmoi diff` for drift. Karabiner's JSON must render as a
+  regular file because it cannot detect changes through a direct file symlink.
+  Codex portable defaults live in `config/codex/config.toml`. Its declared
+  keys are merged into the current user's writable `~/.codex/config.toml`;
+  project trust, hook trust, app-generated paths, and other local keys stay
+  there. Never symlink or import that whole file. `just save-machine-settings`
+  reviews changed declared keys before promoting them into the repo; an
+  unresolved conflict stops apply before the system switch.
   Local Homebrew casks live under
   `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
   replaces Ice; `just export-thaw` saves one native export in
@@ -94,13 +96,17 @@ unless asked.
   editor extension lists, and display layout via **`just _display-layout-capture`**).
   **`just import-inventory global`** refreshes `inventory-global/` (the same tracked snapshot, and
   **`scripts/raycast-settings-sync.sh`** when `config/raycast/settings.json` changed).
-  **`just diff-tracked`** runs the tracked import, then reports tracked drift:
+  **`just diff`** reports tracked drift without refreshing inventory:
   Homebrew, Mac App Store apps, editor extensions, chezmoi, and live app JSON vs
   repo. **`just discover-global`** is the separate discovery mode for unmanaged
   candidates into `inventory-global/discovery/`: `/Applications`, defaults domains
   outside the tracked list, preference plists, LaunchAgents/LaunchDaemons, fonts,
   system extensions, and unmanaged shell snippets. Use `git diff` / `git status` separately for
   version-control work on the repo itself.
+  Local editor extensions listed in `config/editor-extensions/local-only.txt`
+  are installed from source, never requested from the marketplace, and preserved
+  by editor prune in both VS Code and Cursor. Keep this list separate from the
+  marketplace extension declaration files.
   When plist review output changes, update `scripts/plist-sidecars.sh` together with
   **`just _plist-sidecars`** when testing paths manually.
 
@@ -155,6 +161,7 @@ bash -n scripts/import-inventory.sh
 bash -n scripts/diff-tracked.sh
 bun scripts/repo-settings-import.ts . --json >/dev/null
 bash -n scripts/check-codex-config.sh
+bun test scripts/codex-config-sync.test.ts scripts/restart-plan.test.ts scripts/settings-apply.test.ts
 scripts/check-codex-config.sh
 just --list
 just --dry-run apply

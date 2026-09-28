@@ -14,15 +14,30 @@ help:
 doctor *args:
     @bun "{{ REPO }}/scripts/doctor.ts" {{ args }}
 
-# Update system/app/env/dotfile layers and install editor extensions.
+# Apply declarations without intentionally quitting desktop apps; report pending restarts.
 apply: _check-macos
+    @bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
     @scripts/with-sudo-keepalive.sh just _apply
+
+# Apply declarations, restart only affected apps, and guide native imports.
+apply-full:
+    @bash "{{ REPO }}/scripts/settings-apply.sh"
+
+# Compatibility names for the guided full apply.
+apply-settings: apply-full
+settings-apply: apply-full
 
 # Apply dotfile changes with chezmoi
 chezmoi-apply:
     @bash "{{ REPO }}/scripts/setup-handy.sh" "{{ REPO }}"
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
-    @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live
+    @if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then \
+      echo "Docker settings skipped for this apply (MACHINE_SKIP_DOCKER=1)."; \
+    elif [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+      bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live; \
+    else \
+      echo "Docker live settings deferred to just apply-full."; \
+    fi
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 # Capture machine state into inventory-tracked/ or inventory-global/ (see AGENTS.md).
@@ -33,9 +48,16 @@ import-inventory scope="global":
 export-thaw source="":
     @bash "{{ REPO }}/scripts/export-thaw.sh" {{ quote(source) }}
 
-# Run tracked inventory import, then report drift for currently managed surfaces.
-diff-tracked:
+# Read-only comparison of tracked declarations, packages, and selected app settings.
+diff:
     @"{{ REPO }}/scripts/diff-tracked.sh"
+
+# Compatibility name for tracked drift review.
+diff-tracked: diff
+
+# Review portable changes made in app UIs before promoting them into the repo.
+save-machine-settings scope="all":
+    @bash "{{ REPO }}/scripts/save-machine-settings.sh" {{ quote(scope) }}
 
 # Discover unmanaged global machine surfaces that may be worth tracking.
 discover-global:
@@ -44,6 +66,18 @@ discover-global:
 # Discover persisted app settings candidates for declared Homebrew casks.
 discover-app-settings:
     bun "{{ REPO }}/scripts/app-settings-candidates.ts"
+
+# Report declared settings/import drift; Weather remains a native UI check.
+settings-check:
+    @/usr/bin/python3 "{{ REPO }}/scripts/check-app-defaults.py" "{{ HOST }}"
+    @bun "{{ REPO }}/scripts/app-preferences.ts" check
+    @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}"
+    @bash "{{ REPO }}/scripts/codexbar-settings-sync.sh" check
+    @"{{ REPO }}/scripts/check-codex-config.sh" "{{ REPO }}"
+    @bash "{{ REPO }}/scripts/thaw-profile-sync.sh" check
+    @bash "{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" check
+    @echo "[MANUAL] Weather: confirm System Settings > Menu Bar > Weather is on and visible in the menu bar."
+    @echo "Automated settings checks complete. The remaining checks are visual."
 
 # Merge live app JSON/JSONC into chezmoi-backed repo files (report by default; see scripts/repo-settings-import.ts).
 merge-in-settings *args:
@@ -124,6 +158,8 @@ _raycast-import-force:
 _apply:
     #!/usr/bin/env bash
     set -euo pipefail
+    bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
+    pending="$(bun "{{ REPO }}/scripts/restart-plan.ts")"
     # The login LaunchAgent is loaded during the system switch. Defer it until
     # this apply has cleared quarantine and installed settings; apps are opened
     # explicitly at the end of _after-switch. The PID lets login ignore a stale
@@ -136,6 +172,10 @@ _apply:
     just _system-switch
     just _after-switch
     echo "Machine setup complete."
+    if [[ "${MACHINE_APPLY_MODE:-basic}" != full && -n "$pending" ]]; then
+      printf 'App settings still need apply-full or a restart:\n%s\n' "$pending"
+      printf 'Run just apply-full from Terminal.app when ready.\n'
+    fi
     just _prune-check
 
 # System switch
@@ -151,6 +191,13 @@ _system-switch host=HOST:
 # Clear quarantine before settings reloads or app launches; apply settings before Xcode.
 _after-switch:
     @just _unquarantine-cask-apps
+    @bun "{{ REPO }}/scripts/codex-config-sync.ts" apply
+    @bash "{{ REPO }}/scripts/codexbar-settings-sync.sh" apply
+    @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+      bun "{{ REPO }}/scripts/app-preferences.ts" apply; \
+    else \
+      bun "{{ REPO }}/scripts/app-preferences.ts" check; \
+    fi
     @just chezmoi-apply
     @just _attention-required
     @just _ensure-code-repos
@@ -164,8 +211,12 @@ _attention-required:
     @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, Raycast, and Thaw profiles."
     @just _setup-xcode
     @just git-auth
-    @just _raycast-settings-sync
-    @just _thaw-profile-sync
+    @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+      just _raycast-settings-sync; just _thaw-profile-sync; \
+    else \
+      just _thaw-profile-sync check; bash "{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" check; \
+    fi
+    @echo "Weather menu item: confirm System Settings > Menu Bar > Weather during the final visual check."
 
 _git-auth:
     #!/usr/bin/env bash
@@ -247,6 +298,9 @@ _prune-editor-extensions-apply:
 
 _prune-dotfiles-diff:
     @chezmoi diff --source "{{ REPO }}/home" || true
+
+_restart-plan:
+    @bun "{{ REPO }}/scripts/restart-plan.ts"
 
 # Display layout
 ##############

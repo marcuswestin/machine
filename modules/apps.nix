@@ -27,6 +27,9 @@
       # Local cask pins upstream Handy with Metal-backed GGUF transcription.
       "machine/local/handy"
       "spotify"
+      # Current Codex desktop ships in ChatGPT.app; the old codex-app cask is
+      # discontinued upstream. Keep chatgpt so fresh machines install Codex's
+      # supported desktop app, and install the terminal Codex CLI separately.
       "chatgpt"
       # Atlas was discontinued; the pinned cask is disabled as of 2026-08-26.
       "claude"
@@ -36,7 +39,6 @@
       "visual-studio-code"
       "iterm2"
       "docker-desktop"
-      "codex-app"
       "codex"
       {
         name = "steipete/tap/codexbar";

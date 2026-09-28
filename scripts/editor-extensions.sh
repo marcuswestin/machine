@@ -11,7 +11,7 @@ repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 common_file="$repo_dir/home/.dotfiles/vscode-family/extensions.txt"
 code_file="$repo_dir/home/.dotfiles/vscode-family/extensions.code.txt"
 cursor_file="$repo_dir/home/.dotfiles/vscode-family/extensions.cursor.txt"
-prune_ignore_extensions="$(printf '%s\n' 'tao.tao-ide-extension')"
+local_only_file="$repo_dir/config/editor-extensions/local-only.txt"
 
 case "$mode" in
   install | prune-diff | prune-apply) ;;
@@ -23,6 +23,10 @@ esac
 
 desired_extensions() {
   cat "$common_file" "$1" | grep -Ev '^\s*(#|$)' | sort -fu
+}
+
+local_only_extensions() {
+  grep -Ev '^[[:space:]]*(#|$)' "$local_only_file" | sort -fu
 }
 
 list_extensions() {
@@ -46,7 +50,8 @@ extra_extensions() {
   local editor_file="$2"
   local installed=""
 
-  installed="$(list_extensions "$cli" | grep -vxFf <(printf '%s' "$prune_ignore_extensions") || true)"
+  installed="$(list_extensions "$cli")"
+  installed="$(printf '%s\n' "$installed" | grep -vxFf <(local_only_extensions) || true)"
   comm -23 \
     <(printf '%s\n' "$installed") \
     <(desired_extensions "$editor_file")

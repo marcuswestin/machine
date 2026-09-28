@@ -595,12 +595,15 @@
             "eu.exelban.Stats:Item#:6": "visible"
           },
           "newItemsPlacement": {
-            "anchorIdentifier": "bobko.aerospace:*1 │ V",
-            "relation": "leftOfAnchor",
+            "relation": "sectionDefault",
             "sectionKey": "visible"
           },
           "pinnedAlwaysHiddenBundleIDs": [],
-          "pinnedHiddenBundleIDs": [],
+          "pinnedHiddenBundleIDs": [
+            "com.pais.handy",
+            "com.openai.codex",
+            "com.todesktop.230313mzl4w4u92"
+          ],
           "savedSectionOrder": {
             "hidden": [
               "com.pais.handy:Item-0",

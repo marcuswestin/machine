@@ -21,11 +21,36 @@
       displayStyle = "i3Ordered"; # AeroSpace menu bar style: i3-style ordered workspace pills.
     };
 
+    "com.steipete.codexbar" = {
+      # CodexBar 0.60.3: one provider icon with usage percentage, selected by
+      # highest usage. Provider credentials stay in its writable private config.
+      mergeIcons = true;
+      menuBarDisplayMode = "percent"; # Numeric usage percentage rather than a reset countdown.
+      menuBarShowsBrandIconWithPercent = true;
+      menuBarShowsHighestUsage = true;
+      selectedMenuProvider = "codex"; # Initial/fallback provider; highest usage can select another.
+      usageBarsShowUsed = true;
+      resetTimesShowAbsolute = true;
+      multiAccountMenuLayout = "stacked"; # Show account cards together in the dropdown.
+      costSummaryDisplayStyle = "both"; # Show both the inline cost summary and cost submenu.
+    };
+
     "eu.exelban.Stats" = {
       # Imported from /Users/ro/Desktop/Stats.plist. Keep the exported app/module settings,
       # but omit transient open-panel, window, toolbar, updater, version, and keychain state.
       # Stats widget ids used here: battery, line_chart, mini, and network_chart.
-      CombinedModules = false;
+      # Keep the metrics in one status item so macOS/Thaw cannot reorder them.
+      CombinedModules = true;
+      CombinedModules_popup = false; # Clicking a metric opens that module's own popup.
+      # Stats sorts combinedPosition (the *_position keys below) ascending,
+      # placing modules from left to right. These are ranks, not screen offsets.
+      GPU_position = 0;
+      Network_position = 1;
+      Disk_position = 2;
+      Sensors_position = 3;
+      RAM_position = 4;
+      CPU_position = 5;
+      Battery_position = 6;
       pause = false; # Keep the selected menu bar modules running.
       # Explicit module switches override choices already saved on another Mac.
       # Stats still omits modules unsupported by that Mac's hardware.
@@ -131,20 +156,17 @@
       Sensors_mini_position = 0;
       Sensors_stack_position = 1;
 
-      # macOS status-item autosave positions for the individual Stats menu bar modules.
-      "NSStatusItem Preferred Position Battery" = 612.0;
-      "NSStatusItem Preferred Position CPU" = 480.0;
-      "NSStatusItem Preferred Position Disk" = 912.0;
-      "NSStatusItem Preferred Position GPU" = 568.0;
-      "NSStatusItem Preferred Position Network" = 963.0;
-      "NSStatusItem Preferred Position RAM" = 524.0;
+      # The combined item's position among other apps belongs to Thaw. Old
+      # per-module NSStatusItem screen offsets do not control its internal order.
     };
 
     "com.openai.chat" = {
-      # ChatGPT -> Settings -> App -> Show in Menu Bar: Always.
+      # Legacy ChatGPT domain. The current app bundle is com.openai.codex;
+      # the helper's current shortcut keys are declared below.
+      # Legacy ChatGPT -> Settings -> App -> Show in Menu Bar: Always.
       # The app stores this Swift enum as a JSON string rather than a plist dictionary.
       desktopMenuBarBehavior = ''{"always":{}}'';
-      # ChatGPT -> Settings -> Chat bar -> Keyboard shortcut: Option-Command-Space.
+      # Legacy ChatGPT -> Settings -> Chat bar -> Keyboard shortcut: Option-Command-Space.
       # Carbon key code 49 is Space; modifier mask 2304 is Option (2048) + Command (256).
       KeyboardShortcuts_toggleLauncher = ''{"carbonModifiers":2304,"carbonKeyCode":49}'';
     };
@@ -157,6 +179,21 @@
     "com.googlecode.iterm2" = {
       # iTerm2 -> Settings -> General -> Closing -> Confirm Quit iTerm2.
       PromptOnQuit = false;
+      # The stable GUID of our chezmoi DynamicProfiles/machine.json profile.
+      "Default Bookmark Guid" = "1e7270ff-59ad-4b07-b2b0-87089cb2748d";
+      ApplePressAndHoldEnabled = false; # Holding a key repeats instead of showing accented characters.
+      UseLionStyleFullscreen = false; # iTerm's traditional fullscreen rather than a separate macOS Space.
+      HapticFeedbackForEsc = false;
+      SoundForEsc = false;
+      VisualIndicatorForEsc = false;
+    };
+
+    "ChatGPTHelper" = {
+      # Current ChatGPT launcher helper owns these shortcuts independently of
+      # the legacy com.openai.chat app. Carbon 49 = Space; 2304 = Option + Command.
+      KeyboardShortcuts_toggleLauncher = ''{"carbonKeyCode":49,"carbonModifiers":2304}'';
+      # 6400 = Control (4096) + Option (2048) + Command (256).
+      KeyboardShortcuts_toggleAttachedLauncher = ''{"carbonKeyCode":49,"carbonModifiers":6400}'';
     };
   };
 }
