@@ -17,7 +17,6 @@ in
 {
   imports = [
     ../modules/apps.nix
-    ../modules/codex.nix
     ../modules/defaults.nix
     ../modules/raycast.nix
     ../modules/home-manager.nix
