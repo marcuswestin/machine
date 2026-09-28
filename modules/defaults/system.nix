@@ -90,6 +90,7 @@ in
     # Never on newer macOS--adjust there if you want "when low" only.
     controlcenter = {
       BatteryShowPercentage = true;
+      Sound = true; # Show the output-device/volume control in the menu bar.
     };
 
     CustomUserPreferences = {

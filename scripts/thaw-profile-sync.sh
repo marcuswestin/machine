@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Thaw 3.0.0-alpha.6 has native profile import/apply UI, but no equivalent URI API.
+# Thaw profiles have native import/apply UI, but no documented full-profile URI API.
 # Keep confirmation state locally; never write Thaw's private profile database.
 set -euo pipefail
 
@@ -38,7 +38,7 @@ if [[ "$mode" == check ]]; then
   if [[ "$current" == "$confirmed" ]]; then
     printf 'Saved Thaw profile matches the last user-confirmed apply.\n'
   else
-    printf 'Saved Thaw profile awaits import/apply confirmation; run just apply.\n'
+    printf 'Saved Thaw profile awaits import/apply confirmation; run just apply-full.\n'
   fi
   printf 'This checks the confirmation record, not current Thaw settings or item positions.\n'
   exit 0
@@ -55,7 +55,7 @@ Apply the saved Thaw profile "$name":
 2. Press Cmd-Shift-G in the file dialog and paste:
 $profile
 3. Apply the newly imported "$name" profile.
-4. Check the menu bar layout and settings, then click Applied here.
+4. Check the menu bar layout and settings, then confirm completion below.
 
 If this exact export is already applied on this Mac, confirm without importing
 another copy. Native imports create new profiles; remove obsolete imported copies
@@ -65,14 +65,19 @@ and complete any permissions Thaw requests.
 Cancel leaves this step pending. Unchanged exports will not prompt again.
 EOF
 )"
-bash "${repo_dir}/scripts/attention.sh" "Apply saved Thaw profile" "$message"
 open "thaw://open-settings"
 open -R "$profile"
+if [[ "${MACHINE_SETTINGS_INTERACTIVE:-}" == 1 ]]; then
+  source "${repo_dir}/scripts/settings-prompt.sh"
+  settings_prompt "$message"
+else
+bash "${repo_dir}/scripts/attention.sh" "Apply saved Thaw profile" "$message"
 osascript - "$message" <<'APPLESCRIPT' > /dev/null
 on run argv
   display dialog (item 1 of argv) with title "Apply saved Thaw profile" buttons {"Cancel", "Applied"} default button "Cancel" cancel button "Cancel"
 end run
 APPLESCRIPT
+fi
 
 # Record only after the user confirms the native import AND apply completed.
 mkdir -p "$state_dir"
