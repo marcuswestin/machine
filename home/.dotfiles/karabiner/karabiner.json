@@ -9,7 +9,7 @@
       "complex_modifications": {
         "rules": [
           {
-            "description": "Caps Lock: Escape when tapped, Control when held",
+            "description": "Caps Lock: Escape if released within 500 ms, Control while held",
             "manipulators": [
               {
                 "type": "basic",
@@ -18,7 +18,8 @@
                   "modifiers": { "optional": ["any"] }
                 },
                 "to": [{ "key_code": "left_control" }],
-                "to_if_alone": [{ "key_code": "escape" }]
+                "to_if_alone": [{ "key_code": "escape" }],
+                "parameters": { "basic.to_if_alone_timeout_milliseconds": 500 }
               }
             ]
           }

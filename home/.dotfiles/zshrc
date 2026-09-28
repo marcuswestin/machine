@@ -61,3 +61,4 @@ eval "$(wt config shell init zsh)"
 # tao shell completion
 # source <(tao complete zsh)
 # compdef _tao ./tao
+[[ ! -r '$HOME/.tao-dev/shell/activation.zsh' ]] || source '$HOME/.tao-dev/shell/activation.zsh'
