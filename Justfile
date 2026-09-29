@@ -446,14 +446,36 @@ _display-layout-capture file="scripts/display-layout.sh":
     #!/usr/bin/env bash
     set -euo pipefail
 
-    command="$(displayplacer list | awk '/^displayplacer( |$)/ { print; exit }')"
-    if [ -z "$command" ] || [ "$command" = "displayplacer" ]; then
+    # displayplacer's replay line uses persistent ids, which macOS can reassign when
+    # external displays wake in a different order. Swap in each screen's serial id
+    # ("s" + EDID serial) and emit one display argument per line.
+    screens="$(displayplacer list | awk '
+      /^Persistent screen id:/ { persistent = $4 }
+      /^Serial screen id:/ { serial[persistent] = $4 }
+      /^displayplacer "/ {
+        n = split($0, parts, "\"")
+        for (i = 2; i < n; i += 2) {
+          arg = parts[i]
+          id = substr(arg, 4, index(arg, " ") - 4)
+          if (!(id in serial)) { print "No serial screen id for " id > "/dev/stderr"; exit 1 }
+          sub("^id:" id, "id:" serial[id], arg)
+          printf "  \"%s\"%s\n", arg, (i + 2 < n ? " \\" : "")
+        }
+        found = 1
+        exit
+      }
+      END { if (!found) exit 1 }
+    ')" || {
       printf 'No replayable display layout found. Connect and arrange the displays, then rerun this recipe.\n' >&2
       exit 1
-    fi
+    }
 
     # Avoid a leading-indented heredoc here; those spaces break the shebang line.
-    printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' '' '# Captured from the current macOS display arrangement with displayplacer.' "exec $command" > "{{ file }}"
+    printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' '' \
+      '# Captured from the current macOS display arrangement with displayplacer.' \
+      '# Serial screen ids are tied to the physical displays and are less sensitive to' \
+      '# macOS persistent id changes when external displays wake in a different order.' \
+      'exec displayplacer \' "$screens" > "{{ file }}"
     chmod +x "{{ file }}"
     printf 'Captured display layout in %s\n' "{{ file }}"
 

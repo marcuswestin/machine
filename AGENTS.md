@@ -95,6 +95,10 @@ unless asked.
   **`just discover snapshot tracked`** (`scripts/import-inventory.sh`) refreshes
   `inventory-tracked/` (Brewfile, `mas.json`, `defaults/` with readable sidecars,
   editor extension lists, and display layout via **`just _display-layout-capture`**).
+  `scripts/display-layout.sh` identifies screens by displayplacer serial ids
+  (`id:s…`), not persistent UUIDs, because macOS can reassign persistent ids
+  when external displays wake in a different order; the capture recipe rewrites
+  them. Do not hand-paste `displayplacer list` output into it.
   **`just discover snapshot global`** refreshes `inventory-global/` with the
   same tracked snapshot. Raycast native export/import is paused during the
   Spotlight trial; the public apply and import workflows print a reminder.
