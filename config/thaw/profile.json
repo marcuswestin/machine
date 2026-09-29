@@ -579,6 +579,7 @@
               "eu.exelban.Stats:Item#:4",
               "eu.exelban.Stats:Item#:5",
               "eu.exelban.Stats:Item#:6",
+              "com.apple.MenuBarAgent:com.apple.menuextra.display",
               "org.pqrs.Karabiner-Console-User-Server:menu",
               "com.electron.dockerdesktop:Item-0",
               "bobko.aerospace:Item",
@@ -597,6 +598,7 @@
             "bobko.aerospace:Item": "visible",
             "com.apple.MenuBarAgent:com.apple.menuextra.clock": "visible",
             "com.apple.MenuBarAgent:com.apple.menuextra.controlcenter": "visible",
+            "com.apple.MenuBarAgent:com.apple.menuextra.display": "visible",
             "com.apple.MenuBarAgent:com.apple.menuextra.sound": "visible",
             "com.apple.weather.menu:Weather": "visible",
             "com.electron.dockerdesktop:Item-0": "visible",
@@ -636,6 +638,7 @@
               "eu.exelban.Stats:Item#:4",
               "eu.exelban.Stats:Item#:5",
               "eu.exelban.Stats:Item#:6",
+              "com.apple.MenuBarAgent:com.apple.menuextra.display",
               "org.pqrs.Karabiner-Console-User-Server:menu",
               "com.electron.dockerdesktop:Item-0",
               "bobko.aerospace:Item",
@@ -650,7 +653,7 @@
             ]
           }
         },
-        "modifiedAt": "2026-09-29T12:20:52Z",
+        "modifiedAt": "2026-09-29T12:43:57Z",
         "name": "Ro Machine Current",
         "unconfirmedSpacingProfileScope": "activeProfile"
       }
