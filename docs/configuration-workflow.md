@@ -57,6 +57,25 @@ Chrome Web Store extension still needs native Chrome installation during a
 full apply. The command can also guide Thaw and Raycast exports. Use a scope
 argument to review only one app.
 
+For native exports, choose Desktop in the save panel. Look for the fresh file
+there first; if absent, check the folder shown in the panel and other likely
+export folders, then ask where it was saved. Do not substitute an older file.
+For Thaw, save the live layout and configuration into a profile before export.
+The global **Export Profiles** action can include several profiles;
+`just import-from-machine thaw` asks which one to keep in the repo. Thaw
+3.0.0-alpha.7 exposes individual allowlisted settings through `thaw://`, but
+not a complete profile or menu item order export/import, so the native profile
+file is required for the full transfer.
+
+For Raycast, select **Settings, Aliases & Hotkeys** only before exporting. Its native encrypted
+`.rayconfig` is opaque to the repo; `just import-from-machine raycast` asks you
+to confirm the category selection and saves that native file. The export
+password and public-repo implications are documented in
+`config/raycast/README.md`. Raycast remembers the export passphrase, so later
+exports normally save without another password prompt. A full apply on another Mac opens the native file
+for Raycast's guided import; select only Settings there as well. Keep full
+backups with chats, snippets, history, and credentials outside the repo.
+
 Repo-backed symlinks already record edits directly in the repo. Review their
 `git diff`; no copy is needed. For other live JSON/JSONC, the hidden expert
 `merge-in-settings` recipe remains available for expert use. The explicit

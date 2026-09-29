@@ -6,19 +6,27 @@ repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 destination="${repo_dir}/config/thaw/profile.json"
 suggested="${HOME}/Desktop/Thaw Profiles.json"
 source="${1:-}"
+export_marker=""
 
 if [[ -z "$source" ]]; then
+  export_marker="$(mktemp)"
+  trap 'rm -f "$export_marker"' EXIT
   cat <<EOF
 Export the CURRENT Thaw configuration
 
 1. Open Thaw Settings > Profiles.
 2. Enter a profile name and choose Save Current. If reusing a profile,
    choose Update > Update All first, so it includes today's layout AND settings.
-3. In that profile's more-actions menu (...), choose Export.
+3. In that profile's more-actions menu (...), choose Export, or choose
+   Export Profiles if the menu is unavailable. A multi-profile file will
+   prompt you to choose one profile for the repo.
 4. Save as: $suggested
    In the save dialog, Cmd-Shift-G lets you enter the Desktop folder.
 
 Thaw remembers the save-dialog folder; the path above is our suggested location.
+Look on Desktop first for the newly exported file. If it is absent, check the
+folder shown in Thaw's save dialog and other likely export folders; ask where
+it was saved if you still cannot locate it. Do not use an older export.
 This recipe saves the export to:
   $destination
 It replaces the previous repo snapshot. Review its git diff before committing;
@@ -31,9 +39,18 @@ EOF
     printf 'Or run: just import-from-machine thaw\n'
     exit 0
   fi
-  printf 'When exported, press Enter for the suggested path or enter another unquoted path: '
+  printf 'Press Enter when the Desktop export is complete, enter another path, or type skip: '
   IFS= read -r source
+  if [[ "$source" == skip ]]; then
+    printf 'Thaw export skipped; the repo profile was not changed.\n'
+    exit 0
+  fi
   source="${source:-$suggested}"
+  if [[ "$source" == "$suggested" && ! "$source" -nt "$export_marker" ]]; then
+    printf 'No new Thaw Profiles.json was found on Desktop. Check the save dialog folder, then enter the new export path: '
+    IFS= read -r source
+    [[ -n "$source" ]] || { printf 'A fresh Thaw export path is required.\n' >&2; exit 1; }
+  fi
 fi
 
 # Expand a literal ~/ entered at the prompt without evaluating shell input.
@@ -43,8 +60,28 @@ fi
 
 scratch="$(mktemp -d)"
 output_tmp=""
-trap 'rm -rf "$scratch"; if [[ -n "$output_tmp" ]]; then rm -f "$output_tmp"; fi' EXIT
+trap 'rm -rf "$scratch"; if [[ -n "$output_tmp" ]]; then rm -f "$output_tmp"; fi; if [[ -n "$export_marker" ]]; then rm -f "$export_marker"; fi' EXIT
 cat < "$source" > "$scratch/input.json"
+
+# Export Profiles... can include several profiles. Keep exactly the one the
+# user wants to replicate on another Mac.
+entry_count="$(jq -er 'select(.version == 1 and (.entries | type == "array")) | .entries | length' "$scratch/input.json")"
+if (( entry_count > 1 )); then
+  if [[ ! -t 0 ]]; then
+    printf 'Export contains %s profiles. Run just import-from-machine thaw in a terminal to select one.\n' "$entry_count" >&2
+    exit 1
+  fi
+  printf 'The native export contains %s profiles. Select one for the repo:\n' "$entry_count"
+  jq -r '.entries | to_entries[] | "  \(.key + 1). \(.value.profile.name)"' "$scratch/input.json"
+  printf 'Profile number: '
+  IFS= read -r profile_number
+  if [[ ! "$profile_number" =~ ^[1-9][0-9]*$ ]] || (( profile_number > entry_count )); then
+    printf 'Choose a number from 1 to %s.\n' "$entry_count" >&2
+    exit 1
+  fi
+  jq --argjson index "$((profile_number - 1))" '{version, entries: [.entries[$index]]}' "$scratch/input.json" > "$scratch/selected.json"
+  mv "$scratch/selected.json" "$scratch/input.json"
+fi
 
 # Thaw 3 native exports wrap profiles as {version: 1, entries: [{profile: ...}]}.
 # Check the identifying fields without discarding additional native fields.

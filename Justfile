@@ -233,7 +233,7 @@ _check-macos:
 _audit-login-items:
     @"{{ REPO }}/scripts/audit-login-items.sh" "{{ REPO }}"
 
-# If config/raycast/settings.json changed, gzip + open for Raycast import (see scripts/raycast-settings-sync.sh).
+# Open the native Raycast Settings export when present; otherwise gzip declared JSON.
 _raycast-settings-sync:
     @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}"
 

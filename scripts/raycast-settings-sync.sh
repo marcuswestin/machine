@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Sync Raycast declarative settings: if config/raycast/settings.json changed since
-# last confirmed import, gzip it to .rayconfig and open it for Raycast import.
+# Open the saved native Raycast Settings export for a guided import. Older
+# setups without one still use the generated gzip JSON fallback.
 set -euo pipefail
 
 repo_root="${1:?missing repo root}"
 force="${2:-}"
 
 json="$repo_root/config/raycast/settings.json"
+native="$repo_root/config/raycast/settings-native.rayconfig"
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/machine"
 # Older stamps recorded opening the file, not completing the native import.
 state_file="$state_dir/raycast-settings-confirmed.sha256"
@@ -20,7 +21,12 @@ if [[ ! -f "$json" ]]; then
   exit 0
 fi
 
-current="$(shasum -a 256 "$json" | awk '{print $1}')"
+if [[ -f "$native" ]]; then
+  source_file="$native"
+else
+  source_file="$json"
+fi
+current="$(shasum -a 256 "$source_file" | awk '{print $1}')"
 
 if [[ "$force" == check ]]; then
   if [[ -f "$state_file" ]] && [[ "$(cat "$state_file")" == "$current" ]]; then
@@ -35,8 +41,12 @@ if [[ "$force" != "force" ]] && [[ -f "$state_file" ]] && [[ "$(cat "$state_file
   exit 0
 fi
 
-gzip -cn "$json" >"$out"
-printf 'Raycast settings.json changed; opened %s for import.\n' "$out" >&2
+if [[ "$source_file" == "$json" ]]; then
+  gzip -cn "$json" >"$out"
+else
+  out="$native"
+fi
+printf 'Raycast settings export changed; opened %s for import.\n' "$out" >&2
 open "$out"
 if [[ "${MACHINE_SETTINGS_INTERACTIVE:-}" == 1 ]]; then
   source "${repo_root}/scripts/settings-prompt.sh"

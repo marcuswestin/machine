@@ -36,8 +36,17 @@ ${plan:-   None detected.}
    apply-to-machine: system defaults, missing packages, dotfiles, and editor extensions.
 4. The command will relaunch previously running affected apps in the background
    after applying.
+5. Before pressing Enter, manually export this Mac's current Raycast Settings
+   and Thaw profile to Desktop as backups. In Raycast, use Export Settings & Data;
+   select the categories you want backed up and save to Desktop. Raycast reuses
+   its saved export passphrase, so no password entry is normally needed; on
+   first use, see config/raycast/README.md. In Thaw, save the current layout and configuration
+   into a profile, then export that profile. Keep these backups outside the repo.
+   On a fresh Mac with no existing Raycast or Thaw setup, there is nothing to
+   back up. The command does not automate either export.
 
-Nothing has been applied or quit yet. Pressing Enter starts the shutdown and apply."
+Nothing has been applied or quit yet. Press Enter after completing those exports
+to start the shutdown and apply."
 
 app_running() {
   local app="$1" state

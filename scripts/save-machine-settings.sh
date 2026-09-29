@@ -28,23 +28,33 @@ if [[ "$scope" == all || "$scope" == browser ]]; then
   bun scripts/browser-extension-review.ts resolve "$repo_dir"
 fi
 if [[ "$scope" == all || "$scope" == thaw ]]; then
-  if [[ "$scope" == thaw ]]; then
-    bash scripts/export-thaw.sh
-  else
-    printf '\nThaw: export the current profile through its native UI if its layout changed.\n'
-    printf 'Save it as ~/Desktop/Thaw Profiles.json. Enter its path to import, or press Enter to skip: '
-    IFS= read -r thaw_path || exit 1
-    if [[ -n "$thaw_path" ]]; then
-      [[ "$thaw_path" == '~/'* ]] && thaw_path="${HOME}/${thaw_path:2}"
-      bash scripts/export-thaw.sh "$thaw_path"
-    fi
-  fi
+  bash scripts/export-thaw.sh
 fi
 if [[ "$scope" == all || "$scope" == raycast ]]; then
-  printf '\nRaycast: export Settings from Raycast if they changed.\n'
-  printf 'Enter the .rayconfig or JSON export path to review existing portable preference keys, or press Enter to skip: '
+  raycast_marker="$(mktemp)"
+  trap 'rm -f "$raycast_marker"' EXIT
+  printf '\nExport the CURRENT Raycast settings\n\n'
+  printf '1. In Raycast, run Export Settings & Data.\n'
+  printf '2. Select only Settings, Aliases & Hotkeys. Deselect Clipboard History,\n'
+  printf '   chats, notes, snippets, quicklinks, and all other categories.\n'
+  printf '3. Save the .rayconfig to Desktop. Raycast reuses its saved export\n'
+  printf '   passphrase, so no password entry is normally needed. On first use,\n'
+  printf '   set the passphrase documented in config/raycast/README.md.\n'
+  printf '4. After saving, press Enter here. Type skip to leave Raycast unchanged.\n'
+  printf 'Press Enter when the Desktop export is complete, or type skip: '
   IFS= read -r raycast_path || exit 1
-  if [[ -n "$raycast_path" ]]; then
+  if [[ "$raycast_path" != skip ]]; then
+    if [[ -z "$raycast_path" ]]; then
+      raycast_path="$(find "${HOME}/Desktop" -maxdepth 1 -type f -name 'Raycast*.rayconfig' -newer "$raycast_marker" -print | while IFS= read -r candidate; do stat -f '%m %N' "$candidate"; done | sort -nr | head -n 1 | cut -d ' ' -f 2- || true)"
+      if [[ -z "$raycast_path" ]]; then
+        printf 'No new Raycast export found on Desktop. Check the save dialog folder and other export folders.\n'
+        printf 'Enter the fresh export path: '
+        IFS= read -r raycast_path || exit 1
+      else
+        printf 'Using newest Desktop export: %s\n' "$raycast_path"
+      fi
+    fi
+    [[ -n "$raycast_path" ]] || { printf 'Raycast export path is required.\n' >&2; exit 1; }
     [[ "$raycast_path" == '~/'* ]] && raycast_path="${HOME}/${raycast_path:2}"
     bun scripts/raycast-settings-save.ts "$raycast_path"
   fi
