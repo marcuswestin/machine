@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Upgrade outdated declared Homebrew formulae only.
-# Casks go through `just upgrade`; self-updating casks are left to their own updater.
+# Casks go through `just update casks`; self-updating casks are left to their own updater.
 set -euo pipefail
 
 if [ "$#" -ne 1 ]; then

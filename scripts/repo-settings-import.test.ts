@@ -34,3 +34,34 @@ test("Docker access denial fails apply and remains unverified in reports", () =>
     rmSync(root, { recursive: true });
   }
 });
+
+test("single-target import leaves other repo settings untouched", () => {
+  const root = mkdtempSync(join(tmpdir(), "machine-targeted-import-"));
+  const home = join(root, "home");
+  const repo = join(root, "repo");
+  const live = join(home, ".cursor/cli-config.json");
+  const desired = join(repo, "home/.dotfiles/cursor/cli-config.json");
+  const other = join(repo, "home/.dotfiles/handy/settings_store.json");
+  try {
+    for (const file of [live, desired, other]) mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(live, "{\"shared\":\"machine\",\"new\":true}");
+    writeFileSync(desired, "{\"shared\":\"repo\"}");
+    writeFileSync(other, "{\"unrelated\":true}");
+    const run = (args: string[]) =>
+      Bun.spawnSync([process.execPath, join(import.meta.dir, "repo-settings-import.ts"), repo, ...args], {
+        env: { ...process.env, HOME: home },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+    const report = JSON.parse(run(["--only", "cursor-cli-config", "--json"]).stdout.toString());
+    expect(report).toHaveLength(1);
+    expect(report[0].only_live_keys).toEqual(["new"]);
+    expect(run(["--only", "cursor-cli-config", "--write-lossy"]).exitCode).toBe(0);
+    expect(JSON.parse(readFileSync(desired, "utf8"))).toEqual({ shared: "repo", new: true });
+    expect(readFileSync(other, "utf8")).toBe("{\"unrelated\":true}");
+    expect(run(["--only", "unknown", "--write-lossy"]).exitCode).toBe(2);
+    expect(run(["--only", "cursor-cli-config", "--push-docker-live"]).exitCode).toBe(2);
+  } finally {
+    rmSync(root, { recursive: true });
+  }
+});

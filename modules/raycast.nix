@@ -4,7 +4,7 @@ let
 in
 {
   # Homebrew installs Raycast (modules/apps.nix). Declarative preferences live in
-  # config/raycast/settings.json (plain JSON). `just apply` and `just import-inventory global` run
+  # config/raycast/settings.json (plain JSON). `just apply-to-machine` and `just discover snapshot global` run
   # scripts/raycast-settings-sync.sh: if settings.json changed since the last run
   # (SHA-256 in ~/.local/state/machine/), it gzips to settings.rayconfig and opens it.
   # Use `just _raycast-import-force` to rebuild/open regardless of stamp. Clear Raycast's

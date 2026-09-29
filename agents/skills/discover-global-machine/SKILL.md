@@ -1,6 +1,6 @@
 ---
 name: discover-global-machine
-description: Runs `just discover-global` in the machine repo to find unmanaged global machine surfaces that may be worth tracking later. Use when the user asks for discovery, entire-machine review, candidate app/defaults/config surfaces, or things not currently managed by the repo.
+description: Runs `just discover global` in the machine repo to find unmanaged global machine surfaces that may be worth tracking later. Use when the user asks for discovery, entire-machine review, candidate app/defaults/config surfaces, or things not currently managed by the repo.
 disable-model-invocation: true
 ---
 
@@ -11,7 +11,7 @@ disable-model-invocation: true
 From the machine repo root:
 
 ```sh
-just discover-global
+just discover global
 ```
 
 ## What it does
@@ -33,14 +33,13 @@ It reports:
 - Summarize candidates by section.
 - Point to `inventory-global/discovery/` for full lists when the preview is truncated.
 - Do **not** promote discovered state into active config unless the user explicitly asks next.
-- Do **not** run `just apply`, `just prune`, or `merge-in-settings` writes.
+- Do **not** run `just apply-to-machine`, `just prune apply`, or `merge-in-settings` writes.
 - For currently tracked drift, use the `diff-tracked-machine` skill instead.
 
 ## Related
 
-| Purpose                                 | Command                  |
-| --------------------------------------- | ------------------------ |
-| Currently tracked drift                 | `just diff-tracked`      |
-| Discovery of unmanaged candidates       | `just discover-global`   |
-| Snapshot capture vs live only (private) | `just _snapshot-diff`    |
-| Git worktree                            | `git status`, `git diff` |
+- Currently tracked drift: `just diff`.
+- Discovery of unmanaged candidates: `just discover global`.
+- Snapshot capture: `just discover snapshot`.
+- Snapshot versus current Mac: `just diff snapshot`.
+- Git worktree: `git status`, `git diff`.

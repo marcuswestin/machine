@@ -12,7 +12,7 @@ set -euo pipefail
 #
 # Mac App Store sign-in is required for `mas get` to succeed. If App Store auth
 # is missing, this fails loudly after nix-darwin has already converged the rest
-# of the machine; sign in via App Store.app and rerun `just apply`.
+# of the machine; sign in via App Store.app and rerun `just apply-to-machine`.
 
 script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 

@@ -117,7 +117,9 @@ export function syncFile(file: string, desired: ObjectValue, apply: boolean, run
   }
   const differences = differingKeys(live, desired);
   if (!apply || differences.length === 0) return differences;
-  if (running()) throw new Error("Quit Claude before applying its pending preferences, then rerun just apply");
+  if (running()) {
+    throw new Error("Quit Claude before applying its pending preferences, then rerun just apply-to-machine full");
+  }
   mkdirSync(dirname(file), { recursive: true });
   const temporary = file + `.machine-${process.pid}.tmp`;
   try {

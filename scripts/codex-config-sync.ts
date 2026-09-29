@@ -163,7 +163,7 @@ function main(): void {
   }
   if (mode === "preflight") {
     if (conflicts.length) {
-      console.error("Codex managed-key conflicts; run just save-machine-settings to review:");
+      console.error("Codex managed-key conflicts; run just import-from-machine to review:");
       for (const item of conflicts) console.error(`  ${dotted(item.path)}`);
       process.exitCode = 1;
     }
@@ -171,7 +171,7 @@ function main(): void {
   }
   if (mode === "apply" && conflicts.length) {
     console.error(
-      "Codex UI changed repo-managed settings. Run just save-machine-settings to review them, then rerun just apply:",
+      "Codex UI changed repo-managed settings. Run just import-from-machine to review them, then rerun just apply-to-machine:",
     );
     for (const item of conflicts) console.error(`  ${dotted(item.path)}`);
     process.exitCode = 1;
