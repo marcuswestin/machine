@@ -108,28 +108,11 @@ docker_review='Docker settings import, export, and apply are disabled for now.'
 
 settings_prompt "Step 4 of 4 — Verify the visible result
 
-The report above checked saved preferences. These steps cover live appearance,
-app behavior and choices that are local to this Mac.
+The report above checked saved preferences.
 
 1. Review the report above. Resolve DIFF, MISSING, or UNVERIFIED items before
    confirming, except Docker while its settings sync is disabled. A command completing
    does not mean all settings match.
-2. Menu bar: Stats appears as one group ordered GPU → Network → Disk → Sensors
-   → RAM → CPU → Battery; CodexBar shows one branded percentage item; Weather
-   and Sound are visible. In Thaw, Handy, ChatGPT/Codex and Cursor should be
-   hidden after its rehide interval. Adjust display associations if needed.
-3. Local choices: sign into desired CodexBar providers, choose Weather's first
-   location and this Mac's sound output. Complete native location consent if wanted.
-4. Raycast: Control-Space opens Raycast; Command-Space opens Spotlight. Native
-   Raycast export/import is paused for this trial; check its hotkey manually.
-5. iTerm2: open a new window to inspect the Machine profile, fonts and colors.
-   Chrome: in your Default profile, open
-   https://chromewebstore.google.com/detail/pejdijmoenmkgeppbflobdenhhabjlaj
-   and install iCloud Passwords if missing. Approve the native Chrome prompts,
-   then confirm it is enabled at chrome://extensions.
-6. Codex: the managed number-shortcut setting was checked above. Confirm that
-   Command-1–9 switches chats if you need functional proof. If ChatGPT/Codex was
-   restarted, start a new task to load updated global instructions.
 ${docker_review}
 
 If a mismatch remains, Ctrl-C leaves verification unfinished. Full checklist:

@@ -33,6 +33,13 @@ let
       args = [ ];
     }
     {
+      name = "Karabiner-Elements";
+      bundleIdentifier = "org.pqrs.Karabiner-Elements";
+      appPath = "/Applications/Karabiner-Elements.app";
+      executable = "/Applications/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements";
+      args = [ ];
+    }
+    {
       name = "CodexBar";
       bundleIdentifier = "com.steipete.codexbar";
       appPath = "/Applications/CodexBar.app";

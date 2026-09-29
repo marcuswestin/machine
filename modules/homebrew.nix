@@ -45,7 +45,9 @@ in
     # Applied as the Homebrew owner before Bundle loads any package definitions.
     # Trust only declared items, including local casks, never entire taps.
     trust = {
-      formulae = tapPackages config.homebrew.brews;
+      # Tart loads softnet as a dependency; Homebrew requires each tap formula
+      # to be trusted before it can load the declared package's dependency tree.
+      formulae = tapPackages config.homebrew.brews ++ [ "cirruslabs/cli/softnet" ];
       casks = tapPackages config.homebrew.casks;
     };
   };
