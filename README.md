@@ -69,6 +69,8 @@ Run `just check machine` for a read-only operational health summary, or
 background permissions, declared startup apps and package paths, keyboard
 mapping, managed editor/Handy/Karabiner configs, Handy's model checksum, AeroSpace,
 Codex drift, Thaw's last confirmation, and Time Machine destination configuration.
+Background permissions use Apple's read-only Service Management status API; this
+check does not run `sfltool` or ask for sudo.
 
 Results distinguish `OK`, `WARN` (attention needed), `FAIL` (detected problem),
 and `UNKNOWN` (not verified, including access failures). Exit codes are 0 for all
