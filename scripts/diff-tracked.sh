@@ -103,7 +103,7 @@ bash "${repo_dir}/scripts/codexbar-settings-sync.sh" check
 printf '\n━━ Thaw saved profile confirmation ━━\n'
 bash "${repo_dir}/scripts/thaw-profile-sync.sh" check
 
-printf '\n━━ Raycast saved import confirmation ━━\n'
+printf '\n━━ Raycast native sync ━━\n'
 bash "${repo_dir}/scripts/raycast-settings-sync.sh" "${repo_dir}" check
 
 printf '\nLive first-class macOS defaults, app runtime state, native UI layout, and privacy consent are not fully inspectable here.\n'

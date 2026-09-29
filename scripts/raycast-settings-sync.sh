@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
-# Open the saved native Raycast Settings export for a guided import. Older
-# setups without one still use the generated gzip JSON fallback.
+# Native Raycast import is paused during the Spotlight trial. The explicit
+# private force recipe retains the old guided import for deliberate use.
 set -euo pipefail
 
 repo_root="${1:?missing repo root}"
 force="${2:-}"
+
+if [[ "$force" != force ]]; then
+  printf '[PAUSED] Raycast native import/export is disabled for the Spotlight trial.\n'
+  printf 'Raycast hotkey defaults remain declared; verify Control-Space in Raycast and Command-Space in Spotlight.\n'
+  exit 0
+fi
 
 json="$repo_root/config/raycast/settings.json"
 native="$repo_root/config/raycast/settings-native.rayconfig"
@@ -14,11 +20,8 @@ state_file="$state_dir/raycast-settings-confirmed.sha256"
 out="$repo_root/config/raycast/settings.rayconfig"
 
 if [[ ! -f "$json" ]]; then
-  if [[ "$force" == "force" ]]; then
-    printf 'missing %s\n' "$json" >&2
-    exit 1
-  fi
-  exit 0
+  printf 'missing %s\n' "$json" >&2
+  exit 1
 fi
 
 if [[ -f "$native" ]]; then
@@ -27,19 +30,6 @@ else
   source_file="$json"
 fi
 current="$(shasum -a 256 "$source_file" | awk '{print $1}')"
-
-if [[ "$force" == check ]]; then
-  if [[ -f "$state_file" ]] && [[ "$(cat "$state_file")" == "$current" ]]; then
-    printf 'Raycast export matches the last confirmed import (not a live settings comparison).\n'
-  else
-    printf 'Raycast export awaits native import confirmation; run just apply-to-machine full.\n'
-  fi
-  exit 0
-fi
-
-if [[ "$force" != "force" ]] && [[ -f "$state_file" ]] && [[ "$(cat "$state_file")" == "$current" ]]; then
-  exit 0
-fi
 
 if [[ "$source_file" == "$json" ]]; then
   gzip -cn "$json" >"$out"

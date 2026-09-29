@@ -233,7 +233,7 @@ _check-macos:
 _audit-login-items:
     @"{{ REPO }}/scripts/audit-login-items.sh" "{{ REPO }}"
 
-# Open the native Raycast Settings export when present; otherwise gzip declared JSON.
+# Report that native Raycast sync is paused during the Spotlight trial.
 _raycast-settings-sync:
     @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}"
 
@@ -249,7 +249,7 @@ _snapshot-diff scope="global":
 _plist-sidecars *paths:
     @"{{ REPO }}/scripts/plist-sidecars.sh" {{ paths }}
 
-# Force Raycast .rayconfig rebuild + open (ignores change stamp). Normal path: `discover snapshot global` or `_after-switch`.
+# Explicit private override for a deliberate Raycast native import during the pause.
 _raycast-import-force:
     @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" force
 
@@ -309,7 +309,7 @@ _after-switch:
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 _attention-required:
-    @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, Raycast, and Thaw profiles."
+    @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, and Thaw profiles."
     @just _setup-xcode
     @just _git-auth
     @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \

@@ -74,7 +74,6 @@ printf 'Import: browser extension lists → %s/browser-extensions/\n' "$inv_name
 printf 'Import: display layout → %s/display-layout.sh (ignored if not replayable)\n' "$inv_name"
 (cd "$repo_dir" && just _display-layout-capture "${inv_name}/display-layout.sh") || true
 
-printf 'Import: Raycast bundle if config/raycast/settings.json changed\n'
-"${repo_dir}/scripts/raycast-settings-sync.sh" "${repo_dir}" || true
+printf '[PAUSED] Raycast native import/export is disabled for the Spotlight trial.\n'
 
 printf '\nImport complete; snapshots in %s\n' "$inv"

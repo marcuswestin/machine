@@ -41,33 +41,8 @@ if [[ "$scope" == all || "$scope" == thaw ]]; then
   bash scripts/export-thaw.sh
 fi
 if [[ "$scope" == all || "$scope" == raycast ]]; then
-  raycast_marker="$(mktemp)"
-  trap 'rm -f "$raycast_marker"' EXIT
-  printf '\nExport the CURRENT Raycast settings\n\n'
-  printf '1. In Raycast, run Export Settings & Data.\n'
-  printf '2. Select only Settings, Aliases & Hotkeys. Deselect Clipboard History,\n'
-  printf '   chats, notes, snippets, quicklinks, and all other categories.\n'
-  printf '3. Save the .rayconfig to Desktop. Raycast reuses its saved export\n'
-  printf '   passphrase, so no password entry is normally needed. On first use,\n'
-  printf '   set the passphrase documented in config/raycast/README.md.\n'
-  printf '4. After saving, press Enter here. Type skip to leave Raycast unchanged.\n'
-  printf 'Press Enter when the Desktop export is complete, or type skip: '
-  IFS= read -r raycast_path || exit 1
-  if [[ "$raycast_path" != skip ]]; then
-    if [[ -z "$raycast_path" ]]; then
-      raycast_path="$(find "${HOME}/Desktop" -maxdepth 1 -type f -name 'Raycast*.rayconfig' -newer "$raycast_marker" -print | while IFS= read -r candidate; do stat -f '%m %N' "$candidate"; done | sort -nr | head -n 1 | cut -d ' ' -f 2- || true)"
-      if [[ -z "$raycast_path" ]]; then
-        printf 'No new Raycast export found on Desktop. Check the save dialog folder and other export folders.\n'
-        printf 'Enter the fresh export path: '
-        IFS= read -r raycast_path || exit 1
-      else
-        printf 'Using newest Desktop export: %s\n' "$raycast_path"
-      fi
-    fi
-    [[ -n "$raycast_path" ]] || { printf 'Raycast export path is required.\n' >&2; exit 1; }
-    [[ "$raycast_path" == '~/'* ]] && raycast_path="${HOME}/${raycast_path:2}"
-    bun scripts/raycast-settings-save.ts "$raycast_path"
-  fi
+  printf '\n[PAUSED] Raycast export/import is disabled for the Spotlight trial.\n'
+  printf 'Review Raycast hotkey drift with just diff settings; no Raycast export is requested.\n'
 fi
 if [[ "$scope" == files ]]; then
   printf '\nReview live app JSON/JSONC that does not already resolve to the repo.\n'

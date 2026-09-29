@@ -35,12 +35,20 @@ change. To keep the repo value, edit the local value deliberately.
 `just apply-to-machine` does not intentionally quit desktop apps. Some changed
 settings only take effect when their app next starts; the command prints pending
 restart work. `just apply-to-machine full` plans affected app restarts, shows the
-plan, and waits for Enter. It also guides Thaw and Raycast imports and native
+plan, and waits for Enter. It also guides Thaw import and native
 consent. Run it from Terminal.app if it needs to quit your current terminal.
 It does not reboot, prune, upgrade, commit, or push.
 
+Raycast uses Control-Space and Spotlight search uses Command-Space. The full
+apply reserves the former from macOS input-source switching, restores the
+latter, and relaunches Raycast when its saved hotkey differs. Native Raycast
+export/import is paused for the Spotlight trial; the scripts print a reminder
+instead of prompting for a Raycast backup or import. No Mac restart or separate
+keyboard setting is required after a successful full apply. See
+`config/raycast/README.md`.
+
 If a detector cannot read a managed setting, it reports an unknown state or
-stops the full pass. A recorded Thaw or Raycast import confirms the user
+stops the full pass. A recorded Thaw import confirms the user
 completed the step; it does not prove live UI layout. macOS privacy and login
 item consent remain native user actions. To defer Docker's protected settings
 and restart for one full apply, use
@@ -54,8 +62,13 @@ declared Codex and Claude preferences and browser extensions one at a time.
 Account, trust, session, and other local fields are excluded. Browser extension
 review can preserve a missing declaration, remove it, or skip it; a missing
 Chrome Web Store extension still needs native Chrome installation during a
-full apply. The command can also guide Thaw and Raycast exports. Use a scope
+full apply. The command can also guide a Thaw export. Use a scope
 argument to review only one app.
+
+If macOS blocks a browser profile during the combined import, that browser
+review remains **UNVERIFIED** and the command continues to Thaw.
+`just import-from-machine browser` still stops until the terminal has access;
+neither path changes browser declarations based on an unreadable profile.
 
 For native exports, choose Desktop in the save panel. Look for the fresh file
 there first; if absent, check the folder shown in the panel and other likely
@@ -67,14 +80,21 @@ The global **Export Profiles** action can include several profiles;
 not a complete profile or menu item order export/import, so the native profile
 file is required for the full transfer.
 
-For Raycast, select **Settings, Aliases & Hotkeys** only before exporting. Its native encrypted
-`.rayconfig` is opaque to the repo; `just import-from-machine raycast` asks you
-to confirm the category selection and saves that native file. The export
-password and public-repo implications are documented in
-`config/raycast/README.md`. Raycast remembers the export passphrase, so later
-exports normally save without another password prompt. A full apply on another Mac opens the native file
-for Raycast's guided import; select only Settings there as well. Keep full
-backups with chats, snippets, history, and credentials outside the repo.
+Raycast native import/export is paused during the Spotlight trial.
+`just import-from-machine raycast` prints a reminder and does not request an
+export; full apply does not import one. The declared hotkey still comes from
+`config/raycast/settings.json` through nix-darwin. See
+`config/raycast/README.md` for the deferred native transfer procedure.
+
+`just discover global` writes ignored candidate reports under
+`inventory-global/discovery/` for unmanaged apps, defaults domains, preference
+plists, launch items, fonts, system extensions, and shell snippets. It finds
+candidate surfaces rather than proving which individual preference keys should
+be tracked. `just discover apps` lists preference key names and config-file
+paths for declared cask apps, omitting values and known sensitive files. Use
+`just discover snapshot global` when readable defaults plists are needed for
+manual key-level review. None of these commands promotes values into config;
+review each candidate before declaring it.
 
 Repo-backed symlinks already record edits directly in the repo. Review their
 `git diff`; no copy is needed. For other live JSON/JSONC, the hidden expert

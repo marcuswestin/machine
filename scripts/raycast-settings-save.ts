@@ -44,7 +44,7 @@ const contents = readFileSync(resolve(source));
 if (extname(source) === ".rayconfig" && !(contents[0] === 0x1f && contents[1] === 0x8b)) {
   if (!process.stdin.isTTY) throw new Error("Encrypted Raycast export requires interactive review; repo left untouched");
   console.log("Native encrypted Raycast export detected. Its contents cannot be inspected here.");
-  console.log("Confirm that ONLY Settings, Aliases & Hotkeys was selected in Raycast.");
+  console.log('Confirm that ONLY "Settings (including aliases, hotkeys & favorites)" was selected in Raycast.');
   console.log("This repo and its export password are public, so treat the export as public data.");
   process.stdout.write("Save this native Settings export in the repo? Type yes: ");
   if (answerLine() !== "yes") throw new Error("Raycast export was not saved");

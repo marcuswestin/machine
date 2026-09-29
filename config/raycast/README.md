@@ -1,7 +1,13 @@
-# Raycast settings transfer
+# Raycast during the Spotlight trial
+
+- The repo assigns **Control-Space** to Raycast and **Command-Space** to Spotlight. The Raycast value is `Control-49` (`49` is macOS's Space key code). The system activation disables macOS's Control-Space input-source shortcut so it cannot intercept Raycast. No separate System Settings change is needed after a successful apply.
+- Native Raycast export/import is paused. `just import-from-machine raycast` and `just apply-to-machine full` print a reminder instead of opening a Raycast export or import. `config/raycast/settings.json` still declares the hotkey, and nix-darwin writes that value to Raycast's user defaults. Other Raycast preferences in that JSON are not synced while native import is paused.
+- Quit System Settings, then run `just apply-to-machine full` to apply the declared hotkeys. The full command relaunches Raycast if its saved preferences differ; a normal `just apply-to-machine` does not restart apps. Test Control-Space for Raycast and Command-Space for Spotlight afterward. A Mac reboot is not required.
+- To try the shortcuts before a full apply, use System Settings → Keyboard → Keyboard Shortcuts: set Spotlight → Show Spotlight search to Command-Space and turn off Input Sources → Select previous input source. In Raycast Settings → General → Raycast Hotkey, record Control-Space. These settings should work without rebooting. If Raycast retains its old hotkey after a repo apply, record Control-Space there and relaunch Raycast; the repo declares the same values.
+
+## If native settings transfer resumes
 
 - For Raycast **Export Settings & Data** and **Import Settings & Data**, use password `1234567890`. Raycast remembers the export passphrase, so later exports may not ask for it again. This export password is intentionally public in this repository; do not use it for an account.
-- Export Settings only when updating the portable repo preferences. Keep full backups, which may contain private data, outside the repo.
+- In **Export Settings & Data**, select only **Settings (including aliases, hotkeys & favorites)** when updating the portable repo preferences. Keep full backups, which may contain private data, outside the repo.
 - Save new exports to Desktop. Look there for the fresh file first; if missing, check the save dialog's folder and other likely export folders, then ask where it was saved. Do not use an older export by mistake.
-- Raycast's native `.rayconfig` export is encrypted binary, even with only **Settings, Aliases & Hotkeys** selected. The older gzip JSON parser cannot read it. `just import-from-machine raycast` asks you to confirm that **only Settings, Aliases & Hotkeys** was selected, then saves the opaque native export as `settings-native.rayconfig`. Inspect those settings before exporting because the password above is public.
-- On another Mac, `just apply-to-machine full` opens `settings-native.rayconfig` for Raycast's native import when it changes. Enter the password above, select only Settings on the import checklist, and confirm completion. Other categories stay untouched.
+- Raycast's native `.rayconfig` export is encrypted binary, even with only **Settings (including aliases, hotkeys & favorites)** selected. The older gzip JSON parser cannot read it. Inspect those settings before exporting because the password above is public. These export/import steps are currently disabled in the public workflows.
