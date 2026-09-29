@@ -12,7 +12,7 @@
     "key": null
   },
   {
-    "command": "composer.queue",
+    "command": "composer.submit",
     "key": "CmdOrCtrl+Enter"
   }
 ]
