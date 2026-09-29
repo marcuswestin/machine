@@ -35,7 +35,7 @@ capture_chrome() {
     if ! find "$chrome_root" -maxdepth 2 -name 'Secure Preferences' -type f -print0 >"$found"; then
       rm -f "$tmp" "$found"
       printf 'UNVERIFIED Chrome extensions: cannot read Chrome profiles under %s. Run from a Terminal with access to that folder.\n' "$chrome_root" >&2
-      return 1
+      return 2
     fi
     while IFS= read -r -d '' secure_prefs; do
       profile_dir="$(dirname "$secure_prefs")"
@@ -77,7 +77,7 @@ capture_firefox() {
     if ! find "$firefox_root" -maxdepth 2 -name extensions.json -type f -print0 >"$found"; then
       rm -f "$tmp" "$found"
       printf 'UNVERIFIED Firefox extensions: cannot read profiles under %s.\n' "$firefox_root" >&2
-      return 1
+      return 2
     fi
     while IFS= read -r -d '' extensions_json; do
       profile="$(basename "$(dirname "$extensions_json")")"
@@ -121,7 +121,7 @@ capture_safari() {
     if ! pluginkit -m -A -D -v -p "$point" >"$plugin_rows"; then
       rm -f "$tmp" "$plugin_rows"
       printf 'UNVERIFIED Safari extensions: pluginkit could not list %s.\n' "$point" >&2
-      return 1
+      return 2
     fi
     while IFS= read -r line; do
       [[ "$line" =~ plug-in\)$ ]] && continue

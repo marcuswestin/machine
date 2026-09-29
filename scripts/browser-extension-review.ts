@@ -112,8 +112,14 @@ if (import.meta.main) {
       const result = spawnSync("bash", [join(repo, "scripts/browser-extensions.sh"), "capture", temporary], {
         stdio: "inherit",
       });
-      if (result.status !== 0) throw new Error("Could not capture browser extensions; repo left unchanged");
-      review(repo, temporary, true);
+      if (result.status === 2) {
+        console.error("Browser extensions remain UNVERIFIED; repo left unchanged.");
+        process.exitCode = 2;
+      } else if (result.status !== 0) {
+        throw new Error("Could not capture browser extensions; repo left unchanged");
+      } else {
+        review(repo, temporary, true);
+      }
     } finally {
       rmSync(temporary, { recursive: true, force: true });
     }

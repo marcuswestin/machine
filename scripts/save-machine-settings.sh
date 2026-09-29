@@ -25,7 +25,17 @@ if [[ "$scope" == all || "$scope" == claude ]]; then
 fi
 if [[ "$scope" == all || "$scope" == browser ]]; then
   printf '\nResolve declared browser extensions one at a time.\n'
-  bun scripts/browser-extension-review.ts resolve "$repo_dir"
+  if bun scripts/browser-extension-review.ts resolve "$repo_dir"; then
+    :
+  else
+    browser_status=$?
+    if [[ "$scope" == all && "$browser_status" == 2 ]]; then
+      printf 'Browser extensions are UNVERIFIED; continuing with Thaw.\n' >&2
+      printf 'Run just import-from-machine browser from a Terminal with Chrome profile access later.\n' >&2
+    else
+      exit "$browser_status"
+    fi
+  fi
 fi
 if [[ "$scope" == all || "$scope" == thaw ]]; then
   bash scripts/export-thaw.sh
