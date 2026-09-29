@@ -54,7 +54,7 @@ test("conflicting UI value blocks apply without changing the local file", () => 
 });
 
 test("preflight explains noninteractive Codex conflicts", () => {
-  const f = fixture('service_tier = "priority"\n', 'service_tier = "default"\n');
+  const f = fixture("service_tier = \"priority\"\n", "service_tier = \"default\"\n");
   try {
     const result = f.run("preflight");
     expect(result.exitCode).toBe(1);

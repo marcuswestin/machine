@@ -164,7 +164,9 @@ function main(): void {
   }
   if (mode === "preflight") {
     if (conflicts.length && !process.stdin.isTTY) {
-      console.error("Codex managed-key conflicts need an interactive decision; run just import-from-machine to review:");
+      console.error(
+        "Codex managed-key conflicts need an interactive decision; run just import-from-machine to review:",
+      );
       for (const item of conflicts) console.error(`  ${dotted(item.path)}`);
       process.exitCode = 1;
       return;
