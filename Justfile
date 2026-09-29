@@ -334,6 +334,10 @@ _after-switch:
     @just _install-editor-extensions
     @echo "Opening startup apps..."
     @just _launch-startup-apps
+    @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+      echo "Restoring the declared display layout..."; \
+      just _display-layout-apply; \
+    fi
     @echo "Reloading AeroSpace configuration..."
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
