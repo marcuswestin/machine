@@ -51,7 +51,8 @@ approvals_reviewer = "auto_review"
   preventSleepWhileRunning = true
   keepRemoteControlAwakeWhilePluggedIn = true
   "notifications-turn-mode" = "always"
-  followUpQueueMode = "queue"
+  # Enter steers the running turn (like the Claude desktop app); Cmd+Enter queues via keybindings.json.
+  followUpQueueMode = "steer"
   git-branch-prefix = "feat/"
   git-pull-request-merge-method = "squash"
   defaultTerminalLocation = "bottom"

@@ -68,7 +68,8 @@ unless asked.
   under `home/` / `home/.dotfiles/` with
   chezmoi; use `chezmoi diff` for drift. Karabiner's JSON must render as a
   regular file because it cannot detect changes through a direct file symlink.
-  Codex portable defaults live in `config/codex/config.toml`. Its declared
+  Codex app keybindings (`~/.codex/keybindings.json` → `home/.dotfiles/codex/`)
+  are symlinked by chezmoi. Codex portable defaults live in `config/codex/config.toml`. Its declared
   keys are merged into the current user's writable `~/.codex/config.toml`;
   project trust, hook trust, app-generated paths, and other local keys stay
   there. Never symlink or import that whole file. `just import-from-machine`
