@@ -112,17 +112,24 @@ in
         -exec /bin/chmod u+rwX {} +
     ''}
 
-    # compaudit checks the owner of completion file targets, not just their
-    # directories or symlinks. Migrated files may still belong to the old user,
-    # including completions inside Docker.app. Resolve only completion entries;
-    # immutable Nix-store targets must never have ownership or modes changed.
+    # compaudit checks the owner and write permissions of completion targets,
+    # not just their directories or symlinks. Repair migrated entries only when
+    # needed: macOS rejects even a no-op chown inside a protected app bundle.
+    # Immutable Nix-store targets must never have ownership or modes changed.
     while IFS= read -r -d "" completion; do
       target="$(${pkgs.coreutils}/bin/realpath -e "$completion")"
       case "$target" in
         /nix/store/*) continue ;;
       esac
-      /usr/sbin/chown ${owner} "$target"
-      /bin/chmod go-w "$target"
+      target_owner="$(/usr/bin/stat -f %Su "$target")"
+      if [ "$target_owner" != ${lib.escapeShellArg brew.user} ] && [ "$target_owner" != root ]; then
+        /usr/sbin/chown ${owner} "$target"
+      fi
+      target_mode="$(/usr/bin/stat -f %Lp "$target")"
+      # Octal 022 selects group and other write bits, which compaudit rejects.
+      if [ "$(( 0$target_mode & 022 ))" -ne 0 ]; then
+        /bin/chmod go-w "$target"
+      fi
     done < <(/usr/bin/find -P "${prefix}/share/zsh" \( -type f -o -type l \) -print0)
 
     # Explicit package replacements only, before Bundle resolves conflicts.
