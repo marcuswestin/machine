@@ -17,7 +17,6 @@ export function appsForChanges(
   json: string,
   options: { skipDocker?: boolean; strict?: boolean } = {},
 ): string[] {
-  const skipDocker = options.skipDocker ?? process.env.MACHINE_SKIP_DOCKER === "1";
   const strict = options.strict ?? process.env.MACHINE_RESTART_STRICT === "1";
   const apps = new Set<string>();
   if (/^  MISSING /m.test(codex) || /^  CONFLICT /m.test(codex)) apps.add("ChatGPT");
@@ -49,20 +48,18 @@ export function appsForChanges(
   }
   const rows = JSON.parse(json) as { id: string; status: string; only_repo_keys?: string[]; diff_keys?: string[] }[];
   for (const row of rows) {
-    if (row.id === "docker-settings-store" && skipDocker) continue;
+    if (row.id === "docker-settings-store") continue;
     if (["permission_denied", "parse_error", "missing_repo"].includes(row.status)) {
       if (strict) {
         throw new Error(
           `${row.id} settings are unverified; resolve access or parse errors before apply-full`,
         );
       }
-      if (row.id === "docker-settings-store") apps.add("Docker");
       continue;
     }
     const changed = row.status === "missing_live" || row.status === "json_differs" || row.status === "text_differs"
       || (row.status === "report" && ((row.only_repo_keys?.length ?? 0) + (row.diff_keys?.length ?? 0) > 0));
     if (!changed) continue;
-    if (row.id === "docker-settings-store") apps.add("Docker");
     if (row.id.startsWith("vscode-family")) {
       apps.add("Cursor");
       apps.add("Visual Studio Code");

@@ -50,11 +50,13 @@ if [[ "$scope" == all || "$scope" == raycast ]]; then
   fi
 fi
 if [[ "$scope" == files ]]; then
+  printf 'Docker settings import, export, and apply are disabled for now.\n'
   printf '\nReview live app JSON/JSONC that does not already resolve to the repo.\n'
   printf 'Unknown machine-only keys can contain private data. Inspect each target before committing.\n'
   report="$(bun scripts/repo-settings-import.ts "$repo_dir" --json)"
   while IFS= read -r row; do
     id="$(jq -r '.id' <<< "$row")"
+    [[ "$id" == docker-settings-store ]] && continue
     status="$(jq -r '.status' <<< "$row")"
     repo_file="$(jq -r '.repo' <<< "$row")"
     live_file="$(jq -r '.live' <<< "$row")"
@@ -71,9 +73,6 @@ if [[ "$scope" == files ]]; then
     case "$id" in
       antigravity-ide-settings|vscode-family-settings|vscode-family-keybindings)
         bun scripts/repo-settings-import.ts "$repo_dir" --only "$id" --write-jsonc-vscode
-        ;;
-      docker-settings-store)
-        bun scripts/repo-settings-import.ts "$repo_dir" --only "$id" --write-lossy --write-docker
         ;;
       *)
         bun scripts/repo-settings-import.ts "$repo_dir" --only "$id" --write-lossy

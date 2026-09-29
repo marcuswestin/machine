@@ -15,9 +15,8 @@
  * config/raycast/settings.json manually (no stable public live path here).
  *
  * Docker Desktop: do not symlink `settings-store.json` into the Group Container
- * (the backend crashes). Use `--push-docker-live` to merge repo keys onto the
- * live file: merged = { ...live, ...repo } (same as merge-in-settings writes to
- * repo, but applied to disk where Docker reads it). Invoked from `just apply-to-machine`.
+ * (the backend crashes). Docker settings import, export, and apply are temporarily
+ * disabled. The Docker write flags print a notice and do not write either file.
  *
  * That live path sits under `~/Library/Group Containers/`, which macOS TCC
  * protects. Cursor/agent shells often lack Full Disk Access, so open/read/write
@@ -661,45 +660,23 @@ function main(): number {
   }
 
   if (parsed.pushDockerLive) {
-    const r = pushDockerLiveSettings(repoRoot);
-    if (parsed.asJson) {
-      console.log(JSON.stringify(r, null, 2));
-    } else if (r.status === "wrote_live") {
-      console.log(`docker-settings-store: wrote merged JSON → ${r.live}`);
-    } else if (r.status === "identical") {
-      console.log(`docker-settings-store: identical (${r.live})`);
-    } else if (r.status === "permission_denied") {
-      // Group Containers is TCC-protected; Cursor/agent shells often cannot open it.
-      console.warn(
-        `docker-settings-store: skipped (permission denied on Group Containers)${r.error ? `: ${r.error}` : ""}`,
-      );
-      console.warn(
-        "docker-settings-store: re-run from Terminal.app, or grant Full Disk Access to the IDE, when a Docker settings push is needed.",
-      );
-      return 1;
-    } else if (r.status === "symlink_blocked" || r.status === "not_a_file") {
-      console.error(
-        `docker-settings-store: ${r.status}${r.live ? ` (${r.live})` : ""}${r.error ? `: ${r.error}` : ""}`,
-      );
-      return 1;
-    } else if (r.status === "parse_error" || r.status === "missing_repo") {
-      console.error(`docker-settings-store: ${r.status}${r.error ? `: ${r.error}` : ""}`);
-      return 1;
-    } else {
-      console.log(`docker-settings-store: ${r.status}`);
-    }
-    if (!(parsed.writeLossy || parsed.writeJsoncVscode || parsed.writeDocker)) {
-      return 0;
-    }
+    console.log("Docker settings import, export, and apply are disabled for now.");
+    return 0;
+  }
+
+  if (parsed.writeDocker) {
+    console.log("Docker settings import, export, and apply are disabled for now.");
+    if (parsed.only === "docker-settings-store") return 0;
   }
 
   const rows: Record<string, unknown>[] = [];
   for (const t of targets) {
+    if (t.id === "docker-settings-store" && parsed.writeDocker) continue;
     rows.push(
       processTarget(repoRoot, t, {
         writeLossy: parsed.writeLossy,
         writeJsoncVscode: parsed.writeJsoncVscode,
-        writeDocker: parsed.writeDocker,
+        writeDocker: false,
         asJson: parsed.asJson,
       }),
     );

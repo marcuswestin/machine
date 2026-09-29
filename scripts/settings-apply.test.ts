@@ -75,7 +75,7 @@ test("full apply quits and restores only changed running apps", () => {
     expect(calls).not.toContain("quit Docker");
     expect(calls).not.toContain("open -gj -a Cursor");
     expect(calls).toContain("just diff settings");
-    expect(result.stdout.toString()).toContain("7. Docker: after it starts");
+    expect(result.stdout.toString()).toContain("Docker settings import, export, and apply are disabled for now.");
   } finally {
     rmSync(f.root, { recursive: true });
   }
@@ -92,18 +92,15 @@ test("dormant affected apps stay closed", () => {
   }
 });
 
-test("explicit Docker skip never quits Docker", () => {
+test("disabled Docker sync never quits Docker", () => {
   const f = fixture();
   try {
     const result = f.run("\n\n", {
       MOCK_PLAN: "Docker\nStats",
       MOCK_RUNNING: "1",
-      MACHINE_SKIP_DOCKER: "1",
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout.toString()).toContain("Docker settings and Docker restart are skipped");
-    expect(result.stdout.toString()).toContain("Docker settings were skipped by MACHINE_SKIP_DOCKER=1");
-    expect(result.stdout.toString()).not.toContain("7. Docker: after it starts");
+    expect(result.stdout.toString()).toContain("Docker settings import, export, and apply are disabled for now.");
     expect(f.calls()).not.toContain("quit Docker");
     expect(f.calls()).not.toContain("open -gj -a Docker");
     expect(f.calls()).toContain("quit Stats");
@@ -129,10 +126,11 @@ test("EOF before start does not apply, and unknown app status stops before mutat
 test("failed apply restores previously running affected apps", () => {
   const f = fixture();
   try {
-    expect(f.run("\n", { MOCK_PLAN: "Docker", MOCK_RUNNING: "1", FAIL_APPLY: "1" }).exitCode).toBe(1);
+    expect(f.run("\n", { MOCK_PLAN: "Docker\nStats", MOCK_RUNNING: "1", FAIL_APPLY: "1" }).exitCode).toBe(1);
     const calls = f.calls();
-    expect(calls.indexOf("quit Docker")).toBeLessThan(calls.indexOf("just _apply-to-machine"));
-    expect(calls.indexOf("just _apply-to-machine")).toBeLessThan(calls.indexOf("open -gj -a Docker"));
+    expect(calls.indexOf("quit Stats")).toBeLessThan(calls.indexOf("just _apply-to-machine"));
+    expect(calls.indexOf("just _apply-to-machine")).toBeLessThan(calls.indexOf("open -gj -a Stats"));
+    expect(calls).not.toContain("quit Docker");
     expect(calls).not.toContain("just diff settings");
   } finally {
     rmSync(f.root, { recursive: true });

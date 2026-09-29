@@ -8,13 +8,11 @@ cd "$repo_dir"
 # The full pass closes only apps with a saved setting that currently differs.
 bun "${repo_dir}/scripts/codex-config-sync.ts" preflight
 plan="$(MACHINE_RESTART_STRICT=1 just _restart-plan)"
-if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then
-  printf 'Docker settings and Docker restart are skipped for this run.\n'
-fi
+printf 'Docker settings import, export, and apply are disabled for now.\n'
 restart_apps=()
 if [[ -n "$plan" ]]; then
   while IFS= read -r app; do
-    if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 && "$app" == Docker ]]; then continue; fi
+    if [[ "$app" == Docker ]]; then continue; fi
     restart_apps+=("$app")
   done <<< "$plan"
 fi
@@ -30,8 +28,7 @@ settings_prompt "Step 1 of 4 — Prepare this Mac
    save work in affected apps.
 2. Changed settings require restarting these apps if running:
 ${plan:-   None detected.}
-   If Docker is listed, its containers will be interrupted. With
-   MACHINE_SKIP_DOCKER=1, Docker stays running and its settings are not applied.
+   Docker settings import, export, and apply are disabled for now.
 3. Be ready for sudo and native permission/import prompts. This runs the full
    apply-to-machine: system defaults, missing packages, dotfiles, and editor extensions.
 4. The command will relaunch previously running affected apps in the background
@@ -86,7 +83,6 @@ if ! just _apply-to-machine; then
     open -gj -a "$app"
   done
   printf 'Resolve its reported issue, then rerun just apply-to-machine full.\n' >&2
-  printf 'Docker access: use an authorized Terminal if Docker settings are in scope.\n' >&2
   printf 'Approve any native permission or import prompts through macOS; no consent is bypassed.\n' >&2
   exit 1
 fi
@@ -101,11 +97,7 @@ done
 just diff settings
 printf 'Settings checks finished. Preparing the final visual checklist...\n'
 
-if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then
-  docker_review='Docker settings were skipped by MACHINE_SKIP_DOCKER=1 and remain unverified.'
-else
-  docker_review='7. Docker: after it starts, verify its settings and containers.'
-fi
+docker_review='Docker settings import, export, and apply are disabled for now.'
 
 settings_prompt "Step 4 of 4 — Verify the visible result
 
@@ -113,7 +105,7 @@ The report above checked saved preferences. These steps cover live appearance,
 app behavior and choices that are local to this Mac.
 
 1. Review the report above. Resolve DIFF, MISSING, or UNVERIFIED items before
-   confirming, except Docker when MACHINE_SKIP_DOCKER=1. A command completing
+   confirming, except Docker while its settings sync is disabled. A command completing
    does not mean all settings match.
 2. Menu bar: Stats appears as one group ordered GPU → Network → Disk → Sensors
    → RAM → CPU → Battery; CodexBar shows one branded percentage item; Weather

@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync 
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
-test("Docker access denial fails apply and remains unverified in reports", () => {
+test("Docker apply is disabled and leaves the live file untouched", () => {
   const root = mkdtempSync(join(tmpdir(), "machine-docker-permissions-"));
   const home = join(root, "home");
   const repo = join(root, "repo");
@@ -21,8 +21,8 @@ test("Docker access denial fails apply and remains unverified in reports", () =>
         stderr: "pipe",
       });
     const apply = run(["--push-docker-live"]);
-    expect(apply.exitCode).toBe(1);
-    expect(apply.stderr.toString()).toContain("permission denied");
+    expect(apply.exitCode).toBe(0);
+    expect(apply.stdout.toString()).toContain("Docker settings import, export, and apply are disabled for now.");
     const report = run([]);
     expect(report.stdout.toString()).toContain("docker-settings-store: UNVERIFIED (permission denied)");
     const rows = JSON.parse(run(["--json"]).stdout.toString());

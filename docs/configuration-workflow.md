@@ -42,10 +42,9 @@ It does not reboot, prune, upgrade, commit, or push.
 If a detector cannot read a managed setting, it reports an unknown state or
 stops the full pass. A recorded Thaw or Raycast import confirms the user
 completed the step; it does not prove live UI layout. macOS privacy and login
-item consent remain native user actions. To defer Docker's protected settings
-and restart for one full apply, use
-`MACHINE_SKIP_DOCKER=1 just apply-to-machine full`; Docker then remains
-unverified and unchanged.
+item consent remain native user actions. Docker settings import, export, and
+apply are disabled for now; the commands print a notice and leave Docker
+running with its settings unchanged.
 
 ## Import settings from this Mac
 

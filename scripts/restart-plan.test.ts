@@ -19,15 +19,10 @@ test("only changed app settings enter the restart plan", () => {
     .toEqual(["AeroSpace", "ChatGPT", "Claude", "Stats"]);
 });
 
-test("unreadable Docker settings never count as matching", () => {
+test("disabled Docker settings never enter the restart plan", () => {
   expect(appsForChanges("", "", "", "", deniedDocker, { skipDocker: false }))
-    .toEqual(["Docker"]);
-  expect(() =>
-    appsForChanges("", "", "", "", deniedDocker, {
-      skipDocker: false,
-      strict: true,
-    })
-  ).toThrow("unverified");
+    .toEqual([]);
+  expect(appsForChanges("", "", "", "", deniedDocker, { strict: true })).toEqual([]);
 });
 
 test("explicit Docker skip leaves other restart checks strict", () => {

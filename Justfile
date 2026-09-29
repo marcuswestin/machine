@@ -179,13 +179,7 @@ _apply-to-machine: _check-macos
 _chezmoi-apply:
     @bash "{{ REPO }}/scripts/setup-handy.sh" "{{ REPO }}"
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
-    @if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then \
-      echo "Docker settings skipped for this apply (MACHINE_SKIP_DOCKER=1)."; \
-    elif [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
-      bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live; \
-    else \
-      echo "Docker live settings deferred to just apply-to-machine full."; \
-    fi
+    @echo "Docker settings import, export, and apply are disabled for now."
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 _settings-check:
