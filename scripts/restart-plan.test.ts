@@ -19,6 +19,11 @@ test("only changed app settings enter the restart plan", () => {
     .toEqual(["AeroSpace", "ChatGPT", "Claude", "Stats"]);
 });
 
+test("a changed Raycast hotkey restarts Raycast during full apply", () => {
+  expect(appsForChanges("", "", "", "[DIFF] com.raycast.macos: 4 declared keys, 1 differing/unset", "[]"))
+    .toEqual(["Raycast"]);
+});
+
 test("unreadable Docker settings never count as matching", () => {
   expect(appsForChanges("", "", "", "", deniedDocker, { skipDocker: false }))
     .toEqual(["Docker"]);

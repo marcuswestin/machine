@@ -15,7 +15,7 @@
       "navigationCommandStyleIdentifierKey": "macos"
     },
     "preferencesGeneral": {
-      "raycastGlobalHotkey": "Command-49",
+      "raycastGlobalHotkey": "Control-49",
       "raycastAlternativeEscape": false
     },
     "preferencesAppearance": {

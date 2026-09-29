@@ -46,6 +46,7 @@ export function appsForChanges(
     if (line.includes("com.google.Chrome")) apps.add("Google Chrome");
     if (line.includes("bobko.aerospace")) apps.add("AeroSpace");
     if (line.includes("com.openai.chat")) apps.add("ChatGPT");
+    if (line.includes("com.raycast.macos")) apps.add("Raycast");
   }
   const rows = JSON.parse(json) as { id: string; status: string; only_repo_keys?: string[]; diff_keys?: string[] }[];
   for (const row of rows) {
