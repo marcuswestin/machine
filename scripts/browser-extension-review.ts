@@ -82,7 +82,7 @@ function review(repo: string, liveDir: string, interactive: boolean): void {
       const answer = answerLine();
       if (answer === "r") removeChromeDeclaration(repo, item);
       else if (answer === "" || answer === "k") {
-        console.log("  Kept in the repo. Run just apply-full for a guided Chrome Web Store install.");
+        console.log("  Kept in the repo. Run just apply-to-machine full for a guided Chrome Web Store install.");
       } else console.log("  Skipped; repo unchanged.");
     }
     for (const item of extra) {

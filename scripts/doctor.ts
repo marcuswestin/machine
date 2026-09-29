@@ -100,7 +100,7 @@ export function appArtifactPath(artifact: unknown[], appdir: string): string | u
 function main() {
   const args = process.argv.slice(2);
   if (args.some(a => a !== "--json")) {
-    console.error("Usage: just doctor [--json]");
+    console.error("Usage: just check machine [--json]");
     process.exitCode = 64;
     return;
   }
@@ -132,7 +132,7 @@ function main() {
         check: name,
         status: "UNKNOWN",
         detail: String(e).slice(0, 700),
-        action: "Run just doctor in a normal Terminal if access was denied; inspect the reported error.",
+        action: "Run just check machine in a normal Terminal if access was denied; inspect the reported error.",
       });
     }
   }
@@ -149,7 +149,7 @@ function main() {
         : {
           status: "FAIL",
           detail: "managed symlink is missing, broken, or differs",
-          action: "Run just chezmoi-apply; reopen affected apps afterward.",
+          action: "Run just apply-to-machine dotfiles; reopen affected apps afterward.",
         };
     });
   }
@@ -180,7 +180,7 @@ function main() {
       return {
         status: "FAIL",
         detail: "/run/current-system is missing",
-        action: "Review machine-nix-boot background permission, then run just apply.",
+        action: "Review machine-nix-boot background permission, then run just apply-to-machine.",
       };
     }
     const active = realpathSync("/run/current-system");
@@ -190,7 +190,7 @@ function main() {
       detail: active === selected
         ? "active generation matches the selected system profile (not a build comparison with Git)"
         : "active and selected generations differ",
-      ...(active !== selected ? { action: "Run just apply." } : {}),
+      ...(active !== selected ? { action: "Run just apply-to-machine." } : {}),
     };
   });
   const uid = Number(required("id", ["-u"]));
@@ -206,7 +206,7 @@ function main() {
         return {
           status: "FAIL",
           detail: "service is not registered",
-          action: "Review Background App Activity permission, then run just apply.",
+          action: "Review Background App Activity permission, then run just apply-to-machine.",
         };
       }
       if (r.code !== 0) throw new Error(r.error || r.out);
@@ -251,7 +251,7 @@ function main() {
             ? "no hidutil mappings active; test Karabiner's Caps Lock tap/hold behavior physically"
             : "declared mappings found in HID service output; physical keyboard behavior not tested"
           : "HID service mappings do not match the declarations",
-        ...(!found ? { action: "Run just apply and test the physical keyboard." } : {}),
+        ...(!found ? { action: "Run just apply-to-machine and test the physical keyboard." } : {}),
       };
     });
     check("Startup applications", () => {
@@ -304,7 +304,7 @@ function main() {
         ...(missing.length
           ? {
             action:
-              "Inspect missing packages or moved app bundles before reinstalling; just apply does not repair stale receipts.",
+              "Inspect missing packages or moved app bundles before reinstalling; just apply-to-machine does not repair stale receipts.",
           }
           : {}),
       };
@@ -314,13 +314,13 @@ function main() {
       findings.push({ check: name, status: "UNKNOWN", detail: "could not evaluate declarations" });
     }
   }
-  script("Editor symlinks", "check-vscode-family-symlinks.sh", [repo], "Run just chezmoi-apply.");
+  script("Editor symlinks", "check-vscode-family-symlinks.sh", [repo], "Run just apply-to-machine dotfiles.");
   symlink(
     "Handy settings",
     join(home, "Library/Application Support/com.pais.handy/settings_store.json"),
     join(repo, "home/.dotfiles/handy/settings_store.json"),
   );
-  script("Handy model", "setup-handy.sh", [repo, "check"], "Run just chezmoi-apply, then reopen Handy.");
+  script("Handy model", "setup-handy.sh", [repo, "check"], "Run just apply-to-machine dotfiles, then reopen Handy.");
   check("Karabiner settings", () => {
     const live = join(home, ".config/karabiner/karabiner.json");
     const source = join(repo, "home/.dotfiles/karabiner/karabiner.json");
@@ -334,7 +334,7 @@ function main() {
     return {
       status: "FAIL",
       detail: "regular config file is missing, is a symlink, or differs from the repository",
-      action: "Run just chezmoi-apply so Karabiner can detect future config changes.",
+      action: "Run just apply-to-machine dotfiles so Karabiner can detect future config changes.",
     };
   });
   check("AeroSpace config", () => {
@@ -355,7 +355,7 @@ function main() {
       status: conflicts || missing ? "WARN" : "OK",
       detail: output,
       ...(conflicts || missing
-        ? { action: "Review with just save-machine-settings; run just apply for missing managed keys." }
+        ? { action: "Review with just import-from-machine; run just apply-to-machine for missing managed keys." }
         : {}),
     };
   });
@@ -365,7 +365,9 @@ function main() {
     return {
       status: pending ? "WARN" : "OK",
       detail: output,
-      ...(pending ? { action: "Run just apply-full and complete or confirm the native Thaw profile apply." } : {}),
+      ...(pending
+        ? { action: "Run just apply-to-machine full and complete or confirm the native Thaw profile apply." }
+        : {}),
     };
   });
   check("Time Machine", () => {

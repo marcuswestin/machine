@@ -26,7 +26,7 @@ differences="$(jq -nr --argjson desired "$desired" --argjson actual "$actual" '
 ')"
 if [[ -n "$differences" ]]; then
   printf 'Stats preferences differ from the repository:\n%s\n' "$differences"
-  printf 'Quit Stats, run just apply, then reopen Stats to load the declared preferences.\n'
+  printf 'Quit Stats, run just apply-to-machine, then reopen Stats to load the declared preferences.\n'
 else
   printf 'Saved Stats preferences match all declared keys.\n'
 fi

@@ -13,7 +13,7 @@ err=0
 check_resolves() {
   local label="$1" path="$2" expected="$3"
   if [[ ! -e "$path" ]]; then
-    printf 'vscode-family symlink check: missing %s — run: just chezmoi-apply\n' "$label" >&2
+    printf 'vscode-family symlink check: missing %s — run: just apply-to-machine dotfiles\n' "$label" >&2
     err=1
     return
   fi
@@ -22,7 +22,7 @@ check_resolves() {
   if [[ "$got" != "$expected" ]]; then
     printf 'vscode-family symlink check: %s drifts from repo canonical copy.\n' "$label" >&2
     printf '  %s\n  resolves to: %s\n  expected:      %s\n' "$path" "$got" "$expected" >&2
-    printf 'Replace with chezmoi symlinks: just chezmoi-apply\n' >&2
+    printf 'Replace with chezmoi symlinks: just apply-to-machine dotfiles\n' >&2
     err=1
   fi
 }

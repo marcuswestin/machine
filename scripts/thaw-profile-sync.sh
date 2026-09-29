@@ -23,7 +23,7 @@ if ! jq -e -s '
       (.appearanceConfiguration | type == "object") and
       (.menuBarLayout | type == "object")))
 ' "$profile" > /dev/null; then
-  printf 'Expected one native Thaw profile in %s; run just export-thaw.\n' "$profile" >&2
+  printf 'Expected one native Thaw profile in %s; run just import-from-machine thaw.\n' "$profile" >&2
   exit 1
 fi
 name="$(jq -r '.entries[0].profile.name' "$profile")"
@@ -38,7 +38,7 @@ if [[ "$mode" == check ]]; then
   if [[ "$current" == "$confirmed" ]]; then
     printf 'Saved Thaw profile matches the last user-confirmed apply.\n'
   else
-    printf 'Saved Thaw profile awaits import/apply confirmation; run just apply-full.\n'
+    printf 'Saved Thaw profile awaits import/apply confirmation; run just apply-to-machine full.\n'
   fi
   printf 'This checks the confirmation record, not current Thaw settings or item positions.\n'
   exit 0

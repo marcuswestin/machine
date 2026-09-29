@@ -17,7 +17,7 @@
  * Docker Desktop: do not symlink `settings-store.json` into the Group Container
  * (the backend crashes). Use `--push-docker-live` to merge repo keys onto the
  * live file: merged = { ...live, ...repo } (same as merge-in-settings writes to
- * repo, but applied to disk where Docker reads it). Invoked from `just chezmoi-apply`.
+ * repo, but applied to disk where Docker reads it). Invoked from `just apply-to-machine`.
  *
  * That live path sits under `~/Library/Group Containers/`, which macOS TCC
  * protects. Cursor/agent shells often lack Full Disk Access, so open/read/write
@@ -583,6 +583,7 @@ function processTarget(
 
 function parseCli(argv: string[]): {
   repo: string;
+  only: string | null;
   writeLossy: boolean;
   writeJsoncVscode: boolean;
   writeDocker: boolean;
@@ -595,6 +596,7 @@ function parseCli(argv: string[]): {
   let writeDocker = false;
   let pushDockerLive = false;
   let asJson = false;
+  let only: string | null = null;
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i]!;
     if (a === "--write-lossy") {
@@ -607,6 +609,12 @@ function parseCli(argv: string[]): {
       pushDockerLive = true;
     } else if (a === "--json") {
       asJson = true;
+    } else if (a === "--only") {
+      only = argv[++i] ?? null;
+      if (!only || only.startsWith("-")) {
+        console.error("error: --only requires a target ID");
+        return null;
+      }
     } else if (a.startsWith("-")) {
       console.error(`error: unknown flag: ${a}`);
       return null;
@@ -616,12 +624,13 @@ function parseCli(argv: string[]): {
   }
   if (positionals.length < 1) {
     console.error(
-      "usage: repo-settings-import.ts <repo-root> [--write-lossy] ... [--push-docker-live] (run via: just merge-in-settings …)",
+      "usage: repo-settings-import.ts <repo-root> [--only target-id] [--write-lossy] ... [--push-docker-live]",
     );
     return null;
   }
   return {
     repo: positionals[0]!,
+    only,
     writeLossy,
     writeJsoncVscode,
     writeDocker,
@@ -639,6 +648,15 @@ function main(): number {
   const homeDir = path.join(repoRoot, "home");
   if (!fs.existsSync(homeDir) || !fs.statSync(homeDir).isDirectory()) {
     console.error(`error: not a machine repo (missing home/): ${repoRoot}`);
+    return 2;
+  }
+  const targets = parsed.only ? TARGETS.filter((target) => target.id === parsed.only) : TARGETS;
+  if (targets.length === 0) {
+    console.error(`error: unknown settings target: ${parsed.only}`);
+    return 2;
+  }
+  if (parsed.pushDockerLive && parsed.only && parsed.only !== "docker-settings-store") {
+    console.error("error: --push-docker-live cannot be combined with --only for another target");
     return 2;
   }
 
@@ -676,7 +694,7 @@ function main(): number {
   }
 
   const rows: Record<string, unknown>[] = [];
-  for (const t of TARGETS) {
+  for (const t of targets) {
     rows.push(
       processTarget(repoRoot, t, {
         writeLossy: parsed.writeLossy,

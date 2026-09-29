@@ -3,8 +3,8 @@
 Declarative macOS setup for my machines.
 
 The target is **macOS 27**, declared once as `TARGET_MACOS_MAJOR` in `up.sh`.
-The installer, `scripts/up-local.sh`, and `just apply`, `just update`, and
-`just upgrade` reject a different major version before making setup changes
+The installer, `scripts/up-local.sh`, `just apply-to-machine`, and `just update`
+reject a different major version before making setup changes
 or prompting for sudo. Minor and patch releases within that major are allowed.
 When adopting another macOS major, update that declaration after validating
 the setup on it. `system.stateVersion` is a separate nix-darwin migration pin.
@@ -19,7 +19,7 @@ To deliberately test another macOS major, override only for that invocation:
 
 ```sh
 MACHINE_ALLOW_UNSUPPORTED_MACOS=1 bash scripts/up-local.sh
-# Or: MACHINE_ALLOW_UNSUPPORTED_MACOS=1 just apply
+# Or: MACHINE_ALLOW_UNSUPPORTED_MACOS=1 just apply-to-machine
 ```
 
 The same environment override works with the fresh-machine installer below.
@@ -64,8 +64,8 @@ post-install quit warning do not require local cleanup.
 
 ## Machine health
 
-Run `just doctor` for a read-only operational health summary, or
-`just doctor --json` for structured output. It checks Nix activation and required
+Run `just check machine` for a read-only operational health summary, or
+`just check machine --json` for structured output. It checks Nix activation and required
 background permissions, declared startup apps and package paths, keyboard
 mapping, managed editor/Handy/Karabiner configs, Handy's model checksum, AeroSpace,
 Codex drift, Thaw's last confirmation, and Time Machine destination configuration.
@@ -81,7 +81,7 @@ normal read/evaluation caches. It reports suggested actions without executing th
 
 This is not a security advisory scan or full installed-version audit. Use the
 `review-machine-repo` skill for that, `just diff` for read-only tracked drift,
-`just import-inventory tracked` for an optional local snapshot, and `just verify`
+`just discover snapshot tracked` for an optional local snapshot, and `just check repo`
 for repository validation. An active Nix
 generation is not proof it matches the current Git tree; running apps are not
 proof of functionality; import confirmation is not proof of live app settings.
@@ -95,7 +95,7 @@ proof of functionality; import confirmation is not proof of live app settings.
 - Global Codex and Claude instructions share
   `home/.dotfiles/agents/global-instructions.md`. Chezmoi renders it into
   `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`; edit the shared source and run
-  `just chezmoi-apply` to distribute changes. These are regular files because
+  `just apply-to-machine dotfiles` to distribute changes. These are regular files because
   Claude Cowork skips global instruction symlinks outside its working directory.
   New sessions load the rule to keep automation windows in the background when
   supported. These instructions do not change either tool's writable local state.
@@ -103,15 +103,15 @@ proof of functionality; import confirmation is not proof of live app settings.
 - Karabiner-Elements: keyboard semantics, physical key behavior, and key
   remapping only. The managed `Machine` profile maps Caps Lock to Escape when
   tapped alone and Control while held with another key. Escape is sent on release
-  (Karabiner's default tap timeout is one second). nix-darwin clears its older
+  (the declared tap timeout is 500 ms). nix-darwin clears its older
   Caps-to-Control mapping so Karabiner receives the original key. Enable
   Karabiner's requested macOS permissions on each Mac; test both a tap and a
-  Control shortcut after `just apply`. Chezmoi renders a regular
+  Control shortcut after `just apply-to-machine`. Chezmoi renders a regular
   `~/.config/karabiner/karabiner.json` from the tracked source because Karabiner
   does not reload changes when that file is a symlink. No Mac restart is needed
   for the rule.
 
-`just apply` installs missing Homebrew packages but does not upgrade or
+`just apply-to-machine` installs missing Homebrew packages but does not upgrade or
 downgrade apps that are already present, including those that self-update.
 The Homebrew tap commits in `flake.lock` supply install versions for ordinary
 casks. Local casks under `homebrew/local/` pin a verified release and checksum
@@ -120,7 +120,7 @@ Homebrew receipt or local cask; that difference is reported during review, not
 automatically copied into a pin. Advance a local pin after checking the upstream
 release, download, and compatibility with this Mac.
 
-`just upgrade` upgrades outdated declared casks that Homebrew manages. It leaves
+`just update casks` upgrades outdated declared casks that Homebrew manages. It leaves
 self-updating apps to their own updaters; name one explicitly to upgrade it
 through Homebrew. `just update` bumps the Homebrew tap pins in `flake.lock`,
 applies, then upgrades declared formulae and Homebrew-managed casks. The upgrade
@@ -134,13 +134,13 @@ or startup app launches. The login LaunchAgent defers to the apply process while
 it is running, so loading the agent during the switch cannot launch apps early.
 Dotfiles and app settings are applied before Xcode downloads, GitHub sign-in,
 and Raycast import, so an interruption in those steps leaves the settings in
-place. `chezmoi-apply` stops Handy first and downloads its configured transcription
+place. The dotfiles apply provisions Handy's configured transcription
 model before applying settings. The existing Parakeet TDT 0.6B v3 Q8 model is
 pinned by revision and SHA-256 in `config/handy/models.json`; verified existing
 files in Handy's model folder or its Hugging Face cache are reused. Downloads
-stay outside Git. `just diff-tracked` reports missing or mismatched model files.
+stay outside Git. `just diff` reports missing or mismatched model files.
 Handy's managed shortcut is hold Right Command; the full apply launches Handy
-afterward, or reopen it manually after running only `just chezmoi-apply`.
+afterward, or reopen it manually after running only `just apply-to-machine dotfiles`.
 
 Raycast's first-launch tour and Stats' setup wizard are disabled by declared
 preferences before startup. This does not grant macOS privacy permissions or
@@ -157,11 +157,11 @@ opens its own popup. Stats owns this internal order; Thaw owns the position of
 the whole group. Hardware-unavailable modules are omitted without reordering
 the others. After switching from separate items, place the single group in Thaw
 if necessary; a previously exported profile can still contain obsolete individual
-Stats entries. Use `just export-thaw` after adjusting the overall layout.
-On another Mac, quit Stats before `just apply`, then reopen Stats; no Mac restart
+Stats entries. Use `just import-from-machine thaw` after adjusting the overall layout.
+On another Mac, quit Stats before `just apply-to-machine`, then reopen Stats; no Mac restart
 is needed. Stats can omit modules that the hardware does not support. If its
 items are still absent, check System Settings → Menu Bar → Stats and Thaw's
-visibility settings. `just diff-tracked` compares the declared preferences with
+visibility settings. `just diff` compares the declared preferences with
 saved Stats preferences; run `bash scripts/check-stats-config.sh` for that check
 alone. Remote pairing, updater state, and window state remain local.
 
@@ -178,7 +178,7 @@ workspace-dependent AeroSpace anchor. Import and apply the updated native profil
 when prompted; adjust display associations on another Mac. Profiles position
 existing items; they do not enable Weather or other macOS controls. Sound visibility
 is declared through nix-darwin. macOS has no declared Weather menu control in this
-repo: `just apply-full` asks you to confirm System Settings > Menu Bar > Weather
+repo: `just apply-to-machine full` asks you to confirm System Settings > Menu Bar > Weather
 and its visible menu bar item. The former UI script could not reliably read that
 control even with iTerm's permissions enabled, so apply no longer runs it.
 Weather's first location determines the displayed city; location permissions
@@ -186,14 +186,14 @@ and list order stay local.
 Raycast imports now record completion only after you confirm the native import;
 older stamps that recorded merely opening the export are not accepted as proof.
 
-`just settings-check` reports saved custom app-defaults drift, CodexBar provider
+`just diff settings` reports saved custom app-defaults drift, CodexBar provider
 toggles, managed JSON/file drift, and Codex overrides and Thaw/Raycast confirmations.
 It prints a manual Weather check instead of claiming to read that UI state. It does not write settings and
 prints preference key names, not private values. A successful command means the
 report ran; it does not mean every app is configured. It excludes first-class
 macOS defaults, other live UI layout, permissions, and untracked settings. See the
 [configuration coverage review](docs/reviews/2026-09-26-configuration-sync.md)
-for remaining gaps and verification steps. `just discover-app-settings` inventories
+for remaining gaps and verification steps. `just discover apps` inventories
 candidate paths and preference keys locally; it does not import those settings.
 
 Additional portable settings are managed for Claude Desktop (a narrow recursive
@@ -208,21 +208,21 @@ remain owned by browser sync. Docker settings access failures now fail the apply
 step instead of reporting success with skipped settings.
 `just diff` reports a declared browser extension missing on the Mac in words;
 the raw `-`/`+` diff is no longer used for that section. The repo still keeps
-iCloud Passwords. `just save-machine-settings` reviews browser extensions one
+iCloud Passwords. `just import-from-machine browser` reviews browser extensions one
 at a time, and refuses to interpret an unreadable browser profile as empty.
 
 Use the [single-pass verification checklist](docs/reviews/2026-09-27-settings-acceptance.md)
 after applying on each Mac. These declarations do not replace app credentials,
 privacy permission prompts, or per-display Thaw associations.
 
-Use `just diff` for a read-only comparison. `just apply` installs and applies
+Use `just diff` for a read-only comparison. `just apply-to-machine` installs and applies
 declarations without intentionally quitting desktop apps; it prints apps with
-pending restart work. `just apply-full` is the guided pass: it lists affected
+pending restart work. `just apply-to-machine full` is the guided pass: it lists affected
 running apps, waits for Enter, then quits only those apps, applies settings,
 reopens them in the background, and walks through native imports and visual
 verification. Docker containers may be interrupted when Docker needs restarting.
 Ctrl-C/EOF leaves a native import confirmation pending. Neither command reboots
-the Mac. `just save-machine-settings` reviews portable values changed in the UI
+the Mac. `just import-from-machine` reviews portable values changed in the UI
 and selectively promotes them into the repo. See
 [configuration commands](docs/configuration-workflow.md) for scope and limits.
 
@@ -230,6 +230,7 @@ Codex's `config/codex/config.toml` is a per-user key allowlist. Apply merges
 missing declared keys into writable `~/.codex/config.toml`, leaving project
 trust, app state, and unlisted keys alone. If a declared key changed in the UI,
 apply stops before the system switch and asks for review through
-`just save-machine-settings`. The repo file is never silently overwritten.
+`just import-from-machine`. The repo file is never silently overwritten.
 
-`just prune-diff` includes chezmoi drift alongside other undeclared state.
+`just prune plan` previews undeclared package and extension removals; chezmoi
+drift appears in `just diff` and is never a prune candidate.

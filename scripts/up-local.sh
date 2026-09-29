@@ -13,9 +13,9 @@ nix_cmd() {
 
 main() {
   bash "$(dirname "${BASH_SOURCE[0]}")/../up.sh" --check-os
-  info "Running just apply"
+  info "Running just apply-to-machine"
   export MACHINE_HOST
-  nix_cmd shell nixpkgs#just -c just apply
+  nix_cmd shell nixpkgs#just -c just apply-to-machine
 }
 
 main "$@"

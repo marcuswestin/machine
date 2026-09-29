@@ -6,29 +6,177 @@ REPO := justfile_directory()
 HOST := env_var_or_default("MACHINE_HOST", "machine")
 NIX_CMD := "nix --extra-experimental-features 'nix-command flakes'"
 
-# List all recipes
+# List public workflows.
 help:
-    @just --list
+    @just --list --unsorted
 
-# Read-only machine health summary; --json emits structured results (no repairs).
+# Apply repo declarations to this Mac; full restarts apps, dotfiles limits the scope.
+[group('Configure')]
+apply-to-machine mode="normal":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case {{ quote(mode) }} in
+      normal) MACHINE_APPLY_MODE=basic just _apply-to-machine ;;
+      full) bash "{{ REPO }}/scripts/settings-apply.sh" ;;
+      dotfiles) MACHINE_APPLY_MODE=basic just _chezmoi-apply ;;
+      *) printf 'usage: just apply-to-machine [normal|full|dotfiles]\n' >&2; exit 64 ;;
+    esac
+
+# Review portable machine settings and import selected values into the repo.
+[group('Configure')]
+import-from-machine scope="all":
+    @bash "{{ REPO }}/scripts/save-machine-settings.sh" {{ quote(scope) }}
+
+# Compare declared state with this Mac; snapshot compares an earlier local capture.
+[group('Inspect')]
+diff scope="all" inventory="tracked":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case {{ quote(scope) }} in
+      all) "{{ REPO }}/scripts/diff-tracked.sh" ;;
+      settings) just _settings-check ;;
+      prune) just _prune-removals-diff ;;
+      snapshot) just _snapshot-diff {{ quote(inventory) }} ;;
+      *) printf 'usage: just diff [all|settings|prune|snapshot [tracked|global]]\n' >&2; exit 64 ;;
+    esac
+
+# Validate repo source, current machine health, or both (read-only).
+[group('Inspect')]
+[positional-arguments]
+check scope="all" *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scope="$1"
+    shift
+    case "$scope" in
+      repo)
+        if (( $# != 0 )); then
+          printf 'usage: just check [all|repo|machine [--json]]\n' >&2
+          exit 64
+        fi
+        just _verify
+        ;;
+      machine) just _doctor "$@" ;;
+      all)
+        if (( $# != 0 )); then
+          printf 'usage: just check [all|repo|machine [--json]]\n' >&2
+          exit 64
+        fi
+        repo_status=0
+        machine_status=0
+        just _verify || repo_status=$?
+        just _doctor || machine_status=$?
+        if (( (repo_status != 0 && repo_status != 2) || (machine_status != 0 && machine_status != 2) )); then exit 1; fi
+        if (( repo_status != 0 || machine_status != 0 )); then exit 2; fi
+        ;;
+      *) printf 'usage: just check [all|repo|machine [--json]]\n' >&2; exit 64 ;;
+    esac
+
+# Find unmanaged candidates, or capture an ignored local inventory snapshot.
+[group('Inspect')]
+discover scope="global" inventory="tracked":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case {{ quote(scope) }} in
+      global) "{{ REPO }}/scripts/discover-global.sh" ;;
+      apps) bun "{{ REPO }}/scripts/app-settings-candidates.ts" ;;
+      snapshot) "{{ REPO }}/scripts/import-inventory.sh" {{ quote(inventory) }} ;;
+      *) printf 'usage: just discover [global|apps|snapshot [tracked|global]]\n' >&2; exit 64 ;;
+    esac
+
+# Update pinned taps and installed packages, or upgrade declared casks only.
+[group('Maintain')]
+[positional-arguments]
+update scope="all" *casks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scope="$1"
+    shift
+    case "$scope" in
+      all)
+        if (( $# != 0 )); then
+          printf 'usage: just update [all|casks [cask...]]\n' >&2
+          exit 64
+        fi
+        just _update-all
+        ;;
+      casks) just _upgrade "$@" ;;
+      *) printf 'usage: just update [all|casks [cask...]]\n' >&2; exit 64 ;;
+    esac
+
+# Preview undeclared package/extension removals, or apply them explicitly.
+[group('Maintain')]
+prune mode="plan":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case {{ quote(mode) }} in
+      plan) just _prune-removals-diff ;;
+      apply)
+        just _prune-removals-diff
+        just _prune-homebrew-apply
+        just _prune-editor-extensions-apply
+        ;;
+      *) printf 'usage: just prune [plan|apply]\n' >&2; exit 64 ;;
+    esac
+
+# Format repo files with dprint.
+[group('Develop')]
+fmt:
+    dprint fmt .
+
+# Hidden compatibility names; new workflows use the grouped public recipes.
+[private]
+apply: apply-to-machine
+[private]
+apply-full:
+    @just apply-to-machine full
+[private]
+apply-settings: apply-full
+[private]
+settings-apply: apply-full
+[private]
+chezmoi-apply: _chezmoi-apply
+[private]
+save-machine-settings scope="all":
+    @just import-from-machine {{ quote(scope) }}
+[private]
+diff-tracked: diff
+[private]
+prune-diff: _prune-removals-diff
+[private]
 doctor *args:
-    @bun "{{ REPO }}/scripts/doctor.ts" {{ args }}
+    @just _doctor {{ args }}
+[private]
+verify: _verify
+[private]
+upgrade *casks:
+    @just _upgrade {{ casks }}
+[private]
+discover-global:
+    @just discover global
+[private]
+discover-app-settings:
+    @just discover apps
+[private]
+import-inventory scope="global":
+    @just discover snapshot {{ quote(scope) }}
+[private]
+export-thaw source="":
+    @bash "{{ REPO }}/scripts/export-thaw.sh" {{ quote(source) }}
+[private]
+settings-check: _settings-check
+[private]
+merge-in-settings *args:
+    @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" {{ args }}
+[private]
+git-auth: _git-auth
 
-# Apply declarations without intentionally quitting desktop apps; report pending restarts.
-apply: _check-macos
+# Private implementation recipes.
+_apply-to-machine: _check-macos
     @bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
     @scripts/with-sudo-keepalive.sh just _apply
 
-# Apply declarations, restart only affected apps, and guide native imports.
-apply-full:
-    @bash "{{ REPO }}/scripts/settings-apply.sh"
-
-# Compatibility names for the guided full apply.
-apply-settings: apply-full
-settings-apply: apply-full
-
-# Apply dotfile changes with chezmoi
-chezmoi-apply:
+_chezmoi-apply:
     @bash "{{ REPO }}/scripts/setup-handy.sh" "{{ REPO }}"
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
     @if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then \
@@ -36,39 +184,11 @@ chezmoi-apply:
     elif [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
       bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --push-docker-live; \
     else \
-      echo "Docker live settings deferred to just apply-full."; \
+      echo "Docker live settings deferred to just apply-to-machine full."; \
     fi
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
-# Capture machine state into inventory-tracked/ or inventory-global/ (see AGENTS.md).
-import-inventory scope="global":
-    @"{{ REPO }}/scripts/import-inventory.sh" "{{ scope }}"
-
-# Guide a Thaw profile export and save its JSON in the repo (optional file path).
-export-thaw source="":
-    @bash "{{ REPO }}/scripts/export-thaw.sh" {{ quote(source) }}
-
-# Read-only comparison of tracked declarations, packages, and selected app settings.
-diff:
-    @"{{ REPO }}/scripts/diff-tracked.sh"
-
-# Compatibility name for tracked drift review.
-diff-tracked: diff
-
-# Review portable changes made in app UIs before promoting them into the repo.
-save-machine-settings scope="all":
-    @bash "{{ REPO }}/scripts/save-machine-settings.sh" {{ quote(scope) }}
-
-# Discover unmanaged global machine surfaces that may be worth tracking.
-discover-global:
-    @"{{ REPO }}/scripts/discover-global.sh"
-
-# Discover persisted app settings candidates for declared Homebrew casks.
-discover-app-settings:
-    bun "{{ REPO }}/scripts/app-settings-candidates.ts"
-
-# Report declared settings/import drift; Weather remains a native UI check.
-settings-check:
+_settings-check:
     @/usr/bin/python3 "{{ REPO }}/scripts/check-app-defaults.py" "{{ HOST }}"
     @bun "{{ REPO }}/scripts/app-preferences.ts" check
     @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}"
@@ -79,47 +199,28 @@ settings-check:
     @echo "[MANUAL] Weather: confirm System Settings > Menu Bar > Weather is on and visible in the menu bar."
     @echo "Automated settings checks complete. The remaining checks are visual."
 
-# Merge live app JSON/JSONC into chezmoi-backed repo files (report by default; see scripts/repo-settings-import.ts).
-merge-in-settings *args:
-    bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" {{ args }}
-
-# Authenticate GitHub CLI and configure GitHub HTTPS pushes.
-git-auth:
-    @just _git-auth
-
-# Homebrew, editor extensions, and chezmoi only (used by `_prune-check` and `diff-tracked`).
-prune-diff:
+_prune-removals-diff:
     @just _prune-homebrew-diff
     @just _prune-editor-extensions-diff
-    @just _prune-dotfiles-diff
 
-# Remove undeclared Homebrew formulae/casks and editor extensions, then apply dotfiles.
-prune:
-    @just _prune-homebrew-apply
-    @just _prune-editor-extensions-apply
-    @just chezmoi-apply
+_doctor *args:
+    @bun "{{ REPO }}/scripts/doctor.ts" {{ args }}
 
-# Upgrade outdated declared Homebrew casks. Name a self-updating cask to upgrade it deliberately.
-upgrade *casks: _check-macos
-    @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" {{ casks }}
-
-# Bump Homebrew and tap pins, apply, then upgrade declared formulae and casks.
-update: _check-macos
-    {{ NIX_CMD }} flake update nix-homebrew homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
-    @just apply
-    @scripts/update-homebrew-apps.sh "{{ HOST }}"
-    @just upgrade
-    @just _unquarantine-cask-apps
-
-# Format repo files with dprint. Uses `./dprint.json` at repo root (extends chezmoi-config).
-fmt:
-    dprint fmt .
-
-# Validate the Nix flake without applying it.
-verify:
+_verify:
     dprint check .
     @"{{ REPO }}/scripts/check-vscode-family-symlinks.sh" "{{ REPO }}"
     {{ NIX_CMD }} flake check --show-trace
+
+[positional-arguments]
+_upgrade *casks: _check-macos
+    @bash scripts/upgrade-homebrew-casks.sh "{{ HOST }}" "$@"
+
+_update-all: _check-macos
+    {{ NIX_CMD }} flake update nix-homebrew homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
+    @just apply-to-machine
+    @scripts/update-homebrew-apps.sh "{{ HOST }}"
+    @just _upgrade
+    @just _unquarantine-cask-apps
 
 # Private recipes
 #################
@@ -148,7 +249,7 @@ _snapshot-diff scope="global":
 _plist-sidecars *paths:
     @"{{ REPO }}/scripts/plist-sidecars.sh" {{ paths }}
 
-# Force Raycast .rayconfig rebuild + open (ignores change stamp). Normal path: `import-inventory global` or `_after-switch`.
+# Force Raycast .rayconfig rebuild + open (ignores change stamp). Normal path: `discover snapshot global` or `_after-switch`.
 _raycast-import-force:
     @"{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" force
 
@@ -173,8 +274,8 @@ _apply:
     just _after-switch
     echo "Machine setup complete."
     if [[ "${MACHINE_APPLY_MODE:-basic}" != full && -n "$pending" ]]; then
-      printf 'App settings still need apply-full or a restart:\n%s\n' "$pending"
-      printf 'Run just apply-full from Terminal.app when ready.\n'
+      printf 'App settings still need apply-to-machine full or a restart:\n%s\n' "$pending"
+      printf 'Run just apply-to-machine full from Terminal.app when ready.\n'
     fi
     just _prune-check
 
@@ -198,7 +299,7 @@ _after-switch:
     else \
       bun "{{ REPO }}/scripts/app-preferences.ts" check; \
     fi
-    @just chezmoi-apply
+    @just _chezmoi-apply
     @just _attention-required
     @just _ensure-code-repos
     @echo "Installing editor extensions (may take a while)..."
@@ -210,7 +311,7 @@ _after-switch:
 _attention-required:
     @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, Raycast, and Thaw profiles."
     @just _setup-xcode
-    @just git-auth
+    @just _git-auth
     @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
       just _raycast-settings-sync; just _thaw-profile-sync; \
     else \
@@ -273,13 +374,13 @@ _launch-startup-apps:
 
 _prune-check:
     @set +e; \
-      output="$(just prune-diff 2>&1)"; \
+      output="$(just prune plan 2>&1)"; \
       status="$?"; \
       set -e; \
       if [ "$status" -ne 0 ]; then \
         printf '\nPrune check failed:\n%s\n' "$output" >&2; \
-      elif printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions|^diff --git'; then \
-        printf '\nPrune candidates found:\n%s\n\nRun this to prune them:\n  just prune\n' "$output"; \
+      elif printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions'; then \
+        printf '\nPrune candidates found:\n%s\n\nRun this to prune them:\n  just prune apply\n' "$output"; \
       else \
         printf '\nNo prune candidates found.\n'; \
       fi

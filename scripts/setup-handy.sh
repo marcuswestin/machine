@@ -45,7 +45,7 @@ for ref in "$revision" main; do
 done
 
 if [ "$mode" = check ]; then
-  printf 'Handy model missing or checksum differs: %s (run just chezmoi-apply).\n' "$model_id" >&2
+  printf 'Handy model missing or checksum differs: %s (run just apply-to-machine dotfiles).\n' "$model_id" >&2
   exit 1
 fi
 

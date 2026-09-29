@@ -9,25 +9,25 @@ unless asked.
 - Run `just help` to list all recipes.
 - Fresh-machine entrypoint: `up.sh`.
 - Daily command surface: `just`.
-- `just doctor` is the read-only operational health summary (`--json` for structured
+- `just check machine` is the read-only operational health summary (`--json` for structured
   results). Exit 1 means a detected failure; exit 2 means warnings or unverified
   checks. It does not replace the `review-machine-repo` security/upgrade review.
-  Validate changes with `bun test scripts/doctor.test.ts` and a live `just doctor`;
+  Validate changes with `bun test scripts/doctor.test.ts` and a live `just check machine`;
   access failures must remain unverified, never healthy.
-- Steady-state apply command: `just apply`. It installs missing Homebrew
+- Steady-state apply command: `just apply-to-machine`. It installs missing Homebrew
   packages but does not upgrade already-installed formulae or casks
   (`homebrew.onActivation.upgrade = false`), so app self-updates are left
-  alone. `just upgrade` upgrades outdated Homebrew-managed casks; name a
+  alone. `just update casks` upgrades outdated Homebrew-managed casks; name a
   self-updating cask explicitly for a deliberate Homebrew upgrade. It preserves
   tap-qualified cask names and skips targets older than installed receipts.
   `just update` bumps Homebrew tap pins in `flake.lock`, applies, then upgrades
   declared formulae and Homebrew-managed casks. Local cask versions and checksums
   are verified fresh-install baselines, not copies of self-updated live versions.
-- Public commands are the recipes shown by `just --list`; implementation
-  recipes are prefixed with `_` and should stay private.
+- Public commands are the grouped recipes shown by `just --list`; implementation
+  recipes are prefixed with `_` and compatibility recipes have `[private]`.
   **`just _audit-login-items`** reports enabled Login Items outside
   `machine.startupApps` plus `com.apple.*` / `org.pqrs.*`; it is not part
-  of `just verify` until the allowlist matches live helpers.
+  of `just check repo` until the allowlist matches live helpers.
 - `up.sh` should remain minimal: install/load base Nix, ensure enough tooling to
   clone/update this repo, then hand off to `scripts/up-local.sh`.
 - `scripts/up-local.sh` should invoke the declarative apply path with minimal
@@ -44,12 +44,12 @@ unless asked.
   in Application Support directly: chezmoi writes symlinks
   `~/.config/vscode-family/*` → `home/.dotfiles/vscode-family/*`, and
   `~/Library/Application Support/{Code,Cursor}/User/{settings,keybindings}.json` →
-  `~/.config/vscode-family/*`. Edit the repo files only; run `just chezmoi-apply` so the
-  symlinks stay authoritative (`just verify` checks resolution). **`just merge-in-settings`**
+  `~/.config/vscode-family/*`. Edit the repo files only; run `just apply-to-machine dotfiles` so the
+  symlinks stay authoritative (`just check repo` checks resolution). **`just merge-in-settings`**
   compares live app JSON/JSONC on disk to those repo files and can merge new keys (see
   `scripts/repo-settings-import.ts`).
 - `inventory-tracked/` and `inventory-global/`: optional local snapshots for human review;
-  do not blindly promote them into active config. **`just _snapshot-diff`**
+  do not blindly promote them into active config. **`just diff snapshot`**
   compares captured files under one of those folders to current machine output when those files exist
   (Brewfile, `mas.json`, `defaults/*.plist`, `display-layout.sh` vs the canonical
   script). **`just _plist-sidecars`** (`scripts/plist-sidecars.sh`)
@@ -71,13 +71,13 @@ unless asked.
   Codex portable defaults live in `config/codex/config.toml`. Its declared
   keys are merged into the current user's writable `~/.codex/config.toml`;
   project trust, hook trust, app-generated paths, and other local keys stay
-  there. Never symlink or import that whole file. `just save-machine-settings`
+  there. Never symlink or import that whole file. `just import-from-machine`
   reviews changed declared keys before promoting them into the repo; an
   unresolved conflict stops apply before the system switch.
   Local Homebrew casks live under
   `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
-  replaces Ice; `just export-thaw` saves one native export in
-  `config/thaw/profile.json`. `just apply` opens a guided native import/apply step
+  replaces Ice; `just import-from-machine thaw` saves one native export in
+  `config/thaw/profile.json`. `just apply-to-machine full` opens a guided native import/apply step
   when that file changes and records completion only after the user confirms.
   Thaw 3.0.0-alpha.6 has no supported full-profile import/apply URI; do not replace
   this with writes to its private database or permission grants. Use
@@ -90,15 +90,15 @@ unless asked.
   unmanaged. Treat captured paths as potentially sensitive and scrub or omit before
   committing anything derived from them. When you add new declaration surfaces
   that should show up in tracked drift review, extend `scripts/diff-tracked.sh`
-  (and keep `just prune-diff` in sync if those items are also prune candidates).
-  **`just import-inventory tracked`** (`scripts/import-inventory.sh`) refreshes
+  (and keep `just diff prune` in sync if those items are also prune candidates).
+  **`just discover snapshot tracked`** (`scripts/import-inventory.sh`) refreshes
   `inventory-tracked/` (Brewfile, `mas.json`, `defaults/` with readable sidecars,
   editor extension lists, and display layout via **`just _display-layout-capture`**).
-  **`just import-inventory global`** refreshes `inventory-global/` (the same tracked snapshot, and
+  **`just discover snapshot global`** refreshes `inventory-global/` (the same tracked snapshot, and
   **`scripts/raycast-settings-sync.sh`** when `config/raycast/settings.json` changed).
   **`just diff`** reports tracked drift without refreshing inventory:
   Homebrew, Mac App Store apps, editor extensions, chezmoi, and live app JSON vs
-  repo. **`just discover-global`** is the separate discovery mode for unmanaged
+  repo. **`just discover global`** is the separate discovery mode for unmanaged
   candidates into `inventory-global/discovery/`: `/Applications`, defaults domains
   outside the tracked list, preference plists, LaunchAgents/LaunchDaemons, fonts,
   system extensions, and unmanaged shell snippets. Use `git diff` / `git status` separately for
@@ -164,8 +164,8 @@ bash -n scripts/check-codex-config.sh
 bun test scripts/codex-config-sync.test.ts scripts/restart-plan.test.ts scripts/settings-apply.test.ts
 scripts/check-codex-config.sh
 just --list
-just --dry-run apply
-just verify
+just --dry-run apply-to-machine
+just check repo
 ```
 
 For macOS defaults changes, also inspect the relevant nix-darwin option when
@@ -186,9 +186,9 @@ nix eval --extra-experimental-features 'nix-command flakes' \
 
 ## Fresh-Machine Safety
 
-- `just apply` may install apps, apply macOS defaults, apply chezmoi dotfiles, and
+- `just apply-to-machine` may install apps, apply macOS defaults, apply chezmoi dotfiles, and
   install editor extensions.
-- `just prune-diff` should show removals before `just prune` executes
+- `just prune plan` should show removals before `just prune apply` executes
   them.
 - Prune commands should stay conservative: only remove undeclared Homebrew
   leaves/casks and undeclared editor extensions.

@@ -26,7 +26,7 @@ if [[ "$force" == check ]]; then
   if [[ -f "$state_file" ]] && [[ "$(cat "$state_file")" == "$current" ]]; then
     printf 'Raycast export matches the last confirmed import (not a live settings comparison).\n'
   else
-    printf 'Raycast export awaits native import confirmation; run just apply-full.\n'
+    printf 'Raycast export awaits native import confirmation; run just apply-to-machine full.\n'
   fi
   exit 0
 fi

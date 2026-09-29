@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Capture a native Thaw profile export for the guided import/apply step in just apply.
+# Capture a native Thaw profile export for the guided import/apply step in just apply-to-machine full.
 set -euo pipefail
 
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -23,12 +23,12 @@ This recipe saves the export to:
   $destination
 It replaces the previous repo snapshot. Review its git diff before committing;
 profiles can include custom names, display identifiers, and automation settings.
-Run just apply to open the guided Thaw import/apply step when this export changes.
+Run just apply-to-machine full to open the guided Thaw import/apply step when this export changes.
 
 EOF
   if [[ ! -t 0 ]]; then
     printf 'After exporting, tell Codex it is ready and where you saved the file.\n'
-    printf 'Or run: just export-thaw "%s"\n' "$suggested"
+    printf 'Or run: just import-from-machine thaw\n'
     exit 0
   fi
   printf 'When exported, press Enter for the suggested path or enter another unquoted path: '

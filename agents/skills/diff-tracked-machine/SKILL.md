@@ -1,6 +1,6 @@
 ---
 name: diff-tracked-machine
-description: Runs `just diff-tracked` in the machine repo (`import-inventory tracked`, tracked Homebrew/MAS/editor/chezmoi drift, then `merge-in-settings` report), interprets machine-vs-repo output, recommends `just merge-in-settings` write flags when merging live JSON into chezmoi sources is appropriate, and only runs write/import commands after explicit user confirmation. Use when the user wants tracked declarative drift review plus safe import guidance, or mentions diff-tracked with merge-in-settings, diff-tracked-machine, or promoting local app JSON into `home/.dotfiles`.
+description: Runs `just diff` in the machine repo to compare tracked declarations with this Mac, interprets drift, and recommends reviewed imports where appropriate. Use when the user wants tracked declarative drift review or safe guidance for promoting local app JSON into `home/.dotfiles`.
 disable-model-invocation: true
 ---
 
@@ -8,13 +8,13 @@ disable-model-invocation: true
 
 ## Scope
 
-`just diff-tracked` is **not** a Git worktree diff. It compares **this Mac** to **what the repo declares**:
+`just diff` is **not** a Git worktree diff. It compares **this Mac** to **what the repo declares** without writing inventory:
 
-1. **`import-inventory tracked`** — snapshots declared review inputs into **`inventory-tracked/`** (brew, MAS list, selected defaults with sidecars, extensions, display layout when replayable).
+1. **Optional `just discover snapshot tracked`** — captures review inputs into ignored **`inventory-tracked/`** when a saved snapshot is requested.
 
 2. **Tracked drift sections** — Homebrew vs flake brewfile, Mac App Store apps vs `homebrew.masApps`, editor extensions vs `vscode-family/extensions.txt`, and **`chezmoi diff`**.
 
-3. **`just merge-in-settings`** (report only) — live app JSON/JSONC vs `home/.dotfiles/` (see `scripts/repo-settings-import.ts`).
+3. **Live app JSON/JSONC report** — compares disk state with `home/.dotfiles/` (see `scripts/repo-settings-import.ts`).
 
 Use **`git diff` / `git status`** separately when the task is ordinary version control on the machine repo.
 
@@ -23,27 +23,28 @@ Use **`git diff` / `git status`** separately when the task is ordinary version c
 1. **Run** from the machine repo root:
 
    ```sh
-   just diff-tracked
+   just diff
    ```
 
 2. **Interpret output**
-   - **Tracked drift sections:** Homebrew leaves/casks, Mac App Store apps, undeclared editor extensions, and **chezmoi diff** — template or target edits live in `home/` (then `just chezmoi-apply` after updating the repo).
+   - **Tracked drift sections:** Homebrew leaves/casks, Mac App Store apps, undeclared editor extensions, and **chezmoi diff** — template or target edits live in `home/` (then `just apply-to-machine dotfiles` after updating the repo).
    - **`merge-in-settings` section:** keys or files only on the machine vs repo-owned JSON; symlink-OK lines mean live already resolves to the repo file.
 
-3. **Recommend JSON merge into repo** when live `Application Support` (or `~/.continue`, etc.) **diverges** from the canonical repo file (broken symlink or edits outside the repo copy). Point to:
+3. **Recommend JSON merge into repo** when live `Application Support` (or `~/.continue`, etc.) **diverges** from the canonical repo file (broken symlink or edits outside the repo copy). Start with the guided command; use the hidden expert command only for a reviewed special case:
 
    | Goal                                      | Command                                                                                                                                                      |
    | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-   | Report only                               | `just merge-in-settings` or `just merge-in-settings --json`                                                                                                  |
+   | Report only                               | `just diff` or the hidden expert `just merge-in-settings --json`                                                                                             |
+   | Guided per-file import                    | `just import-from-machine files`                                                                                                                             |
    | Merge object JSON (repo wins on same key) | `just merge-in-settings --write-lossy`                                                                                                                       |
    | Include Docker store                      | add `--write-docker`                                                                                                                                         |
    | VS Code/Cursor family JSONC               | `just merge-in-settings --write-jsonc-vscode` (strips `//` and block comments in `settings.json`; keybindings can be replaced from live — see script header) |
 
-4. **Confirm before any write:** Ask explicitly (“Run `just merge-in-settings …` with these flags? yes/no”) and list the **exact** command. Do not pass `--write-lossy`, `--write-jsonc-vscode`, or `--write-docker` until the user says yes.
+4. **Confirm before any expert write:** Ask explicitly (“Run `just merge-in-settings …` with these flags? yes/no”) and list the **exact** command. Do not pass `--write-lossy`, `--write-jsonc-vscode`, or `--write-docker` until the user says yes. The guided `import-from-machine files` command prompts for each file itself.
 
 5. **After yes:** Run only what was confirmed.
 
 ## Constraints
 
 - Follow **AGENTS.md**: no secrets, no blind promotion of inventory snapshots into active config.
-- **`merge-in-settings`** does not replace **`just discover-global`** or Raycast’s export flow; excluded paths are documented in `scripts/repo-settings-import.ts`.
+- **`merge-in-settings`** does not replace **`just discover global`** or `just import-from-machine raycast`; excluded paths are documented in `scripts/repo-settings-import.ts`.

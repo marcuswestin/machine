@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Guided repo -> Mac apply. All system mutation still uses the owning just apply.
+# Guided repo -> Mac apply. All system mutation still uses the owning private apply recipe.
 set -euo pipefail
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 source "${repo_dir}/scripts/settings-prompt.sh"
@@ -20,7 +20,7 @@ if [[ -n "$plan" ]]; then
 fi
 if { [[ "${TERM_PROGRAM:-}" == iTerm.app ]] && [[ " $plan " == *"iTerm"* ]]; } \
   || { [[ "${TERM_PROGRAM:-}" == Codex || "${TERM_PROGRAM:-}" == ChatGPT ]] && [[ " $plan " == *"ChatGPT"* ]]; }; then
-  printf 'Run just apply-full from Terminal.app; this terminal may close during app restart.\n' >&2
+  printf 'Run just apply-to-machine full from Terminal.app; this terminal may close during app restart.\n' >&2
   exit 2
 fi
 
@@ -33,7 +33,7 @@ ${plan:-   None detected.}
    If Docker is listed, its containers will be interrupted. With
    MACHINE_SKIP_DOCKER=1, Docker stays running and its settings are not applied.
 3. Be ready for sudo and native permission/import prompts. This runs the full
-   just apply: system defaults, missing packages, dotfiles, and editor extensions.
+   apply-to-machine: system defaults, missing packages, dotfiles, and editor extensions.
 4. The command will relaunch previously running affected apps in the background
    after applying.
 
@@ -61,7 +61,7 @@ quit_app() {
       return 0
     fi
     if (( attempt == limit )); then
-      printf '%s did not quit; close it and rerun just apply-full.\n' "$app" >&2
+      printf '%s did not quit; close it and rerun just apply-to-machine full.\n' "$app" >&2
       return 1
     fi
     sleep 1
@@ -79,13 +79,13 @@ done
 printf '\nStep 2 of 4 — Apply repository settings\n'
 # Native imports retain their content hashes; only the acknowledgement UI changes.
 export MACHINE_SETTINGS_INTERACTIVE=1 MACHINE_APPLY_MODE=full
-if ! just apply; then
+if ! just _apply-to-machine; then
   printf '\nApply stopped. The failed step above remains incomplete.\n' >&2
   for app in "${previously_running[@]}"; do
     printf 'Restoring %s in the background...\n' "$app"
     open -gj -a "$app"
   done
-  printf 'Resolve its reported issue, then rerun just apply-full.\n' >&2
+  printf 'Resolve its reported issue, then rerun just apply-to-machine full.\n' >&2
   printf 'Docker access: use an authorized Terminal if Docker settings are in scope.\n' >&2
   printf 'Approve any native permission or import prompts through macOS; no consent is bypassed.\n' >&2
   exit 1
@@ -98,7 +98,7 @@ for app in "${previously_running[@]}"; do
     open -gj -a "$app"
   fi
 done
-just settings-check
+just diff settings
 printf 'Settings checks finished. Preparing the final visual checklist...\n'
 
 if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then

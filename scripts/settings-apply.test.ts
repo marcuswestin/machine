@@ -19,7 +19,7 @@ function fixture() {
     `#!/bin/bash
 printf 'just %s\\n' "$*" >> "$TEST_LOG"
 if [[ "$1" == _restart-plan ]]; then printf '%s\\n' "\${MOCK_PLAN:-}"; fi
-if [[ "$1" == apply && "\${FAIL_APPLY:-}" == 1 ]]; then exit 1; fi
+if [[ "$1" == _apply-to-machine && "\${FAIL_APPLY:-}" == 1 ]]; then exit 1; fi
 `,
     { mode: 0o755 },
   );
@@ -69,12 +69,12 @@ test("full apply quits and restores only changed running apps", () => {
     const result = f.run("\n\n", { MOCK_PLAN: "Claude\nStats", MOCK_RUNNING: "1" });
     expect(result.exitCode).toBe(0);
     const calls = f.calls();
-    expect(calls.indexOf("quit Claude")).toBeLessThan(calls.indexOf("just apply"));
-    expect(calls.indexOf("quit Stats")).toBeLessThan(calls.indexOf("just apply"));
-    expect(calls.indexOf("just apply")).toBeLessThan(calls.indexOf("open -gj -a Claude"));
+    expect(calls.indexOf("quit Claude")).toBeLessThan(calls.indexOf("just _apply-to-machine"));
+    expect(calls.indexOf("quit Stats")).toBeLessThan(calls.indexOf("just _apply-to-machine"));
+    expect(calls.indexOf("just _apply-to-machine")).toBeLessThan(calls.indexOf("open -gj -a Claude"));
     expect(calls).not.toContain("quit Docker");
     expect(calls).not.toContain("open -gj -a Cursor");
-    expect(calls).toContain("just settings-check");
+    expect(calls).toContain("just diff settings");
     expect(result.stdout.toString()).toContain("7. Docker: after it starts");
   } finally {
     rmSync(f.root, { recursive: true });
@@ -116,11 +116,11 @@ test("EOF before start does not apply, and unknown app status stops before mutat
   const f = fixture();
   try {
     expect(f.run("", { MOCK_PLAN: "Stats" }).exitCode).toBe(1);
-    expect(f.calls()).not.toContain("just apply");
+    expect(f.calls()).not.toContain("just _apply-to-machine");
     const result = f.run("\n", { MOCK_PLAN: "Stats", FAIL_STATUS: "Stats" });
     expect(result.exitCode).toBe(1);
     expect(result.stderr.toString()).toContain("Could not check whether Stats is running");
-    expect(f.calls()).not.toContain("just apply");
+    expect(f.calls()).not.toContain("just _apply-to-machine");
   } finally {
     rmSync(f.root, { recursive: true });
   }
@@ -131,9 +131,9 @@ test("failed apply restores previously running affected apps", () => {
   try {
     expect(f.run("\n", { MOCK_PLAN: "Docker", MOCK_RUNNING: "1", FAIL_APPLY: "1" }).exitCode).toBe(1);
     const calls = f.calls();
-    expect(calls.indexOf("quit Docker")).toBeLessThan(calls.indexOf("just apply"));
-    expect(calls.indexOf("just apply")).toBeLessThan(calls.indexOf("open -gj -a Docker"));
-    expect(calls).not.toContain("just settings-check");
+    expect(calls.indexOf("quit Docker")).toBeLessThan(calls.indexOf("just _apply-to-machine"));
+    expect(calls.indexOf("just _apply-to-machine")).toBeLessThan(calls.indexOf("open -gj -a Docker"));
+    expect(calls).not.toContain("just diff settings");
   } finally {
     rmSync(f.root, { recursive: true });
   }
@@ -144,7 +144,7 @@ test("current terminal app prevents self-termination", () => {
   try {
     const result = f.run("\n", { MOCK_PLAN: "iTerm", TERM_PROGRAM: "iTerm.app" });
     expect(result.exitCode).toBe(2);
-    expect(f.calls()).not.toContain("just apply");
+    expect(f.calls()).not.toContain("just _apply-to-machine");
   } finally {
     rmSync(f.root, { recursive: true });
   }
