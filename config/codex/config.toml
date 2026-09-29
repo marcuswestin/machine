@@ -6,7 +6,7 @@ personality = "pragmatic"
 default_permissions = ":workspace"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
-service_tier = "priority"
+service_tier = "default"
 
 [agents]
   default_subagent_model = "gpt-5.6-luna"

@@ -6,7 +6,9 @@ source "${repo_dir}/scripts/settings-prompt.sh"
 cd "$repo_dir"
 
 # The full pass closes only apps with a saved setting that currently differs.
+printf 'Checking Codex configuration before the full apply...\n'
 bun "${repo_dir}/scripts/codex-config-sync.ts" preflight
+printf 'Preparing the app restart plan (this can take several seconds)...\n'
 plan="$(MACHINE_RESTART_STRICT=1 just _restart-plan)"
 if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then
   printf 'Docker settings and Docker restart are skipped for this run.\n'

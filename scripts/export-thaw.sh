@@ -93,7 +93,12 @@ if ! jq -e -s '
       (.name | type == "string") and
       (.generalSettings | type == "object") and
       (.appearanceConfiguration | type == "object") and
-      (.menuBarLayout | type == "object")
+      (.menuBarLayout |
+        type == "object" and
+        (.itemOrder | type == "object" and
+          (.visible | type == "array") and
+          (.hidden | type == "array")) and
+        (.itemSectionMap | type == "object"))
     )))
 ' "$scratch/input.json" > /dev/null; then
   printf 'Expected a native export containing one Thaw profile. Export that profile, then retry.\n' >&2

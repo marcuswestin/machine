@@ -15,6 +15,7 @@ help:
 apply-to-machine mode="normal":
     #!/usr/bin/env bash
     set -euo pipefail
+    printf 'Starting apply-to-machine (%s). Checking the selected workflow...\n' {{ quote(mode) }}
     case {{ quote(mode) }} in
       normal) MACHINE_APPLY_MODE=basic just _apply-to-machine ;;
       full) bash "{{ REPO }}/scripts/settings-apply.sh" ;;
@@ -104,20 +105,40 @@ update scope="all" *casks:
       *) printf 'usage: just update [all|casks [cask...]]\n' >&2; exit 64 ;;
     esac
 
-# Preview undeclared package/extension removals, or apply them explicitly.
+# Review undeclared package/extension removals and confirm before pruning.
 [group('Maintain')]
-prune mode="plan":
+prune mode="prompt":
     #!/usr/bin/env bash
     set -euo pipefail
+    candidates="$(just _prune-removals-diff)"
+    if [[ -z "$candidates" ]]; then
+      printf 'No prune candidates found.\n'
+      exit 0
+    fi
+    printf '%s\n' "$candidates"
     case {{ quote(mode) }} in
-      plan) just _prune-removals-diff ;;
-      apply)
-        just _prune-removals-diff
-        just _prune-homebrew-apply
-        just _prune-editor-extensions-apply
+      prompt)
+        if [[ ! -t 0 ]]; then
+          printf 'No interactive terminal; nothing was removed. Run just prune in a terminal to confirm.\n'
+          exit 0
+        fi
+        printf 'Remove these packages and extensions? Homebrew may quit affected apps. [y/N] '
+        IFS= read -r answer || answer=""
+        case "$answer" in
+          y|Y|yes|YES|Yes) ;;
+          *) printf 'Prune cancelled; nothing was removed.\n'; exit 0 ;;
+        esac
         ;;
-      *) printf 'usage: just prune [plan|apply]\n' >&2; exit 64 ;;
+      plan)
+        printf 'Preview only; nothing was removed.\n'
+        exit 0
+        ;;
+      apply) ;;
+      *) printf 'usage: just prune [prompt|plan|apply]\n' >&2; exit 64 ;;
     esac
+    printf 'Removing the listed undeclared packages and editor extensions...\n'
+    just _prune-homebrew-apply
+    just _prune-editor-extensions-apply
 
 # Format repo files with dprint.
 [group('Develop')]
@@ -173,12 +194,17 @@ git-auth: _git-auth
 
 # Private implementation recipes.
 _apply-to-machine: _check-macos
+    @echo "Checking Codex configuration for conflicts before making changes..."
     @bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
+    @echo "Preparing sudo access for the machine apply..."
     @scripts/with-sudo-keepalive.sh just _apply
 
 _chezmoi-apply:
+    @echo "Checking the declared Handy model..."
     @bash "{{ REPO }}/scripts/setup-handy.sh" "{{ REPO }}"
+    @echo "Applying managed dotfiles with chezmoi..."
     chezmoi apply --force --no-tty --source "{{ REPO }}/home"
+    @echo "Applying or checking managed app settings that depend on dotfiles..."
     @if [[ "${MACHINE_SKIP_DOCKER:-0}" == 1 ]]; then \
       echo "Docker settings skipped for this apply (MACHINE_SKIP_DOCKER=1)."; \
     elif [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
@@ -191,13 +217,11 @@ _chezmoi-apply:
 _settings-check:
     @/usr/bin/python3 "{{ REPO }}/scripts/check-app-defaults.py" "{{ HOST }}"
     @bun "{{ REPO }}/scripts/app-preferences.ts" check
-    @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}"
+    @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --diff
     @bash "{{ REPO }}/scripts/codexbar-settings-sync.sh" check
     @"{{ REPO }}/scripts/check-codex-config.sh" "{{ REPO }}"
     @bash "{{ REPO }}/scripts/thaw-profile-sync.sh" check
     @bash "{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" check
-    @echo "[MANUAL] Weather: confirm System Settings > Menu Bar > Weather is on and visible in the menu bar."
-    @echo "Automated settings checks complete. The remaining checks are visual."
 
 _prune-removals-diff:
     @just _prune-homebrew-diff
@@ -259,7 +283,9 @@ _raycast-import-force:
 _apply:
     #!/usr/bin/env bash
     set -euo pipefail
+    printf 'Checking Codex configuration for conflicts...\n'
     bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
+    printf 'Checking which app settings will need a restart (this can take several seconds)...\n'
     pending="$(bun "{{ REPO }}/scripts/restart-plan.ts")"
     # The login LaunchAgent is loaded during the system switch. Defer it until
     # this apply has cleared quarantine and installed settings; apps are opened
@@ -269,8 +295,12 @@ _apply:
     mkdir -p "$(dirname "$startup_marker")"
     printf '%s\n' "$$" > "$startup_marker"
     trap 'rm -f "$startup_marker"' EXIT
+    printf 'Checking Apple Command Line Tools and available updates (this can take a while)...\n'
     bash "{{ REPO }}/scripts/setup-clt.sh"
+    printf 'Applying the Nix system generation, macOS defaults, and Homebrew declarations...\n'
+    printf 'Evaluation, downloads, and installation can take several minutes. Follow any sudo or macOS prompts.\n'
     just _system-switch
+    printf 'System switch complete. Applying user files and app settings...\n'
     just _after-switch
     echo "Machine setup complete."
     if [[ "${MACHINE_APPLY_MODE:-basic}" != full && -n "$pending" ]]; then
@@ -291,21 +321,27 @@ _system-switch host=HOST:
 
 # Clear quarantine before settings reloads or app launches; apply settings before Xcode.
 _after-switch:
+    @echo "Clearing quarantine on declared apps..."
     @just _unquarantine-cask-apps
+    @echo "Applying Codex and CodexBar settings..."
     @bun "{{ REPO }}/scripts/codex-config-sync.ts" apply
     @bash "{{ REPO }}/scripts/codexbar-settings-sync.sh" apply
+    @echo "Applying or checking declared app preferences..."
     @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
       bun "{{ REPO }}/scripts/app-preferences.ts" apply; \
     else \
       bun "{{ REPO }}/scripts/app-preferences.ts" check; \
     fi
     @just _chezmoi-apply
+    @echo "Checking setup steps that may need native prompts..."
     @just _attention-required
+    @echo "Ensuring declared code repositories are present..."
     @just _ensure-code-repos
     @echo "Installing editor extensions (may take a while)..."
     @just _install-editor-extensions
     @echo "Opening startup apps..."
     @just _launch-startup-apps
+    @echo "Reloading AeroSpace configuration..."
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 _attention-required:
@@ -374,13 +410,13 @@ _launch-startup-apps:
 
 _prune-check:
     @set +e; \
-      output="$(just prune plan 2>&1)"; \
+      output="$(just _prune-removals-diff 2>&1)"; \
       status="$?"; \
       set -e; \
       if [ "$status" -ne 0 ]; then \
         printf '\nPrune check failed:\n%s\n' "$output" >&2; \
-      elif printf '%s\n' "$output" | grep -Eq 'Would uninstall|Undeclared .* extensions'; then \
-        printf '\nPrune candidates found:\n%s\n\nRun this to prune them:\n  just prune apply\n' "$output"; \
+      elif [ -n "$output" ]; then \
+        printf '\nPrune candidates found:\n%s\n\nRun just prune to review and confirm removal.\n' "$output"; \
       else \
         printf '\nNo prune candidates found.\n'; \
       fi

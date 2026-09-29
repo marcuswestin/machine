@@ -151,13 +151,14 @@ function main(): void {
   });
   const missing = expected.filter(({ path }) => at(live, path) === undefined);
   if (mode === "check") {
-    console.log(
-      `Codex user config: ${
-        expected.length - conflicts.length - missing.length
-      } matching, ${missing.length} missing, ${conflicts.length} conflicting managed keys.`,
-    );
     for (const item of [...missing, ...conflicts]) {
-      console.log(`  ${at(live, item.path) === undefined ? "MISSING" : "CONFLICT"} ${dotted(item.path)}`);
+      const shown = (value: Json | undefined) =>
+        safeImport(item.path)
+          ? value === undefined ? "<unset>" : JSON.stringify(value)
+          : "<redacted>";
+      console.log(
+        `[DIFF] codex.${dotted(item.path)}: current=${shown(at(live, item.path))} -> repo=${shown(item.value)}`,
+      );
     }
     return;
   }

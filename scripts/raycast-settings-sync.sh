@@ -7,6 +7,7 @@ repo_root="${1:?missing repo root}"
 force="${2:-}"
 
 if [[ "$force" != force ]]; then
+  [[ "$force" == check ]] && exit 0
   printf '[PAUSED] Raycast native import/export is disabled for the Spotlight trial.\n'
   printf 'Raycast hotkey defaults remain declared; verify Control-Space in Raycast and Command-Space in Spotlight.\n'
   exit 0

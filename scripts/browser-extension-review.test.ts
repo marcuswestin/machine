@@ -16,7 +16,7 @@ test("a repo extension absent from the Mac is missing locally, not a removal ins
   expect(compareBrowserExtensions([], [passwordExtension])).toEqual({ missing: [], extra: [passwordExtension] });
 });
 
-test("semantic diff explains install direction without changing the repo", () => {
+test("semantic diff reports only changed extension values without changing the repo", () => {
   const root = mkdtempSync(join(tmpdir(), "machine-browser-review-"));
   try {
     const repo = join(root, "repo");
@@ -36,11 +36,9 @@ test("semantic diff explains install direction without changing the repo", () =>
       stderr: "pipe",
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout.toString()).toContain("[MISSING ON MAC] chrome/Default: iCloud Passwords");
-    expect(result.stdout.toString()).toContain(
-      "https://chromewebstore.google.com/detail/pejdijmoenmkgeppbflobdenhhabjlaj",
+    expect(result.stdout.toString()).toBe(
+      "[DIFF] browser.chrome.Default.pejdijmoenmkgeppbflobdenhhabjlaj: current=<absent> -> repo=\"iCloud Passwords\"\n",
     );
-    expect(result.stdout.toString()).toContain("Apply does not remove it");
     expect(readFileSync(join(repo, "config/browser-extensions/chrome.json"), "utf8")).toBe(before);
   } finally {
     rmSync(root, { recursive: true });

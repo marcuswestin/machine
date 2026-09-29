@@ -14,7 +14,8 @@ export function backgroundStatus(label: string, serviceStatus: string): Result {
     return {
       status: "FAIL",
       detail: `${label}: requires approval`,
-      action: "Review System Settings → General → Login Items & Extensions; enable the corresponding machine background item.",
+      action:
+        "Review System Settings → General → Login Items & Extensions; enable the corresponding machine background item.",
     };
   }
   if (serviceStatus === "notRegistered") {
@@ -324,22 +325,21 @@ function main() {
   });
   check("Codex configuration", () => {
     const output = required("bash", ["scripts/check-codex-config.sh", repo]);
-    const conflicts = /^  CONFLICT /m.test(output);
-    const missing = /^  MISSING /m.test(output);
+    const drift = /^\[DIFF\] codex\./m.test(output);
     return {
-      status: conflicts || missing ? "WARN" : "OK",
-      detail: output,
-      ...(conflicts || missing
+      status: drift ? "WARN" : "OK",
+      detail: output || "Managed Codex keys match",
+      ...(drift
         ? { action: "Review with just import-from-machine; run just apply-to-machine for missing managed keys." }
         : {}),
     };
   });
   check("Thaw confirmation", () => {
     const output = required("bash", ["scripts/thaw-profile-sync.sh", "check"]);
-    const pending = output.includes("awaits import/apply confirmation");
+    const pending = output.includes("[DIFF] thaw.profile.confirmedSha256:");
     return {
       status: pending ? "WARN" : "OK",
-      detail: output,
+      detail: output || "Saved profile matches its last confirmed apply",
       ...(pending
         ? { action: "Run just apply-to-machine full and complete or confirm the native Thaw profile apply." }
         : {}),

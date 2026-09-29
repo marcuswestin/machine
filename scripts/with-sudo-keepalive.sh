@@ -14,7 +14,9 @@ export MACHINE_SUDO_KEEPALIVE_ACTIVE=1
 
 # Prompt once up front. Later privileged commands still need to invoke `sudo`
 # explicitly; this only keeps the timestamp warm while the wrapped command runs.
+printf 'Authenticating with sudo now. Approve Touch ID or enter your password when prompted.\n'
 sudo -v
+printf 'Sudo authentication complete; starting the apply.\n'
 
 # Refresh the sudo timestamp without prompting. If the timestamp is revoked or
 # expires unexpectedly, the keepalive exits and the next sudo command will ask.

@@ -234,5 +234,6 @@ trust, app state, and unlisted keys alone. If a declared key changed in the UI,
 apply stops before the system switch and asks for review through
 `just import-from-machine`. The repo file is never silently overwritten.
 
-`just prune plan` previews undeclared package and extension removals; chezmoi
-drift appears in `just diff` and is never a prune candidate.
+`just prune` lists undeclared package and extension removals and asks before
+proceeding (default: no). `just prune plan` only previews; chezmoi drift
+appears in `just diff` and is never a prune candidate.

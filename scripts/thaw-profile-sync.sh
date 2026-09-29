@@ -21,7 +21,12 @@ if ! jq -e -s '
       (.name | type == "string" and length > 0) and
       (.generalSettings | type == "object") and
       (.appearanceConfiguration | type == "object") and
-      (.menuBarLayout | type == "object")))
+      (.menuBarLayout |
+        type == "object" and
+        (.itemOrder | type == "object" and
+          (.visible | type == "array") and
+          (.hidden | type == "array")) and
+        (.itemSectionMap | type == "object"))))
 ' "$profile" > /dev/null; then
   printf 'Expected one native Thaw profile in %s; run just import-from-machine thaw.\n' "$profile" >&2
   exit 1
@@ -35,12 +40,10 @@ if [[ -f "$state_file" ]]; then
 fi
 
 if [[ "$mode" == check ]]; then
-  if [[ "$current" == "$confirmed" ]]; then
-    printf 'Saved Thaw profile matches the last user-confirmed apply.\n'
-  else
-    printf 'Saved Thaw profile awaits import/apply confirmation; run just apply-to-machine full.\n'
+  if [[ "$current" != "$confirmed" ]]; then
+    printf '[DIFF] thaw.profile.confirmedSha256: current=%s -> repo=%s (saved export includes item visibility and order; run just apply-to-machine full to import and confirm)\n' \
+      "${confirmed:-<never confirmed>}" "$current"
   fi
-  printf 'This checks the confirmation record, not current Thaw settings or item positions.\n'
   exit 0
 fi
 if [[ "$mode" != force && "$current" == "$confirmed" ]]; then

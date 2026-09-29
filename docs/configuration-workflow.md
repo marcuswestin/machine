@@ -19,9 +19,10 @@ reports; it never promotes a candidate into active configuration.
   candidates or capture ignored local inventory for later review.
 - `just update [all|casks [cask…]]`: update Homebrew pins and packages, or
   upgrade managed casks only.
-- `just prune [plan|apply]`: preview undeclared Homebrew packages and editor
-  extensions by default; `apply` removes them. Changed dotfiles are not prune
-  candidates.
+- `just prune`: list undeclared Homebrew packages and editor extensions, then
+  ask whether to remove them (default: no). `just prune plan` only previews;
+  `just prune apply` removes them explicitly without a prompt. Changed
+  dotfiles are not prune candidates.
 
 ## Apply and conflicts
 
@@ -76,7 +77,11 @@ export folders, then ask where it was saved. Do not substitute an older file.
 For Thaw, save the live layout and configuration into a profile before export.
 The global **Export Profiles** action can include several profiles;
 `just import-from-machine thaw` asks which one to keep in the repo. Thaw
-3.0.0-alpha.7 exposes individual allowlisted settings through `thaw://`, but
+exports include `menuBarLayout.itemOrder` and `itemSectionMap`, so the saved
+profile records item order and which items are hidden or visible. The diff
+checks whether this export was confirmed as applied on this Mac; it cannot
+compare Thaw's current live layout to the file. Thaw 3.0.0-alpha.7 exposes
+individual allowlisted settings through `thaw://`, but
 not a complete profile or menu item order export/import, so the native profile
 file is required for the full transfer.
 

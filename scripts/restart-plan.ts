@@ -20,7 +20,9 @@ export function appsForChanges(
   const skipDocker = options.skipDocker ?? process.env.MACHINE_SKIP_DOCKER === "1";
   const strict = options.strict ?? process.env.MACHINE_RESTART_STRICT === "1";
   const apps = new Set<string>();
-  if (/^  MISSING /m.test(codex) || /^  CONFLICT /m.test(codex)) apps.add("ChatGPT");
+  if (/^  MISSING /m.test(codex) || /^  CONFLICT /m.test(codex) || /^\[DIFF\] codex\./m.test(codex)) {
+    apps.add("ChatGPT");
+  }
   if (/\[DIFF\] claude-/i.test(preferences)) apps.add("Claude");
   if (/\[UNKNOWN\] /i.test(preferences)) {
     throw new Error("App preferences could not be checked; resolve this before applying");
@@ -39,7 +41,7 @@ export function appsForChanges(
     if (/antigravity/i.test(line)) apps.add("Antigravity IDE");
   }
   for (const line of defaults.split("\n")) {
-    if (!/^\[(DIFF|UNKNOWN)\] /.test(line)) continue;
+    if (!/^\[(DIFF|UNKNOWN|UNVERIFIED)\] /.test(line)) continue;
     if (line.includes("eu.exelban.Stats")) apps.add("Stats");
     if (line.includes("com.stonerl.Thaw")) apps.add("Thaw");
     if (line.includes("app.monitorcontrol.MonitorControl")) apps.add("MonitorControl");
