@@ -82,7 +82,9 @@ prune_diff_extensions() {
 
   extra="$(extra_extensions "$cli" "$editor_file")"
   if [ -n "$extra" ]; then
-    printf 'Undeclared %s extensions:\n%s\n' "$name" "$extra"
+    while IFS= read -r extension; do
+      printf '[DIFF] editor.%s.%s: current=installed -> repo=absent (prune candidate)\n' "$name" "$extension"
+    done <<< "$extra"
   fi
 }
 

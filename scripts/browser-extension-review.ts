@@ -69,6 +69,14 @@ function review(repo: string, liveDir: string, interactive: boolean): void {
     differences += missing.length + extra.length;
     for (const item of missing) {
       const label = `${item.browser}/${item.profile ?? "default"}: ${item.name ?? item.id ?? item.bundle_id}`;
+      if (!interactive) {
+        console.log(
+          `[DIFF] browser.${item.browser}.${item.profile ?? "default"}.${
+            item.id ?? item.bundle_id
+          }: current=<absent> -> repo=${JSON.stringify(item.name ?? item.id ?? item.bundle_id)}`,
+        );
+        continue;
+      }
       console.log(`[MISSING ON MAC] ${label} is declared in the repo.`);
       if (item.browser === "chrome") {
         console.log(
@@ -86,6 +94,14 @@ function review(repo: string, liveDir: string, interactive: boolean): void {
       } else console.log("  Skipped; repo unchanged.");
     }
     for (const item of extra) {
+      if (!interactive) {
+        console.log(
+          `[DIFF] browser.${item.browser}.${item.profile ?? "default"}.${item.id ?? item.bundle_id}: current=${
+            JSON.stringify(item.name ?? item.id ?? item.bundle_id)
+          } -> repo=<absent>`,
+        );
+        continue;
+      }
       console.log(
         `[ONLY ON MAC] ${item.browser}/${item.profile ?? "default"}: ${
           item.name ?? item.id ?? item.bundle_id
@@ -96,7 +112,7 @@ function review(repo: string, liveDir: string, interactive: boolean): void {
       }
     }
   }
-  if (!differences) console.log("Browser extension declarations match the captured Mac inventory.");
+  if (!differences && interactive) console.log("Browser extension declarations match the captured Mac inventory.");
 }
 
 if (import.meta.main) {
@@ -112,8 +128,14 @@ if (import.meta.main) {
       const result = spawnSync("bash", [join(repo, "scripts/browser-extensions.sh"), "capture", temporary], {
         stdio: "inherit",
       });
-      if (result.status !== 0) throw new Error("Could not capture browser extensions; repo left unchanged");
-      review(repo, temporary, true);
+      if (result.status === 2) {
+        console.error("Browser extensions remain UNVERIFIED; repo left unchanged.");
+        process.exitCode = 2;
+      } else if (result.status !== 0) {
+        throw new Error("Could not capture browser extensions; repo left unchanged");
+      } else {
+        review(repo, temporary, true);
+      }
     } finally {
       rmSync(temporary, { recursive: true, force: true });
     }

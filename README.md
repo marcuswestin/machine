@@ -69,6 +69,8 @@ Run `just check machine` for a read-only operational health summary, or
 background permissions, declared startup apps and package paths, keyboard
 mapping, managed editor/Handy/Karabiner configs, Handy's model checksum, AeroSpace,
 Codex drift, Thaw's last confirmation, and Time Machine destination configuration.
+Background permissions use Apple's read-only Service Management status API; this
+check does not run `sfltool` or ask for sudo.
 
 Results distinguish `OK`, `WARN` (attention needed), `FAIL` (detected problem),
 and `UNKNOWN` (not verified, including access failures). Exit codes are 0 for all
@@ -232,5 +234,6 @@ trust, app state, and unlisted keys alone. If a declared key changed in the UI,
 apply stops before the system switch and asks for review through
 `just import-from-machine`. The repo file is never silently overwritten.
 
-`just prune plan` previews undeclared package and extension removals; chezmoi
-drift appears in `just diff` and is never a prune candidate.
+`just prune` lists undeclared package and extension removals and asks before
+proceeding (default: no). `just prune plan` only previews; chezmoi drift
+appears in `just diff` and is never a prune candidate.

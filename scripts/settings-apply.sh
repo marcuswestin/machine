@@ -6,7 +6,9 @@ source "${repo_dir}/scripts/settings-prompt.sh"
 cd "$repo_dir"
 
 # The full pass closes only apps with a saved setting that currently differs.
+printf 'Checking Codex configuration before the full apply...\n'
 bun "${repo_dir}/scripts/codex-config-sync.ts" preflight
+printf 'Preparing the app restart plan (this can take several seconds)...\n'
 plan="$(MACHINE_RESTART_STRICT=1 just _restart-plan)"
 printf 'Docker settings import, export, and apply are disabled for now.\n'
 restart_apps=()
@@ -33,8 +35,13 @@ ${plan:-   None detected.}
    apply-to-machine: system defaults, missing packages, dotfiles, and editor extensions.
 4. The command will relaunch previously running affected apps in the background
    after applying.
+5. Before pressing Enter, save the current Thaw layout and configuration into
+   a profile and export that profile to Desktop as a backup. Keep the backup
+   outside the repo. On a fresh Mac with no Thaw setup, there is nothing to
+   back up. Raycast native export/import is paused for the Spotlight trial.
 
-Nothing has been applied or quit yet. Pressing Enter starts the shutdown and apply."
+Nothing has been applied or quit yet. Press Enter after completing those exports
+to start the shutdown and apply."
 
 app_running() {
   local app="$1" state
@@ -113,8 +120,8 @@ app behavior and choices that are local to this Mac.
    hidden after its rehide interval. Adjust display associations if needed.
 3. Local choices: sign into desired CodexBar providers, choose Weather's first
    location and this Mac's sound output. Complete native location consent if wanted.
-4. Raycast: press its hotkey and inspect its appearance. The import confirmation
-   only records your approval, not a live settings comparison.
+4. Raycast: Control-Space opens Raycast; Command-Space opens Spotlight. Native
+   Raycast export/import is paused for this trial; check its hotkey manually.
 5. iTerm2: open a new window to inspect the Machine profile, fonts and colors.
    Chrome: in your Default profile, open
    https://chromewebstore.google.com/detail/pejdijmoenmkgeppbflobdenhhabjlaj

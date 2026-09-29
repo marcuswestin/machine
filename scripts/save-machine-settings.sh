@@ -25,29 +25,24 @@ if [[ "$scope" == all || "$scope" == claude ]]; then
 fi
 if [[ "$scope" == all || "$scope" == browser ]]; then
   printf '\nResolve declared browser extensions one at a time.\n'
-  bun scripts/browser-extension-review.ts resolve "$repo_dir"
-fi
-if [[ "$scope" == all || "$scope" == thaw ]]; then
-  if [[ "$scope" == thaw ]]; then
-    bash scripts/export-thaw.sh
+  if bun scripts/browser-extension-review.ts resolve "$repo_dir"; then
+    :
   else
-    printf '\nThaw: export the current profile through its native UI if its layout changed.\n'
-    printf 'Save it as ~/Desktop/Thaw Profiles.json. Enter its path to import, or press Enter to skip: '
-    IFS= read -r thaw_path || exit 1
-    if [[ -n "$thaw_path" ]]; then
-      [[ "$thaw_path" == '~/'* ]] && thaw_path="${HOME}/${thaw_path:2}"
-      bash scripts/export-thaw.sh "$thaw_path"
+    browser_status=$?
+    if [[ "$scope" == all && "$browser_status" == 2 ]]; then
+      printf 'Browser extensions are UNVERIFIED; continuing with Thaw.\n' >&2
+      printf 'Run just import-from-machine browser from a Terminal with Chrome profile access later.\n' >&2
+    else
+      exit "$browser_status"
     fi
   fi
 fi
+if [[ "$scope" == all || "$scope" == thaw ]]; then
+  bash scripts/export-thaw.sh
+fi
 if [[ "$scope" == all || "$scope" == raycast ]]; then
-  printf '\nRaycast: export Settings from Raycast if they changed.\n'
-  printf 'Enter the .rayconfig or JSON export path to review existing portable preference keys, or press Enter to skip: '
-  IFS= read -r raycast_path || exit 1
-  if [[ -n "$raycast_path" ]]; then
-    [[ "$raycast_path" == '~/'* ]] && raycast_path="${HOME}/${raycast_path:2}"
-    bun scripts/raycast-settings-save.ts "$raycast_path"
-  fi
+  printf '\n[PAUSED] Raycast export/import is disabled for the Spotlight trial.\n'
+  printf 'Review Raycast hotkey drift with just diff settings; no Raycast export is requested.\n'
 fi
 if [[ "$scope" == files ]]; then
   printf 'Docker settings import, export, and apply are disabled for now.\n'

@@ -33,6 +33,15 @@ test("Raycast export parser changes no repo data without explicit interactive re
     });
     expect(changed.exitCode).not.toBe(0);
     expect(readFileSync(repoFile, "utf8")).toBe(JSON.stringify(source));
+    writeFileSync(exportFile, Buffer.from([0x45, 0x82, 0x37, 0x4a]));
+    const encrypted = Bun.spawnSync(["bun", join(import.meta.dir, "raycast-settings-save.ts"), exportFile], {
+      env,
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    expect(encrypted.exitCode).not.toBe(0);
+    expect(encrypted.stderr.toString()).toContain("requires interactive review");
+    expect(readFileSync(repoFile, "utf8")).toBe(JSON.stringify(source));
   } finally {
     rmSync(root, { recursive: true });
   }

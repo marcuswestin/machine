@@ -4,6 +4,7 @@
 import { spawnSync } from "node:child_process";
 import {
   chmodSync,
+  existsSync,
   lstatSync,
   mkdirSync,
   readFileSync,
@@ -173,11 +174,26 @@ if (import.meta.main) {
           return result.status === 0;
         },
       );
-      console.log(
-        `[${differences.length ? mode === "apply" ? "APPLIED" : "DIFF" : "MATCH"}] ${name}${
-          differences.length ? ": " + differences.join(", ") : ""
-        }`,
-      );
+      if (mode === "check") {
+        if (differences.length === 0) continue;
+        const file = join(process.env.MACHINE_HOME ?? homedir(), target.path);
+        const live = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) as ObjectValue : {};
+        for (const key of differences) {
+          const keys = key.split(".");
+          const current = at(live, keys);
+          const desired = at(target.settings, keys);
+          const sensitive = /password|secret|token|credential|auth|session|private/i.test(key);
+          const shown = (value: unknown) =>
+            sensitive ? "<redacted>" : value === undefined ? "<unset>" : JSON.stringify(value);
+          console.log(`[DIFF] ${name}.${key}: current=${shown(current)} -> repo=${shown(desired)}`);
+        }
+      } else {
+        console.log(
+          `[${differences.length ? "APPLIED" : "MATCH"}] ${name}${
+            differences.length ? ": " + differences.join(", ") : ""
+          }`,
+        );
+      }
     } catch (error) {
       failed = true;
       // Avoid emitting parse errors containing private JSON fragments.

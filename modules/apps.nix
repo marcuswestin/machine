@@ -9,6 +9,8 @@
       "gemini-cli"
       "anomalyco/tap/opencode"
       "mobile-dev-inc/tap/maestro"
+      # Tart runs the macOS/Linux VMs used by local isolation workflows.
+      "cirruslabs/cli/tart"
       {
         name = "ollama";
         # Continue's declared local models need the Ollama server at login.

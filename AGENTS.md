@@ -94,15 +94,18 @@ unless asked.
   **`just discover snapshot tracked`** (`scripts/import-inventory.sh`) refreshes
   `inventory-tracked/` (Brewfile, `mas.json`, `defaults/` with readable sidecars,
   editor extension lists, and display layout via **`just _display-layout-capture`**).
-  **`just discover snapshot global`** refreshes `inventory-global/` (the same tracked snapshot, and
-  **`scripts/raycast-settings-sync.sh`** when `config/raycast/settings.json` changed).
+  **`just discover snapshot global`** refreshes `inventory-global/` with the
+  same tracked snapshot. Raycast native export/import is paused during the
+  Spotlight trial; the public apply and import workflows print a reminder.
   **`just diff`** reports tracked drift without refreshing inventory:
   Homebrew, Mac App Store apps, editor extensions, chezmoi, and live app JSON vs
   repo. **`just discover global`** is the separate discovery mode for unmanaged
   candidates into `inventory-global/discovery/`: `/Applications`, defaults domains
   outside the tracked list, preference plists, LaunchAgents/LaunchDaemons, fonts,
-  system extensions, and unmanaged shell snippets. Use `git diff` / `git status` separately for
-  version-control work on the repo itself.
+  system extensions, and unmanaged shell snippets. **`just discover apps`** lists
+  key names and config-file paths for declared cask apps without preference
+  values; its results are review candidates, not automatically untracked settings.
+  Use `git diff` / `git status` separately for version-control work on the repo itself.
   Local editor extensions listed in `config/editor-extensions/local-only.txt`
   are installed from source, never requested from the marketplace, and preserved
   by editor prune in both VS Code and Cursor. Keep this list separate from the

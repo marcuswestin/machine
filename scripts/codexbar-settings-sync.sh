@@ -24,12 +24,17 @@ changes="$(jq -nr --argjson desired "$desired" --argjson actual "$actual" '
   [$id, (if $enabled then "enable" else "disable" end)] | @tsv
 ')"
 if [[ -z "$changes" ]]; then
-  printf 'CodexBar provider toggles match the repository.\n'
+  [[ "$mode" == check ]] || printf 'CodexBar provider toggles match the repository.\n'
 elif [[ "$mode" == check ]]; then
-  printf 'CodexBar provider toggle drift (provider, action):\n%s\n' "$changes"
+  jq -nr --argjson desired "$desired" --argjson actual "$actual" '
+    $actual[] | .provider as $id |
+    ($desired | index($id) != null) as $wanted |
+    select(.enabled != $wanted) |
+    "[DIFF] codexbar.provider.\($id): current=\(.enabled) -> repo=\($wanted)"
+  '
 else
   while IFS=$'\t' read -r provider action; do
     codexbar config "$action" --provider "$provider"
   done <<< "$changes"
 fi
-printf 'Provider login and usage availability remain local to each Mac.\n'
+[[ "$mode" == check ]] || printf 'Provider login and usage availability remain local to each Mac.\n'

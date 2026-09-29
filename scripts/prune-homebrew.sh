@@ -23,7 +23,7 @@ desired_casks="$(mktemp)"
 desired_formulae="$(mktemp)"
 trap 'rm -f "$brewfile" "$desired_casks" "$desired_formulae"' EXIT
 
-nix "${nix_flags[@]}" eval --raw ".#darwinConfigurations.${host}.config.homebrew.brewfile" > "$brewfile"
+nix "${nix_flags[@]}" --option warn-dirty false eval --raw ".#darwinConfigurations.${host}.config.homebrew.brewfile" > "$brewfile"
 
 awk -F'"' '/^cask "/ { print $2 }' "$brewfile" | sort -fu > "$desired_casks"
 desired_cask_aliases="$(
@@ -41,11 +41,15 @@ extra_formulae="$(comm -23 <(printf '%s\n' "$installed_formulae" | sort -fu) "$d
 
 if [ "$mode" = diff ]; then
   if [ -n "$extra_casks" ]; then
-    printf 'Would uninstall casks:\n%s\n' "$extra_casks"
+    while IFS= read -r cask; do
+      printf '[DIFF] homebrew.cask.%s: current=installed -> repo=absent (prune candidate)\n' "$cask"
+    done <<< "$extra_casks"
   fi
 
   if [ -n "$extra_formulae" ]; then
-    printf 'Would uninstall formulae leaves:\n%s\n' "$extra_formulae"
+    while IFS= read -r formula; do
+      printf '[DIFF] homebrew.formula.%s: current=installed -> repo=absent (prune candidate)\n' "$formula"
+    done <<< "$extra_formulae"
   fi
 
   exit 0

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-// Promote only already-declared Raycast preference leaves from a native export.
-// Extensions, snippets, account data, and unknown fields remain outside this import.
-import { readFileSync, readSync, writeFileSync } from "node:fs";
+// Save a user-confirmed Settings-only native export, or promote declared
+// preference leaves from the older JSON export format.
+import { copyFileSync, readFileSync, readSync, writeFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { gunzipSync } from "node:zlib";
 
@@ -39,6 +39,25 @@ if (!source) throw new Error("usage: raycast-settings-save.ts <native-export.ray
 const repoFile = join(resolve(process.env.MACHINE_REPO ?? join(import.meta.dir, "..")), "config/raycast/settings.json");
 const current = JSON.parse(readFileSync(repoFile, "utf8")) as JsonObject;
 const contents = readFileSync(resolve(source));
+// Native Raycast exports are encrypted binary files. Raycast itself must import
+// them; the old gzip JSON format below is the repo's own generated fallback.
+if (extname(source) === ".rayconfig" && !(contents[0] === 0x1f && contents[1] === 0x8b)) {
+  if (!process.stdin.isTTY) {
+    throw new Error("Encrypted Raycast export requires interactive review; repo left untouched");
+  }
+  console.log("Native encrypted Raycast export detected. Its contents cannot be inspected here.");
+  console.log("Confirm that ONLY \"Settings (including aliases, hotkeys & favorites)\" was selected in Raycast.");
+  console.log("This repo and its export password are public, so treat the export as public data.");
+  process.stdout.write("Save this native Settings export in the repo? Type yes: ");
+  if (answerLine() !== "yes") throw new Error("Raycast export was not saved");
+  const nativeFile = join(
+    resolve(process.env.MACHINE_REPO ?? join(import.meta.dir, "..")),
+    "config/raycast/settings-native.rayconfig",
+  );
+  copyFileSync(resolve(source), nativeFile);
+  console.log(`Saved native Raycast Settings export: ${nativeFile}`);
+  process.exit(0);
+}
 const exported = JSON.parse(
   extname(source) === ".rayconfig" ? gunzipSync(contents).toString("utf8") : contents.toString("utf8"),
 ) as JsonObject;

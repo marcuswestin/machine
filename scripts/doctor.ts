@@ -7,49 +7,21 @@ import { basename, join, resolve } from "node:path";
 type Status = "OK" | "WARN" | "FAIL" | "UNKNOWN";
 type Finding = { check: string; status: Status; detail: string; action?: string };
 type Result = { status: Status; detail: string; action?: string };
-type BackgroundItem = { uid: number; identifier: string; disposition: string[] };
 
-export function backgroundItems(text: string): BackgroundItem[] {
-  const items: BackgroundItem[] = [];
-  let uid = NaN;
-  let identifier = "";
-  let disposition: string[] = [];
-  const flush = () => {
-    if (identifier) items.push({ uid, identifier, disposition });
-    identifier = "";
-    disposition = [];
-  };
-  for (const line of text.split("\n")) {
-    const section = line.match(/Records for UID (-?\d+)\s*:/);
-    if (section) {
-      flush();
-      uid = Number(section[1]);
-    } else if (/^\s*#\d+:\s*$/.test(line)) flush();
-    else if (/^\s*Identifier:/.test(line)) identifier = line.split("Identifier:")[1].trim().replace(/^\d+\./, "");
-    else if (/^\s*Disposition:/.test(line)) {
-      disposition = (line.match(/\[([^\]]*)\]/)?.[1] ?? "").split(",").map(s => s.trim());
-    }
-  }
-  flush();
-  return items;
-}
-
-export function backgroundStatus(items: BackgroundItem[], label: string, uid: number): Result {
-  // BTM's UID -2 is its shared/system record section, not another login user.
-  const relevant = items.filter(i => i.identifier === label && (i.uid === uid || i.uid === -2 || i.uid === 0));
-  if (!relevant.length) return { status: "UNKNOWN", detail: `${label}: no relevant BTM record found` };
-  if (relevant.some(i => i.disposition.includes("disallowed") || i.disposition.includes("disabled"))) {
+export function backgroundStatus(label: string, serviceStatus: string): Result {
+  if (serviceStatus === "enabled") return { status: "OK", detail: `${label}: enabled and eligible to run` };
+  if (serviceStatus === "requiresApproval") {
     return {
       status: "FAIL",
-      detail: `${label}: disabled or disallowed`,
+      detail: `${label}: requires approval`,
       action:
         "Review System Settings → General → Login Items & Extensions; enable the corresponding machine background item.",
     };
   }
-  if (relevant.every(i => i.disposition.includes("enabled") && i.disposition.includes("allowed"))) {
-    return { status: "OK", detail: `${label}: enabled and allowed` };
+  if (serviceStatus === "notRegistered") {
+    return { status: "FAIL", detail: `${label}: not registered`, action: "Run just apply-to-machine." };
   }
-  return { status: "UNKNOWN", detail: `${label}: unrecognized BTM disposition` };
+  return { status: "UNKNOWN", detail: `${label}: authorization status ${serviceStatus || "missing"} is unverified` };
 }
 
 export function launchdStatus(text: string): Result {
@@ -214,10 +186,14 @@ function main() {
     });
   }
   check("Background permissions", () => {
-    const items = backgroundItems(required("sfltool", ["dumpbtm"]));
-    const results = ["org.nixos.activate-system", "org.nixos.machine-login-startup"].map(label =>
-      backgroundStatus(items, label, uid)
-    );
+    const labels = ["org.nixos.activate-system", "org.nixos.machine-login-startup"];
+    const statuses = required("/usr/bin/swift", [
+      resolve(repo, "scripts/background-permissions.swift"),
+      "/Library/LaunchDaemons/org.nixos.activate-system.plist",
+      join(home, "Library/LaunchAgents/org.nixos.machine-login-startup.plist"),
+    ]).split("\n");
+    if (statuses.length !== labels.length) throw new Error("Service Management returned an incomplete status list");
+    const results = labels.map((label, index) => backgroundStatus(label, statuses[index]));
     const problem = results.find(r => r.status === "FAIL") ?? results.find(r => r.status !== "OK");
     return { status: problem?.status ?? "OK", detail: results.map(r => r.detail).join("; "), action: problem?.action };
   });
@@ -349,22 +325,21 @@ function main() {
   });
   check("Codex configuration", () => {
     const output = required("bash", ["scripts/check-codex-config.sh", repo]);
-    const conflicts = /^  CONFLICT /m.test(output);
-    const missing = /^  MISSING /m.test(output);
+    const drift = /^\[DIFF\] codex\./m.test(output);
     return {
-      status: conflicts || missing ? "WARN" : "OK",
-      detail: output,
-      ...(conflicts || missing
+      status: drift ? "WARN" : "OK",
+      detail: output || "Managed Codex keys match",
+      ...(drift
         ? { action: "Review with just import-from-machine; run just apply-to-machine for missing managed keys." }
         : {}),
     };
   });
   check("Thaw confirmation", () => {
     const output = required("bash", ["scripts/thaw-profile-sync.sh", "check"]);
-    const pending = output.includes("awaits import/apply confirmation");
+    const pending = output.includes("[DIFF] thaw.profile.confirmedSha256:");
     return {
       status: pending ? "WARN" : "OK",
-      detail: output,
+      detail: output || "Saved profile matches its last confirmed apply",
       ...(pending
         ? { action: "Run just apply-to-machine full and complete or confirm the native Thaw profile apply." }
         : {}),

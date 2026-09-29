@@ -4,18 +4,15 @@ let
 in
 {
   # Homebrew installs Raycast (modules/apps.nix). Declarative preferences live in
-  # config/raycast/settings.json (plain JSON). `just apply-to-machine` and `just discover snapshot global` run
-  # scripts/raycast-settings-sync.sh: if settings.json changed since the last run
-  # (SHA-256 in ~/.local/state/machine/), it gzips to settings.rayconfig and opens it.
-  # Use `just _raycast-import-force` to rebuild/open regardless of stamp. Clear Raycast's
-  # export passphrase when exporting from the app if you want an unencrypted backup. A few keys
-  # still map to NSUserDefaults:
+  # config/raycast/settings.json (plain JSON). Native export/import is paused
+  # for the Spotlight trial; `just _raycast-import-force` is an explicit private
+  # override. The declared hotkey still maps to NSUserDefaults:
   system.defaults.CustomUserPreferences."com.raycast.macos" = {
     # Let Homebrew own Raycast updates (brew upgrade) instead of the in-app updater.
     updaterEnabled = false;
     # Register the exported shortcut before first launch, even if the interactive
-    # .rayconfig import has not completed. Command-49 means Command + Space
-    # (macOS virtual key code 49); keep the export as the single source of truth.
+    # .rayconfig import has not completed. Control-49 means Control + Space
+    # (macOS virtual key code 49); keep settings.json as the source of truth.
     raycastGlobalHotkey =
       settings.builtin_package_raycastPreferences.preferencesGeneral.raycastGlobalHotkey;
     # Raycast 1.104.x's first-launch wizard flag (verified against 1.104.29).

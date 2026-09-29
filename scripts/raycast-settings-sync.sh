@@ -1,42 +1,42 @@
 #!/usr/bin/env bash
-# Sync Raycast declarative settings: if config/raycast/settings.json changed since
-# last confirmed import, gzip it to .rayconfig and open it for Raycast import.
+# Native Raycast import is paused during the Spotlight trial. The explicit
+# private force recipe retains the old guided import for deliberate use.
 set -euo pipefail
 
 repo_root="${1:?missing repo root}"
 force="${2:-}"
 
+if [[ "$force" != force ]]; then
+  printf '[PAUSED] Raycast native import/export is disabled for the Spotlight trial.\n'
+  printf 'Raycast hotkey defaults remain declared; verify Control-Space in Raycast and Command-Space in Spotlight.\n'
+  exit 0
+fi
+
 json="$repo_root/config/raycast/settings.json"
+native="$repo_root/config/raycast/settings-native.rayconfig"
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/machine"
 # Older stamps recorded opening the file, not completing the native import.
 state_file="$state_dir/raycast-settings-confirmed.sha256"
 out="$repo_root/config/raycast/settings.rayconfig"
 
 if [[ ! -f "$json" ]]; then
-  if [[ "$force" == "force" ]]; then
-    printf 'missing %s\n' "$json" >&2
-    exit 1
-  fi
-  exit 0
+  printf 'missing %s\n' "$json" >&2
+  exit 1
 fi
 
-current="$(shasum -a 256 "$json" | awk '{print $1}')"
-
-if [[ "$force" == check ]]; then
-  if [[ -f "$state_file" ]] && [[ "$(cat "$state_file")" == "$current" ]]; then
-    printf 'Raycast export matches the last confirmed import (not a live settings comparison).\n'
-  else
-    printf 'Raycast export awaits native import confirmation; run just apply-to-machine full.\n'
-  fi
-  exit 0
+if [[ -f "$native" ]]; then
+  source_file="$native"
+else
+  source_file="$json"
 fi
+current="$(shasum -a 256 "$source_file" | awk '{print $1}')"
 
-if [[ "$force" != "force" ]] && [[ -f "$state_file" ]] && [[ "$(cat "$state_file")" == "$current" ]]; then
-  exit 0
+if [[ "$source_file" == "$json" ]]; then
+  gzip -cn "$json" >"$out"
+else
+  out="$native"
 fi
-
-gzip -cn "$json" >"$out"
-printf 'Raycast settings.json changed; opened %s for import.\n' "$out" >&2
+printf 'Raycast settings export changed; opened %s for import.\n' "$out" >&2
 open "$out"
 if [[ "${MACHINE_SETTINGS_INTERACTIVE:-}" == 1 ]]; then
   source "${repo_root}/scripts/settings-prompt.sh"

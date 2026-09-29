@@ -19,7 +19,9 @@ export function appsForChanges(
 ): string[] {
   const strict = options.strict ?? process.env.MACHINE_RESTART_STRICT === "1";
   const apps = new Set<string>();
-  if (/^  MISSING /m.test(codex) || /^  CONFLICT /m.test(codex)) apps.add("ChatGPT");
+  if (/^  MISSING /m.test(codex) || /^  CONFLICT /m.test(codex) || /^\[DIFF\] codex\./m.test(codex)) {
+    apps.add("ChatGPT");
+  }
   if (/\[DIFF\] claude-/i.test(preferences)) apps.add("Claude");
   if (/\[UNKNOWN\] /i.test(preferences)) {
     throw new Error("App preferences could not be checked; resolve this before applying");
@@ -38,13 +40,14 @@ export function appsForChanges(
     if (/antigravity/i.test(line)) apps.add("Antigravity IDE");
   }
   for (const line of defaults.split("\n")) {
-    if (!/^\[(DIFF|UNKNOWN)\] /.test(line)) continue;
+    if (!/^\[(DIFF|UNKNOWN|UNVERIFIED)\] /.test(line)) continue;
     if (line.includes("eu.exelban.Stats")) apps.add("Stats");
     if (line.includes("com.stonerl.Thaw")) apps.add("Thaw");
     if (line.includes("app.monitorcontrol.MonitorControl")) apps.add("MonitorControl");
     if (line.includes("com.google.Chrome")) apps.add("Google Chrome");
     if (line.includes("bobko.aerospace")) apps.add("AeroSpace");
     if (line.includes("com.openai.chat")) apps.add("ChatGPT");
+    if (line.includes("com.raycast.macos")) apps.add("Raycast");
   }
   const rows = JSON.parse(json) as { id: string; status: string; only_repo_keys?: string[]; diff_keys?: string[] }[];
   for (const row of rows) {

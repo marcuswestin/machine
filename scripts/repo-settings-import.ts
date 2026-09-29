@@ -214,6 +214,30 @@ function mergeReport(
   return { onlyLive, onlyRepo, diffs };
 }
 
+function managedDiffValues(
+  desired: Record<string, unknown>,
+  live: Record<string, unknown>,
+  prefix = "",
+): { key: string; current: unknown; repo: unknown }[] {
+  return Object.entries(desired).flatMap(([key, value]) => {
+    const name = prefix + key;
+    const current = live[key];
+    if (
+      value !== null && typeof value === "object" && !Array.isArray(value)
+      && current !== null && typeof current === "object" && !Array.isArray(current)
+    ) {
+      return managedDiffValues(value as Record<string, unknown>, current as Record<string, unknown>, name + ".");
+    }
+    if (jsonStableStringify(value) === jsonStableStringify(current)) return [];
+    const sensitive = /password|secret|token|credential|auth|session|private/i.test(name);
+    return [{
+      key: name,
+      current: sensitive ? "<redacted>" : current === undefined ? "<unset>" : current,
+      repo: sensitive ? "<redacted>" : value,
+    }];
+  });
+}
+
 function writeJson(filePath: string, data: unknown): void {
   fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
@@ -459,6 +483,7 @@ function processTarget(
     writeJsoncVscode: boolean;
     writeDocker: boolean;
     asJson: boolean;
+    diff: boolean;
   },
 ): Record<string, unknown> {
   const out: Record<string, unknown> = { id: t.id, status: "unknown" };
@@ -559,6 +584,7 @@ function processTarget(
   out.only_repo_keys = Object.keys(onlyRepo).sort();
   out.diff_keys = Object.keys(diffs).sort();
   out.status = "report";
+  if (opts.diff) out.diff_values = managedDiffValues(rd, ld);
 
   const merged = { ...ld, ...rd };
   let allowWrite: boolean;
@@ -588,6 +614,7 @@ function parseCli(argv: string[]): {
   writeDocker: boolean;
   pushDockerLive: boolean;
   asJson: boolean;
+  diff: boolean;
 } | null {
   const positionals: string[] = [];
   let writeLossy = false;
@@ -595,6 +622,7 @@ function parseCli(argv: string[]): {
   let writeDocker = false;
   let pushDockerLive = false;
   let asJson = false;
+  let diff = false;
   let only: string | null = null;
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i]!;
@@ -608,6 +636,8 @@ function parseCli(argv: string[]): {
       pushDockerLive = true;
     } else if (a === "--json") {
       asJson = true;
+    } else if (a === "--diff") {
+      diff = true;
     } else if (a === "--only") {
       only = argv[++i] ?? null;
       if (!only || only.startsWith("-")) {
@@ -635,6 +665,7 @@ function parseCli(argv: string[]): {
     writeDocker,
     pushDockerLive,
     asJson,
+    diff,
   };
 }
 
@@ -677,13 +708,39 @@ function main(): number {
         writeLossy: parsed.writeLossy,
         writeJsoncVscode: parsed.writeJsoncVscode,
         writeDocker: false,
-        asJson: parsed.asJson,
+        asJson: parsed.asJson || parsed.diff,
+        diff: parsed.diff,
       }),
     );
   }
 
   if (parsed.asJson) {
     console.log(JSON.stringify(rows, null, 2));
+    return 0;
+  }
+
+  if (parsed.diff) {
+    const shown = (value: unknown) => JSON.stringify(value);
+    for (const row of rows) {
+      const id = row.id as string;
+      const status = row.status as string;
+      if (status === "symlink_ok" || status === "identical") continue;
+      if (status === "report") {
+        for (const item of row.diff_values as { key: string; current: unknown; repo: unknown }[]) {
+          console.log(`[DIFF] ${id}.${item.key}: current=${shown(item.current)} -> repo=${shown(item.repo)}`);
+        }
+      } else if (status === "text_differs" || status === "json_differs") {
+        const current = createHash("sha256").update(fs.readFileSync(row.live as string)).digest("hex");
+        const desired = createHash("sha256").update(fs.readFileSync(row.repo as string)).digest("hex");
+        console.log(`[DIFF] ${id}.file.sha256: current=${current} -> repo=${desired}`);
+      } else if (status === "permission_denied") {
+        console.log(`[UNVERIFIED] ${id}: permission denied`);
+      } else if (status === "missing_live") {
+        console.log(`[DIFF] ${id}.file: current=<absent> -> repo=${row.repo}`);
+      } else {
+        console.log(`[UNVERIFIED] ${id}: ${status}`);
+      }
+    }
     return 0;
   }
 
