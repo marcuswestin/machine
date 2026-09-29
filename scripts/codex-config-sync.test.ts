@@ -52,3 +52,15 @@ test("conflicting UI value blocks apply without changing the local file", () => 
     rmSync(f.root, { recursive: true });
   }
 });
+
+test("preflight explains noninteractive Codex conflicts", () => {
+  const f = fixture('service_tier = "priority"\n', 'service_tier = "default"\n');
+  try {
+    const result = f.run("preflight");
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr.toString()).toContain("interactive decision");
+    expect(result.stderr.toString()).toContain("service_tier");
+  } finally {
+    rmSync(f.root, { recursive: true });
+  }
+});

@@ -231,8 +231,10 @@ and selectively promotes them into the repo. See
 Codex's `config/codex/config.toml` is a per-user key allowlist. Apply merges
 missing declared keys into writable `~/.codex/config.toml`, leaving project
 trust, app state, and unlisted keys alone. If a declared key changed in the UI,
-apply stops before the system switch and asks for review through
-`just import-from-machine`. The repo file is never silently overwritten.
+apply prompts before the system switch whether to use the Mac value in the repo
+declaration (default: yes). Answer no to keep the repo value. Noninteractive
+applies stop at unresolved conflicts; use `just import-from-machine codex` to
+review them in a terminal.
 
 `just prune` lists undeclared package and extension removals and asks before
 proceeding (default: no). `just prune plan` only previews; chezmoi drift

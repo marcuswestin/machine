@@ -1,12 +1,9 @@
 # Portable Codex settings merged into the current user's writable config.toml.
 # The keys in this file are the managed allowlist; unrelated local keys survive.
-model = "gpt-6-sol"
-model_reasoning_effort = "high"
 personality = "pragmatic"
 default_permissions = ":workspace"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
-service_tier = "default"
 
 [agents]
   default_subagent_model = "gpt-5.6-luna"

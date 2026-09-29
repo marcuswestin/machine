@@ -163,11 +163,30 @@ function main(): void {
     return;
   }
   if (mode === "preflight") {
-    if (conflicts.length) {
-      console.error("Codex managed-key conflicts; run just import-from-machine to review:");
+    if (conflicts.length && !process.stdin.isTTY) {
+      console.error("Codex managed-key conflicts need an interactive decision; run just import-from-machine to review:");
       for (const item of conflicts) console.error(`  ${dotted(item.path)}`);
       process.exitCode = 1;
+      return;
     }
+    let next = managedText;
+    let nextLive = liveText;
+    for (const item of conflicts) {
+      if (!safeImport(item.path)) {
+        console.log(`SKIP ${dotted(item.path)}: local or potentially sensitive setting`);
+        continue;
+      }
+      console.log(`  repo: ${JSON.stringify(item.value)}\n  Mac:  ${JSON.stringify(at(live, item.path))}`);
+      process.stdout.write(`Use the Mac value for ${dotted(item.path)} and overwrite the repo value? [Y/n] `);
+      const answer = answerLine();
+      if (answer === "" || answer === "y" || answer === "yes") {
+        next = setLeaf(next, { path: item.path, value: at(live, item.path)! });
+      } else {
+        nextLive = setLeaf(nextLive, item);
+      }
+    }
+    if (next !== managedText) atomicWrite(source, next, lstatSync(source).mode & 0o777);
+    if (nextLive !== liveText) atomicWrite(target, nextLive, stat!.mode & 0o777);
     return;
   }
   if (mode === "apply" && conflicts.length) {
