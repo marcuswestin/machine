@@ -1,13 +1,13 @@
 ---
 name: apply-full-machine
-description: Run a requested full apply of the machine repo, including affected app restarts and native Raycast and Thaw imports. Use for `just apply-full` or completing its deferred native steps; use diff-tracked-machine for read-only drift review.
+description: Run a requested full apply of the machine repo, including affected app restarts and native Raycast and Thaw imports. Use for `just apply-to-machine full` or completing its deferred native steps; use diff-tracked-machine for read-only drift review.
 ---
 
 # Full machine apply
 
 Work in `/Users/ro/code/machine`. Read `AGENTS.md` and the current `Justfile` and scripts before running the recipe. Check `git status --short`, Codex managed-key preflight, and `MACHINE_RESTART_STRICT=1 just _restart-plan`. Ask for unresolved consequential choices before starting; an explicit choice to include Docker authorizes its restart and possible container interruption. Never run `just prune` as part of this workflow.
 
-Run `just apply-full` from a user-accessible Terminal when sudo requires the user's password. Ask the user to type it in Terminal, never in chat. Monitor the command through its own output or a task-specific log. Keep app windows in the background when possible, and tell the user before native UI requires focus. Do not confirm a prompt until its action is complete. If a guided command is blocked by a prompt or permission, leave its confirmation pending and report the exact blocker.
+Run `just apply-to-machine full` from a user-accessible Terminal when sudo requires the user's password. Ask the user to type it in Terminal, never in chat. Monitor the command through its own output or a task-specific log. Keep app windows in the background when possible, and tell the user before native UI requires focus. Do not confirm a prompt until its action is complete. If a guided command is blocked by a prompt or permission, leave its confirmation pending and report the exact blocker.
 
 ## Raycast native export and import
 
@@ -19,4 +19,4 @@ Import `/Users/ro/code/machine/config/raycast/settings.rayconfig` through Raycas
 
 Use `thaw://open-settings` only to expose Thaw's settings window, then computer control in Profiles to import `/Users/ro/code/machine/config/thaw/profile.json` and apply the newly imported profile. Confirm the toolbar shows it active. Native import creates a new profile; distinguish it from older profiles with the same name. Do not write Thaw's private profile files or preferences directly, and do not delete older profiles without a separate review. Only after the native Apply succeeds, record the normalized JSON hash in `~/.local/state/machine/thaw-profile.sha256`.
 
-After the recipe and native actions, run `just settings-check` and `just doctor --json`. Report matches, differences, warnings, deferred checks, app restarts, and `git status --short` separately. Do not call the run complete while a required native import or final apply prompt is still pending.
+After the recipe and native actions, run `just diff settings` and `just check machine --json`. Report matches, differences, warnings, deferred checks, app restarts, and `git status --short` separately. Do not call the run complete while a required native import or final apply prompt is still pending.
