@@ -17,7 +17,13 @@ function fixture(managed: string, live: string) {
       stdout: "pipe",
       stderr: "pipe",
     });
-  return { root, home, run, read: () => readFileSync(join(home, ".codex/config.toml"), "utf8") };
+  return {
+    root,
+    home,
+    run,
+    source: () => readFileSync(join(repo, "config/codex/config.toml"), "utf8"),
+    read: () => readFileSync(join(home, ".codex/config.toml"), "utf8"),
+  };
 }
 
 test("merges only managed leaves, keeps local trust and is idempotent", () => {
@@ -37,29 +43,36 @@ test("merges only managed leaves, keeps local trust and is idempotent", () => {
   }
 });
 
-test("conflicting UI value blocks apply without changing the local file", () => {
+test("apply overwrites differing managed values from repo and preserves local keys", () => {
   const f = fixture(
     "[desktop]\nprimary-number-shortcut-target = \"sidebar\"\n",
     "[desktop]\nprimary-number-shortcut-target = \"tabs\"\n[projects.\"/tmp/local\"]\ntrust_level = \"trusted\"\n",
   );
   try {
-    const before = f.read();
+    const source = f.source();
     const result = f.run("apply");
-    expect(result.exitCode).toBe(1);
-    expect(result.stderr.toString()).toContain("primary-number-shortcut-target");
-    expect(f.read()).toBe(before);
+    expect(result.exitCode).toBe(0);
+    expect(f.read()).toContain("primary-number-shortcut-target = \"sidebar\"");
+    expect(f.read()).toContain("trust_level = \"trusted\"");
+    expect(f.source()).toBe(source);
+    const once = f.read();
+    expect(f.run("apply").exitCode).toBe(0);
+    expect(f.read()).toBe(once);
   } finally {
     rmSync(f.root, { recursive: true });
   }
 });
 
-test("preflight explains noninteractive Codex conflicts", () => {
+test("preflight validates noninteractively without mutating either file", () => {
   const f = fixture("service_tier = \"priority\"\n", "service_tier = \"default\"\n");
   try {
+    const source = f.source();
+    const live = f.read();
     const result = f.run("preflight");
-    expect(result.exitCode).toBe(1);
-    expect(result.stderr.toString()).toContain("interactive decision");
-    expect(result.stderr.toString()).toContain("service_tier");
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.toString()).toContain("1 managed keys will be applied from the repo");
+    expect(f.source()).toBe(source);
+    expect(f.read()).toBe(live);
   } finally {
     rmSync(f.root, { recursive: true });
   }

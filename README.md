@@ -229,12 +229,11 @@ and selectively promotes them into the repo. See
 [configuration commands](docs/configuration-workflow.md) for scope and limits.
 
 Codex's `config/codex/config.toml` is a per-user key allowlist. Apply merges
-missing declared keys into writable `~/.codex/config.toml`, leaving project
-trust, app state, and unlisted keys alone. If a declared key changed in the UI,
-apply prompts before the system switch whether to use the Mac value in the repo
-declaration (default: yes). Answer no to keep the repo value. Noninteractive
-applies stop at unresolved conflicts; use `just import-from-machine codex` to
-review them in a terminal.
+declared keys into writable `~/.codex/config.toml`, overwriting differing managed
+values while leaving project trust, app state, and unlisted keys alone. Preflight
+validates configuration without changing either file. Use
+`just import-from-machine codex` to review and selectively promote Mac values
+into the repo in a terminal.
 
 `just prune` lists undeclared package and extension removals and asks before
 proceeding (default: no). `just prune plan` only previews; chezmoi drift

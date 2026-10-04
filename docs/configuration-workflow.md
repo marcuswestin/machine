@@ -27,13 +27,12 @@ reports; it never promotes a candidate into active configuration.
 ## Apply and conflicts
 
 The Codex repo file `config/codex/config.toml` lists keys managed for the
-**current user**. Apply merges missing values into regular, writable
+**current user**. Apply merges declared values into regular, writable
 `~/.codex/config.toml` while preserving unknown fields, local trust decisions,
-hooks, and app-generated state. A conflicting managed value prompts before
-sudo or the system switch whether to use the Mac value in the repo declaration
-(default: yes). Answer no to keep the repo value and apply it to the Mac.
-Noninteractive applies stop at unresolved conflicts; use
-`just import-from-machine codex` to review them in a terminal.
+hooks, and app-generated state. Differing managed values are overwritten from
+the repo. Preflight validates configuration without modifying either file.
+Use `just import-from-machine codex` to review and selectively promote Mac
+values into the repo in a terminal.
 
 `just apply-to-machine` does not intentionally quit desktop apps. Some changed
 settings only take effect when their app next starts; the command prints pending
