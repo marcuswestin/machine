@@ -194,7 +194,7 @@ git-auth: _git-auth
 
 # Private implementation recipes.
 _apply-to-machine: _check-macos
-    @echo "Checking Codex configuration for conflicts before making changes..."
+    @echo "Validating Codex configuration before making changes..."
     @bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
     @echo "Preparing sudo access for the machine apply..."
     @scripts/with-sudo-keepalive.sh just _apply
@@ -276,7 +276,7 @@ _raycast-import-force:
 _apply:
     #!/usr/bin/env bash
     set -euo pipefail
-    printf 'Checking Codex configuration for conflicts...\n'
+    printf 'Validating Codex configuration...\n'
     bun "{{ REPO }}/scripts/codex-config-sync.ts" preflight
     printf 'Checking which app settings will need a restart (this can take several seconds)...\n'
     pending="$(bun "{{ REPO }}/scripts/restart-plan.ts")"

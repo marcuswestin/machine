@@ -73,8 +73,8 @@ unless asked.
   keys are merged into the current user's writable `~/.codex/config.toml`;
   project trust, hook trust, app-generated paths, and other local keys stay
   there. Never symlink or import that whole file. `just import-from-machine`
-  reviews changed declared keys before promoting them into the repo; an
-  unresolved conflict stops apply before the system switch.
+  reviews changed declared keys before promoting them into the repo. Apply
+  overwrites differing declared keys from the repo; its preflight only validates.
   Local Homebrew casks live under
   `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
   replaces Ice; `just import-from-machine thaw` saves one native export in
