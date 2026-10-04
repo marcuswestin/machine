@@ -1,7 +1,7 @@
 {
-  "handy-computer/parakeet-tdt-0.6b-v3-gguf/parakeet-tdt-0.6b-v3-Q8_0.gguf": {
-    "revision": "85ac09ea12fc4b1112fa76810059364bc6adc9de",
-    "sha256": "5859f77944efcd8eafa23a6350731960b2b55b2203df51f319665c807d802cc7",
+  "handy-computer/parakeet-tdt-0.6b-v2-gguf/parakeet-tdt-0.6b-v2-Q8_0.gguf": {
+    "revision": "07cee0616125a08ef619729bb47f40ef747e4bc4",
+    "sha256": "f0d0e99cebb6d3b83f1f7069b82b5d3c2e39a54545b0da039cb4bafd9c4e5caa",
     "source": "https://github.com/cjpais/Handy/blob/v0.9.7/src-tauri/src/catalog/catalog.json"
   }
 }

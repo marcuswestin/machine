@@ -165,7 +165,7 @@
     "selected_channel": null,
     "selected_language": "auto",
     "selected_microphone": "MacBook Pro Microphone",
-    "selected_model": "handy-computer/parakeet-tdt-0.6b-v3-gguf/parakeet-tdt-0.6b-v3-Q8_0.gguf",
+    "selected_model": "handy-computer/parakeet-tdt-0.6b-v2-gguf/parakeet-tdt-0.6b-v2-Q8_0.gguf",
     "selected_output_device": null,
     "settings_schema_version": 2,
     "shortcut_activation": "push_to_talk",
