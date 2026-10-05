@@ -22,7 +22,7 @@
     };
 
     "com.steipete.codexbar" = {
-      # CodexBar 0.60.3: one provider icon with usage percentage, selected by
+      # CodexBar 0.72.0: one provider icon with usage percentage, selected by
       # highest usage. Provider credentials stay in its writable private config.
       mergeIcons = true;
       menuBarDisplayMode = "percent"; # Numeric usage percentage rather than a reset countdown.
@@ -33,6 +33,9 @@
       resetTimesShowAbsolute = true;
       multiAccountMenuLayout = "stacked"; # Show account cards together in the dropdown.
       costSummaryDisplayStyle = "both"; # Show both the inline cost summary and cost submenu.
+      refreshFrequency = "oneMinute"; # Refresh provider quotas every 60 seconds; local cost scans keep the app's separate cadence.
+      tokenCostUsageEnabled = true; # Keep local token totals and cost history enabled.
+      providerStorageFootprintsEnabled = false; # Recursive disk accounting also traverses Codex worktrees; omit disk totals and cleanup suggestions.
     };
 
     "eu.exelban.Stats" = {
