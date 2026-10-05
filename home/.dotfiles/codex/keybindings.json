@@ -5,7 +5,7 @@
   },
   {
     "command": "hotkeyWindow",
-    "key": null
+    "key": "Command+Alt+Space"
   },
   {
     "command": "composer.submitInBackground",
