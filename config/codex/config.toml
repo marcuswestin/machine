@@ -51,8 +51,10 @@ approvals_reviewer = "auto_review"
   preventSleepWhileRunning = true
   keepRemoteControlAwakeWhilePluggedIn = true
   "notifications-turn-mode" = "always"
-  # Like the Claude desktop app: Enter steers the running turn and Cmd+Enter
-  # (the built-in "opposite" shortcut) queues; keybindings.json makes idle Cmd+Enter send.
+  # Match Claude Code desktop: Enter sends/steers, Shift+Enter inserts a newline,
+  # and Cmd+Enter queues while running (explicitly bound in keybindings.json).
+  # "enter" means Enter sends even when the draft already contains multiple lines.
+  composerEnterBehavior = "enter"
   followUpQueueMode = "steer"
   git-branch-prefix = "feat/"
   git-pull-request-merge-method = "squash"

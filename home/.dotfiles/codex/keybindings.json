@@ -1,18 +1,22 @@
 [
   {
-    "command": "globalDictationHold",
-    "key": null
+    "command": "composer.submit",
+    "key": "Enter"
   },
   {
-    "command": "hotkeyWindow",
-    "key": "Command+Alt+Space"
+    "command": "composer.queue",
+    "key": "CmdOrCtrl+Enter"
   },
   {
     "command": "composer.submitInBackground",
     "key": null
   },
   {
-    "command": "composer.submit",
-    "key": "CmdOrCtrl+Enter"
+    "command": "globalDictationHold",
+    "key": null
+  },
+  {
+    "command": "hotkeyWindow",
+    "key": "Command+Alt+Space"
   }
 ]
