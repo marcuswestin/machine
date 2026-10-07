@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Capture a native Thaw profile export for the guided import/apply step in just apply-to-machine full.
+# Capture a native Thaw profile export for the guided import/apply step in just apply-to-machine.
 set -euo pipefail
 
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -21,17 +21,20 @@ Export the CURRENT Thaw configuration
    Export Profiles if the menu is unavailable. A multi-profile file will
    prompt you to choose one profile for the repo.
 4. Save as: $suggested
-   In the save dialog, Cmd-Shift-G lets you enter the Desktop folder.
+   (Cmd-Shift-G in the save dialog lets you type the folder. Thaw remembers
+   the last folder used, so check where it actually saves.)
 
-Thaw remembers the save-dialog folder; the path above is our suggested location.
-Look on Desktop first for the newly exported file. If it is absent, check the
-folder shown in Thaw's save dialog and other likely export folders; ask where
-it was saved if you still cannot locate it. Do not use an older export.
-This recipe saves the export to:
-  $destination
-It replaces the previous repo snapshot. Review its git diff before committing;
-profiles can include custom names, display identifiers, and automation settings.
-Run just apply-to-machine full to open the guided Thaw import/apply step when this export changes.
+Two separate files (no symlink):
+  Handoff (Thaw writes):  $suggested
+  Repo copy (we write):   $destination
+After you press Enter, this recipe reads the handoff file, keeps the one profile
+you pick, sorts its keys, and overwrites the repo copy. The handoff file is left
+untouched; delete it whenever you like. At the Desktop path, only a file newer
+than this prompt is accepted, so an older export there is never reused.
+
+Then review git diff -- config/thaw/profile.json before committing (profiles
+can include custom names, display identifiers, and automation settings), and
+run just apply-to-machine to open the guided Thaw import/apply step.
 
 EOF
   if [[ ! -t 0 ]]; then
