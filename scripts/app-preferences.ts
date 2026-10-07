@@ -119,7 +119,7 @@ export function syncFile(file: string, desired: ObjectValue, apply: boolean, run
   const differences = differingKeys(live, desired);
   if (!apply || differences.length === 0) return differences;
   if (running()) {
-    throw new Error("Quit Claude before applying its pending preferences, then rerun just apply-to-machine full");
+    throw new Error("Quit Claude before applying its pending preferences, then rerun just apply-to-machine");
   }
   mkdirSync(dirname(file), { recursive: true });
   const temporary = file + `.machine-${process.pid}.tmp`;
@@ -142,7 +142,11 @@ export function syncFile(file: string, desired: ObjectValue, apply: boolean, run
 
 if (import.meta.main) {
   const mode = process.argv[2] ?? "check";
-  if (!["apply", "check", "save"].includes(mode)) throw new Error("usage: app-preferences.ts [check|apply|save]");
+  // apply-unless-running is the partial apply: Claude rewrites this file on quit, so a
+  // write while it runs would be lost; leave those keys reported as pending instead.
+  if (!["apply", "apply-unless-running", "check", "save"].includes(mode)) {
+    throw new Error("usage: app-preferences.ts [check|apply|apply-unless-running|save]");
+  }
   const repo = resolve(import.meta.dir, "..");
   const manifestPath = join(repo, "config/app-preferences.json");
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Record<
@@ -161,20 +165,26 @@ if (import.meta.main) {
         }
         continue;
       }
+      const running = () => {
+        const expression = "^" + target.process.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "( |$)";
+        // -a: macOS pgrep otherwise skips its ancestors, missing Claude when run from Claude Code.
+        const result = spawnSync("pgrep", ["-a", "-f", expression]);
+        if (result.status !== 0 && result.status !== 1) {
+          throw new Error("Could not determine whether Claude is running");
+        }
+        return result.status === 0;
+      };
+      const writes = mode === "apply" || (mode === "apply-unless-running" && !running());
       const differences = syncFile(
         join(process.env.MACHINE_HOME ?? homedir(), target.path),
         target.settings,
-        mode === "apply",
-        () => {
-          const expression = "^" + target.process.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "( |$)";
-          const result = spawnSync("pgrep", ["-f", expression]);
-          if (result.status !== 0 && result.status !== 1) {
-            throw new Error("Could not determine whether Claude is running");
-          }
-          return result.status === 0;
-        },
+        writes,
+        running,
       );
-      if (mode === "check") {
+      if (!writes) {
+        if (mode === "apply-unless-running" && differences.length > 0) {
+          console.log(`[PENDING] ${name}: Claude is running; run just apply-to-machine to restart it and apply`);
+        }
         if (differences.length === 0) continue;
         const file = join(process.env.MACHINE_HOME ?? homedir(), target.path);
         const live = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) as ObjectValue : {};
@@ -206,6 +216,5 @@ if (import.meta.main) {
   }
   if (mode === "save" && saved) writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
   if (mode === "save") console.log("Reviewed only declared app preference keys; app-owned fields were not copied.");
-  if (mode === "apply" && failed) process.exitCode = 1;
-  if (mode === "save" && failed) process.exitCode = 1;
+  if (mode !== "check" && failed) process.exitCode = 1;
 }

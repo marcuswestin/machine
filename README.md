@@ -39,6 +39,9 @@ Command Line Tools are installed before Homebrew packages. Homebrew directory
 ownership and trust for declared third-party packages (including local casks)
 are applied on every system switch, so no manual `brew trust` step is needed.
 Xcode/App Store and GitHub sign-in may still require interaction.
+The installer runs `just partial-apply-to-machine` to install the declared tools,
+then `just apply-to-machine` for the guided Thaw import, display layout, and
+verification; press Enter at its `[Y/n]` restart prompt.
 
 The apply path also updates Command Line Tools through Software Update, replaces
 the old Claude Code cask with the declared latest channel, and removes the
@@ -180,7 +183,7 @@ workspace-dependent AeroSpace anchor. Import and apply the updated native profil
 when prompted; adjust display associations on another Mac. Profiles position
 existing items; they do not enable Weather or other macOS controls. Sound visibility
 is declared through nix-darwin. macOS has no declared Weather menu control in this
-repo: `just apply-to-machine full` asks you to confirm System Settings > Menu Bar > Weather
+repo: `just apply-to-machine` asks you to confirm System Settings > Menu Bar > Weather
 and its visible menu bar item. The former UI script could not reliably read that
 control even with iTerm's permissions enabled, so apply no longer runs it.
 Weather's first location determines the displayed city; location permissions
@@ -217,13 +220,14 @@ Use the [single-pass verification checklist](docs/reviews/2026-09-27-settings-ac
 after applying on each Mac. These declarations do not replace app credentials,
 privacy permission prompts, or per-display Thaw associations.
 
-Use `just diff` for a read-only comparison. `just apply-to-machine` installs and applies
-declarations without intentionally quitting desktop apps; it prints apps with
-pending restart work. `just apply-to-machine full` is the guided pass: it lists affected
-running apps, waits for Enter, then quits only those apps, applies settings,
-reopens them in the background, and walks through native imports and visual
-verification. Docker containers may be interrupted when Docker needs restarting.
-Ctrl-C/EOF leaves a native import confirmation pending. Neither command reboots
+Use `just diff` for a read-only comparison. `just apply-to-machine` is the guided full
+pass: it lists affected running apps and asks `[Y/n]` (Enter means yes), then quits
+only those apps, applies settings, reopens them in the background, and walks
+through native imports and visual verification. Docker containers may be
+interrupted when Docker needs restarting. `just partial-apply-to-machine` installs
+and applies the same declarations and writes every settings file it safely can,
+without quitting or restarting apps; it prints apps that load their changes on the
+next restart. Ctrl-C/EOF leaves a native import confirmation pending. Neither command reboots
 the Mac. `just import-from-machine` reviews portable values changed in the UI
 and selectively promotes them into the repo. See
 [configuration commands](docs/configuration-workflow.md) for scope and limits.

@@ -41,7 +41,7 @@ fi
 
 if [[ "$mode" == check ]]; then
   if [[ "$current" != "$confirmed" ]]; then
-    printf '[DIFF] thaw.profile.confirmedSha256: current=%s -> repo=%s (saved export includes item visibility and order; run just apply-to-machine full to import and confirm)\n' \
+    printf '[DIFF] thaw.profile.confirmedSha256: current=%s -> repo=%s (saved export includes item visibility and order; run just apply-to-machine to import and confirm)\n' \
       "${confirmed:-<never confirmed>}" "$current"
   fi
   exit 0

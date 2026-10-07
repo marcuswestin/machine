@@ -6,6 +6,8 @@ source "${repo_dir}/scripts/settings-prompt.sh"
 cd "$repo_dir"
 
 # The full pass closes only apps with a saved setting that currently differs.
+partial_hint='To apply without quitting or restarting any apps, run: just partial-apply-to-machine'
+printf '%s\n' "$partial_hint"
 printf 'Checking Codex configuration before the full apply...\n'
 bun "${repo_dir}/scripts/codex-config-sync.ts" preflight
 printf 'Preparing the app restart plan (this can take several seconds)...\n'
@@ -20,32 +22,39 @@ if [[ -n "$plan" ]]; then
 fi
 if { [[ "${TERM_PROGRAM:-}" == iTerm.app ]] && [[ " $plan " == *"iTerm"* ]]; } \
   || { [[ "${TERM_PROGRAM:-}" == Codex || "${TERM_PROGRAM:-}" == ChatGPT ]] && [[ " $plan " == *"ChatGPT"* ]]; }; then
-  printf 'Run just apply-to-machine full from Terminal.app; this terminal may close during app restart.\n' >&2
+  printf 'Run just apply-to-machine from Terminal.app; this terminal may close during app restart.\n' >&2
+  printf '%s\n' "$partial_hint" >&2
   exit 2
 fi
 
-settings_prompt "Step 1 of 4 — Prepare this Mac
+confirm_status=0
+confirm_prompt "Step 1 of 4 — Prepare this Mac
 
-1. Run this command from Terminal.app if it plans to quit your current terminal;
-   save work in affected apps.
-2. Changed settings require restarting these apps if running:
+1. This will quit these running apps, apply their changed settings, and reopen
+   them in the background:
 ${plan:-   None detected.}
+   Save work in those apps first. Run from Terminal.app if your current
+   terminal is listed.
+2. ${partial_hint}
    Docker settings import, export, and apply are disabled for now.
 3. Be ready for sudo and native permission/import prompts. This runs the full
    apply-to-machine: system defaults, missing packages, dotfiles, and editor extensions.
-4. The command will relaunch previously running affected apps in the background
-   after applying.
-5. Before pressing Enter, save the current Thaw layout and configuration into
+4. Before continuing, save the current Thaw layout and configuration into
    a profile and export that profile to Desktop as a backup. Keep the backup
    outside the repo. On a fresh Mac with no Thaw setup, there is nothing to
    back up. Raycast native export/import is paused for the Spotlight trial.
 
-Nothing has been applied or quit yet. Press Enter after completing those exports
-to start the shutdown and apply."
+Nothing has been applied or quit yet." "Restart the apps above and apply?" || confirm_status=$?
+if (( confirm_status == 2 )); then
+  printf 'Nothing was applied or quit. %s\n' "$partial_hint"
+  exit 0
+fi
+(( confirm_status == 0 )) || exit 1
 
 app_running() {
   local app="$1" state
-  if [[ "$app" == Claude ]] && pgrep -f '^/Applications/Claude[.]app/Contents/MacOS/Claude( |$)' >/dev/null; then
+  # -a: macOS pgrep otherwise skips its ancestors, missing Claude when run from Claude Code.
+  if [[ "$app" == Claude ]] && pgrep -a -f '^/Applications/Claude[.]app/Contents/MacOS/Claude( |$)' >/dev/null; then
     return 0
   fi
   state="$(osascript -e 'on run argv' -e 'set appName to item 1 of argv' -e 'if application appName is running then return "running"' -e 'return "stopped"' -e 'end run' "$app")" || {
@@ -65,7 +74,7 @@ quit_app() {
       return 0
     fi
     if (( attempt == limit )); then
-      printf '%s did not quit; close it and rerun just apply-to-machine full.\n' "$app" >&2
+      printf '%s did not quit; close it and rerun just apply-to-machine.\n' "$app" >&2
       return 1
     fi
     sleep 1
@@ -89,7 +98,7 @@ if ! just _apply-to-machine; then
     printf 'Restoring %s in the background...\n' "$app"
     open -gj -a "$app"
   done
-  printf 'Resolve its reported issue, then rerun just apply-to-machine full.\n' >&2
+  printf 'Resolve its reported issue, then rerun just apply-to-machine.\n' >&2
   printf 'Approve any native permission or import prompts through macOS; no consent is bypassed.\n' >&2
   exit 1
 fi

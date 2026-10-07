@@ -14,7 +14,10 @@ unless asked.
   checks. It does not replace the `review-machine-repo` security/upgrade review.
   Validate changes with `bun test scripts/doctor.test.ts` and a live `just check machine`;
   access failures must remain unverified, never healthy.
-- Steady-state apply command: `just apply-to-machine`. It installs missing Homebrew
+- Steady-state apply command: `just apply-to-machine` (full: asks `[Y/n]`, default
+  yes, before restarting affected apps). `just partial-apply-to-machine` applies the
+  same declarations without quitting apps; `just update` uses it, and `up.sh` runs it
+  before the full apply so the declared tools exist. Both install missing Homebrew
   packages but does not upgrade already-installed formulae or casks
   (`homebrew.onActivation.upgrade = false`), so app self-updates are left
   alone. `just update casks` upgrades outdated Homebrew-managed casks; name a
@@ -78,7 +81,7 @@ unless asked.
   Local Homebrew casks live under
   `homebrew/local/` and are exposed as the `machine/local` tap. Thaw
   replaces Ice; `just import-from-machine thaw` saves one native export in
-  `config/thaw/profile.json`. `just apply-to-machine full` opens a guided native import/apply step
+  `config/thaw/profile.json`. `just apply-to-machine` opens a guided native import/apply step
   when that file changes and records completion only after the user confirms.
   Thaw 3.0.0-alpha.6 has no supported full-profile import/apply URI; do not replace
   this with writes to its private database or permission grants. Use

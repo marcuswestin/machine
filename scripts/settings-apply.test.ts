@@ -48,7 +48,7 @@ fi
     TEST_LOG: log,
     TEST_ROOT: root,
     MACHINE_SKIP_DOCKER: "0",
-    MACHINE_APPLY_MODE: "basic",
+    MACHINE_APPLY_MODE: "partial",
     MACHINE_RESTART_STRICT: "0",
     MACHINE_SETTINGS_INTERACTIVE: "1",
     TERM_PROGRAM: "Apple_Terminal",
@@ -117,6 +117,20 @@ test("EOF before start does not apply, and unknown app status stops before mutat
     const result = f.run("\n", { MOCK_PLAN: "Stats", FAIL_STATUS: "Stats" });
     expect(result.exitCode).toBe(1);
     expect(result.stderr.toString()).toContain("Could not check whether Stats is running");
+    expect(f.calls()).not.toContain("just _apply-to-machine");
+  } finally {
+    rmSync(f.root, { recursive: true });
+  }
+});
+
+test("declining the restart prompt applies nothing and points to the partial apply", () => {
+  const f = fixture();
+  try {
+    const result = f.run("n\n", { MOCK_PLAN: "Stats", MOCK_RUNNING: "1" });
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.toString()).toContain("Nothing was applied or quit.");
+    expect(result.stdout.toString()).toContain("just partial-apply-to-machine");
+    expect(f.calls()).not.toContain("quit Stats");
     expect(f.calls()).not.toContain("just _apply-to-machine");
   } finally {
     rmSync(f.root, { recursive: true });

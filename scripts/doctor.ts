@@ -341,7 +341,7 @@ function main() {
       status: pending ? "WARN" : "OK",
       detail: output || "Saved profile matches its last confirmed apply",
       ...(pending
-        ? { action: "Run just apply-to-machine full and complete or confirm the native Thaw profile apply." }
+        ? { action: "Run just apply-to-machine and complete or confirm the native Thaw profile apply." }
         : {}),
     };
   });

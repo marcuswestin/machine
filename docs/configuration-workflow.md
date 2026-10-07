@@ -4,10 +4,11 @@ Run `just help` to see the grouped public recipes. Commands that compare or
 validate state do not apply settings. `just discover` writes only ignored local
 reports; it never promotes a candidate into active configuration.
 
-- `just apply-to-machine [normal|full|dotfiles]`: repo → Mac. Normal installs
-  missing packages and applies declarations without intentionally quitting apps.
-  Full guides native imports and restarts affected apps. Dotfiles limits the
-  scope to chezmoi, Handy's pinned model, and AeroSpace reload.
+- `just apply-to-machine [full|dotfiles]`: repo → Mac. Full (the default) asks
+  `[Y/n]` before restarting affected apps, then guides native imports. Dotfiles
+  limits the scope to chezmoi, Handy's pinned model, and AeroSpace reload.
+- `just partial-apply-to-machine`: repo → Mac without quitting or restarting apps.
+  It installs missing packages and writes all settings files it safely can.
 - `just import-from-machine [all|browser|codex|claude|thaw|raycast|files]`: Mac → repo.
   Interactively reviews portable values and writes only selected declarations.
   It never applies, stages, commits, or pushes.
@@ -34,12 +35,17 @@ the repo. Preflight validates configuration without modifying either file.
 Use `just import-from-machine codex` to review and selectively promote Mac
 values into the repo in a terminal.
 
-`just apply-to-machine` does not intentionally quit desktop apps. Some changed
-settings only take effect when their app next starts; the command prints pending
-restart work. `just apply-to-machine full` plans affected app restarts, shows the
-plan, and waits for Enter. It also guides Thaw import and native
-consent. Run it from Terminal.app if it needs to quit your current terminal.
-It does not reboot, prune, upgrade, commit, or push.
+`just apply-to-machine` plans affected app restarts, shows the plan, and asks
+`[Y/n]` (Enter means yes; `n` exits without changes). It also guides Thaw import,
+display layout, and native consent. Run it from Terminal.app if it needs to quit
+your current terminal.
+
+`just partial-apply-to-machine` never quits apps. It still writes changed
+settings files; apps pick them up on their next start, and the command prints
+which apps are pending. Claude Desktop preferences are written only while Claude
+is not running, because Claude rewrites that file when it quits. The Thaw import
+and display layout steps run only in the full apply.
+Neither command reboots, prunes, upgrades, commits, or pushes.
 
 Raycast uses Control-Space and Spotlight search uses Command-Space. The full
 apply reserves the former from macOS input-source switching, restores the

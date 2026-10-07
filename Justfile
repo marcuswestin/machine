@@ -10,18 +10,23 @@ NIX_CMD := "nix --extra-experimental-features 'nix-command flakes'"
 help:
     @just --list --unsorted
 
-# Apply repo declarations to this Mac; full restarts apps, dotfiles limits the scope.
+# Apply repo declarations to this Mac, restarting affected apps after a [Y/n] prompt; dotfiles limits the scope.
 [group('Configure')]
-apply-to-machine mode="normal":
+apply-to-machine mode="full":
     #!/usr/bin/env bash
     set -euo pipefail
     printf 'Starting apply-to-machine (%s). Checking the selected workflow...\n' {{ quote(mode) }}
     case {{ quote(mode) }} in
-      normal) MACHINE_APPLY_MODE=basic just _apply-to-machine ;;
       full) bash "{{ REPO }}/scripts/settings-apply.sh" ;;
-      dotfiles) MACHINE_APPLY_MODE=basic just _chezmoi-apply ;;
-      *) printf 'usage: just apply-to-machine [normal|full|dotfiles]\n' >&2; exit 64 ;;
+      dotfiles) MACHINE_APPLY_MODE=partial just _chezmoi-apply ;;
+      *) printf 'usage: just apply-to-machine [full|dotfiles]\n' >&2; exit 64 ;;
     esac
+
+# Apply repo declarations and write settings files without quitting or restarting apps.
+[group('Configure')]
+partial-apply-to-machine:
+    @printf 'Starting partial-apply-to-machine: no apps will be quit or restarted.\n'
+    @MACHINE_APPLY_MODE=partial just _apply-to-machine
 
 # Review portable machine settings and import selected values into the repo.
 [group('Configure')]
@@ -149,8 +154,7 @@ fmt:
 [private]
 apply: apply-to-machine
 [private]
-apply-full:
-    @just apply-to-machine full
+apply-full: apply-to-machine
 [private]
 apply-settings: apply-full
 [private]
@@ -234,7 +238,7 @@ _upgrade *casks: _check-macos
 
 _update-all: _check-macos
     {{ NIX_CMD }} flake update nix-homebrew homebrew-cask homebrew-anomalyco-tap homebrew-nikitabobko-tap homebrew-steipete-tap
-    @just apply-to-machine
+    @just partial-apply-to-machine
     @scripts/update-homebrew-apps.sh "{{ HOST }}"
     @just _upgrade
     @just _unquarantine-cask-apps
@@ -296,9 +300,9 @@ _apply:
     printf 'System switch complete. Applying user files and app settings...\n'
     just _after-switch
     echo "Machine setup complete."
-    if [[ "${MACHINE_APPLY_MODE:-basic}" != full && -n "$pending" ]]; then
-      printf 'App settings still need apply-to-machine full or a restart:\n%s\n' "$pending"
-      printf 'Run just apply-to-machine full from Terminal.app when ready.\n'
+    if [[ "${MACHINE_APPLY_MODE:-partial}" != full && -n "$pending" ]]; then
+      printf 'Settings files were written; these apps load them on their next restart:\n%s\n' "$pending"
+      printf 'Restart them yourself, or run just apply-to-machine from Terminal.app when ready.\n'
     fi
     just _prune-check
 
@@ -320,10 +324,10 @@ _after-switch:
     @bun "{{ REPO }}/scripts/codex-config-sync.ts" apply
     @bash "{{ REPO }}/scripts/codexbar-settings-sync.sh" apply
     @echo "Applying or checking declared app preferences..."
-    @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+    @if [[ "${MACHINE_APPLY_MODE:-partial}" == full ]]; then \
       bun "{{ REPO }}/scripts/app-preferences.ts" apply; \
     else \
-      bun "{{ REPO }}/scripts/app-preferences.ts" check; \
+      bun "{{ REPO }}/scripts/app-preferences.ts" apply-unless-running; \
     fi
     @just _chezmoi-apply
     @echo "Checking setup steps that may need native prompts..."
@@ -334,7 +338,7 @@ _after-switch:
     @just _install-editor-extensions
     @echo "Opening startup apps..."
     @just _launch-startup-apps
-    @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+    @if [[ "${MACHINE_APPLY_MODE:-partial}" == full ]]; then \
       echo "Restoring the declared display layout..."; \
       just _display-layout-apply; \
     fi
@@ -345,7 +349,7 @@ _attention-required:
     @echo "Checking attention-required setup: Xcode/App Store, GitHub authentication, and Thaw profiles."
     @just _setup-xcode
     @just _git-auth
-    @if [[ "${MACHINE_APPLY_MODE:-basic}" == full ]]; then \
+    @if [[ "${MACHINE_APPLY_MODE:-partial}" == full ]]; then \
       just _raycast-settings-sync; just _thaw-profile-sync; \
     else \
       just _thaw-profile-sync check; bash "{{ REPO }}/scripts/raycast-settings-sync.sh" "{{ REPO }}" check; \

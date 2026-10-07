@@ -1,13 +1,13 @@
 ---
 name: apply-full-machine
-description: Run a requested full apply of the machine repo, including affected app restarts and native Thaw import. Raycast native sync is paused during the Spotlight trial. Use for `just apply-to-machine full` or completing its deferred native steps; use diff-tracked-machine for read-only drift review.
+description: Run a requested full apply of the machine repo, including affected app restarts and native Thaw import. Raycast native sync is paused during the Spotlight trial. Use for `just apply-to-machine` or completing its deferred native steps; use diff-tracked-machine for read-only drift review.
 ---
 
 # Full machine apply
 
 Work in `/Users/ro/code/machine`. Read `AGENTS.md` and the current `Justfile` and scripts before running the recipe. Check `git status --short`, Codex managed-key preflight, and `MACHINE_RESTART_STRICT=1 just _restart-plan`. Ask for unresolved consequential choices before starting; an explicit choice to include Docker authorizes its restart and possible container interruption. Never run `just prune` as part of this workflow.
 
-Run `just apply-to-machine full` from a user-accessible Terminal when sudo requires the user's password. Ask the user to type it in Terminal, never in chat. Monitor the command through its own output or a task-specific log. Keep app windows in the background when possible, and tell the user before native UI requires focus. Do not confirm a prompt until its action is complete. If a guided command is blocked by a prompt or permission, leave its confirmation pending and report the exact blocker.
+Run `just apply-to-machine` from a user-accessible Terminal when sudo requires the user's password. Ask the user to type it in Terminal, never in chat. Monitor the command through its own output or a task-specific log. Keep app windows in the background when possible, and tell the user before native UI requires focus. Do not confirm a prompt until its action is complete. If a guided command is blocked by a prompt or permission, leave its confirmation pending and report the exact blocker.
 
 ## Raycast during the Spotlight trial
 
