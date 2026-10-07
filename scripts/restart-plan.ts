@@ -85,8 +85,8 @@ if (import.meta.main) {
     const codex = output("bun", ["scripts/codex-config-sync.ts", "check"]);
     const preferences = output("bun", ["scripts/app-preferences.ts", "check"]);
     const chezmoi = output("chezmoi", ["diff", "--source", `${repo}/home`]);
-    const defaults = output("/usr/bin/python3", [
-      "scripts/check-app-defaults.py",
+    const defaults = output("bun", [
+      "scripts/check-app-defaults.ts",
       process.env.MACHINE_HOST ?? "machine",
     ]);
     const json = output("bun", ["scripts/repo-settings-import.ts", repo, "--json"]);

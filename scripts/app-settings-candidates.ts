@@ -2,6 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
+import { isPlistDict, readPlist } from "./plist";
 
 type CaskConfig = {
   name: string;
@@ -208,21 +209,13 @@ function plistPathsForDomain(domain: string): string[] {
 function plistTopLevelKeys(path: string, warnings: string[]): string[] {
   // plutil's JSON conversion fails on Data/date values. Enumerate keys directly
   // so mixed preference plists do not silently appear to have no settings.
-  const result = run("/usr/bin/python3", [
-    "-c",
-    `
-import json, plistlib, sys
-with open(sys.argv[1], "rb") as stream:
-    value = plistlib.load(stream)
-print(json.dumps(sorted(value.keys()) if isinstance(value, dict) else []))
-`,
-    path,
-  ]);
-  if (!result.ok) {
-    warnings.push(`Cannot read preference keys from ${path}: ${result.stderr}`);
+  try {
+    const value = readPlist(path);
+    return isPlistDict(value) ? Object.keys(value).sort() : [];
+  } catch (error) {
+    warnings.push(`Cannot read preference keys from ${path}: ${(error as Error).message}`);
     return [];
   }
-  return JSON.parse(result.stdout) as string[];
 }
 
 function shouldIgnorePath(path: string): string | undefined {

@@ -5,14 +5,6 @@ set -euo pipefail
 
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 
-pretty_xml() {
-  /usr/bin/python3 -c 'import sys, xml.dom.minidom
-raw = sys.stdin.buffer.read()
-if not raw.strip():
-    raise SystemExit(0)
-sys.stdout.write(xml.dom.minidom.parseString(raw).toprettyxml(indent="  "))'
-}
-
 write_error() {
   local out=$1
   shift
@@ -30,7 +22,8 @@ emit_one() {
     "$toml_out" "${toml_out}.error.txt" \
     "$json_out" "${json_out}.error.txt"
 
-  if ! plutil -convert xml1 -o - "$f" 2>"${xml_out}.error.txt" | pretty_xml >"$xml_out"; then
+  # plutil's XML output is already indented (with tabs).
+  if ! plutil -convert xml1 -o - "$f" 2>"${xml_out}.error.txt" >"$xml_out"; then
     rm -f "$xml_out"
   elif [[ ! -s "${xml_out}.error.txt" ]]; then
     rm -f "${xml_out}.error.txt"

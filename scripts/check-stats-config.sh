@@ -9,13 +9,9 @@ desired="$(nix --extra-experimental-features 'nix-command flakes' eval \
   "${repo_dir}#darwinConfigurations.${host}.config.system.defaults.CustomUserPreferences" \
   --apply 'prefs: prefs."eu.exelban.Stats"')"
 # A Stats plist also contains Data-valued file-dialog bookmarks, which plutil
-# cannot convert to JSON. Parse the plist and select declared keys first.
-actual="$(defaults export eu.exelban.Stats - | /usr/bin/python3 -c '
-import json, plistlib, sys
-declared = json.loads(sys.argv[1])
-saved = plistlib.loads(sys.stdin.buffer.read())
-print(json.dumps({key: saved[key] for key in declared if key in saved}))
-' "$desired")"
+# cannot convert to JSON; plist.ts can. Then select only the declared keys.
+actual="$(defaults export eu.exelban.Stats - | bun "${repo_dir}/scripts/plist.ts" json - \
+  | jq -c --argjson declared "$desired" 'with_entries(select(.key as $key | $declared | has($key)))')"
 
 differences="$(jq -nr --argjson desired "$desired" --argjson actual "$actual" '
   $desired | to_entries[] |

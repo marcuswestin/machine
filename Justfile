@@ -212,7 +212,7 @@ _chezmoi-apply:
     @"{{ REPO }}/scripts/aerospace-reload-config.sh"
 
 _settings-check:
-    @/usr/bin/python3 "{{ REPO }}/scripts/check-app-defaults.py" "{{ HOST }}"
+    @bun "{{ REPO }}/scripts/check-app-defaults.ts" "{{ HOST }}"
     @bun "{{ REPO }}/scripts/app-preferences.ts" check
     @bun "{{ REPO }}/scripts/repo-settings-import.ts" "{{ REPO }}" --diff
     @bash "{{ REPO }}/scripts/codexbar-settings-sync.sh" check
