@@ -5,7 +5,7 @@
     "settings": {
       "locale": "en-US",
       "userThemeMode": "system",
-      "windowControlsZoomFactor": 1.0954451150103321
+      "windowControlsZoomFactor": 1
     }
   },
   "claude-desktop-preferences": {
@@ -13,7 +13,9 @@
     "process": "/Applications/Claude.app/Contents/MacOS/Claude",
     "settings": {
       "preferences": {
-        "quickEntryShortcut": { "accelerator": "Ctrl+Cmd+Space" },
+        "quickEntryShortcut": {
+          "accelerator": "Ctrl+Cmd+Space"
+        },
         "ccBranchPrefix": "feat",
         "dockBounceEnabled": true,
         "keepAwakeEnabled": true
