@@ -443,8 +443,16 @@ _restart-plan:
 # Display layout
 ##############
 
+# Skip, rather than fail, when the captured displays or modes are not available
+# right now (external display unplugged, or a laptop with a different panel).
 _display-layout-apply:
-    @scripts/display-layout.sh
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if mismatch="$(scripts/display-layout-attached.sh scripts/display-layout.sh)"; then
+      scripts/display-layout.sh
+    else
+      printf 'Skipping the display layout: %s\n' "$mismatch"
+    fi
 
 _display-layout-capture file="scripts/display-layout.sh":
     #!/usr/bin/env bash
