@@ -27,6 +27,9 @@ function set(value: JsonObject, keys: string[], replacement: unknown): void {
   for (const key of keys.slice(0, -1)) current = current[key] as JsonObject;
   current[keys.at(-1)!] = replacement;
 }
+function keyText(key: string): string {
+  return /^[A-Za-z0-9_-]+$/.test(key) ? key : JSON.stringify(key);
+}
 function answerLine(): string {
   const byte = Buffer.alloc(1);
   let answer = "";
@@ -36,7 +39,8 @@ function answerLine(): string {
 
 const source = process.argv[2];
 if (!source) throw new Error("usage: raycast-settings-save.ts <native-export.rayconfig|json>");
-const repoFile = join(resolve(process.env.MACHINE_REPO ?? join(import.meta.dir, "..")), "config/raycast/settings.json");
+const repoDir = resolve(process.env.MACHINE_REPO ?? join(import.meta.dir, ".."));
+const repoFile = join(repoDir, "config/raycast/settings.json");
 const current = JSON.parse(readFileSync(repoFile, "utf8")) as JsonObject;
 const contents = readFileSync(resolve(source));
 // Native Raycast exports are encrypted binary files. Raycast itself must import
@@ -50,10 +54,7 @@ if (extname(source) === ".rayconfig" && !(contents[0] === 0x1f && contents[1] ==
   console.log("This repo and its export password are public, so treat the export as public data.");
   process.stdout.write("Save this native Settings export in the repo? Type yes: ");
   if (answerLine() !== "yes") throw new Error("Raycast export was not saved");
-  const nativeFile = join(
-    resolve(process.env.MACHINE_REPO ?? join(import.meta.dir, "..")),
-    "config/raycast/settings-native.rayconfig",
-  );
+  const nativeFile = join(repoDir, "config/raycast/settings-native.rayconfig");
   copyFileSync(resolve(source), nativeFile);
   console.log(`Saved native Raycast Settings export: ${nativeFile}`);
   process.exit(0);
@@ -69,6 +70,7 @@ const next = structuredClone(current);
 const saved = next.builtin_package_raycastPreferences as JsonObject;
 const live = exported.builtin_package_raycastPreferences as JsonObject;
 let changed = 0;
+let reviewed = 0;
 for (const keys of leaves(saved)) {
   if (keys.some((part) => /password|secret|token|credential|auth|private/i.test(part))) continue;
   const previous = at(saved, keys);
@@ -76,7 +78,10 @@ for (const keys of leaves(saved)) {
   if (value === undefined || JSON.stringify(value) === JSON.stringify(previous)) continue;
   if (object(value) || Array.isArray(value)) continue;
   if (!process.stdin.isTTY) throw new Error("Raycast save requires an interactive terminal; repo left untouched");
-  console.log(`${keys.join(".")}\n  repo: ${JSON.stringify(previous)}\n  Mac:  ${JSON.stringify(value)}`);
+  if (!reviewed++) console.log(`Review Raycast preferences that changed in the export (config/raycast/settings.json):`);
+  console.log(["builtin_package_raycastPreferences", ...keys].map(keyText).join("."));
+  console.log(`  repo: ${JSON.stringify(previous)}`);
+  console.log(`  Mac:  ${JSON.stringify(value)}  (${resolve(source)})`);
   process.stdout.write("Promote this Raycast preference? [y/N] ");
   if (["y", "yes"].includes(answerLine())) {
     set(saved, keys, value);

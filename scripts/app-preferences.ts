@@ -64,6 +64,14 @@ function set(value: ObjectValue, keys: string[], replacement: unknown): void {
   current[keys.at(-1)!] = replacement;
 }
 
+function keyText(key: string): string {
+  return /^[A-Za-z0-9_-]+$/.test(key) ? key : JSON.stringify(key);
+}
+
+function shownFile(path: string): string {
+  return path.startsWith(homedir() + "/") ? "~" + path.slice(homedir().length) : path;
+}
+
 function answerLine(): string {
   const byte = Buffer.alloc(1);
   let answer = "";
@@ -96,7 +104,10 @@ function savePreferences(file: string, desired: ObjectValue, name: string): Obje
     const previous = at(desired, keys);
     if (current === undefined || JSON.stringify(current) === JSON.stringify(previous)) continue;
     if (!process.stdin.isTTY) throw new Error("Save requires an interactive terminal");
-    console.log(`${name}.${keys.join(".")}\n  repo: ${JSON.stringify(previous)}\n  Mac:  ${JSON.stringify(current)}`);
+    // Name the leaf by its full path in config/app-preferences.json.
+    console.log([name, "settings", ...keys].map(keyText).join("."));
+    console.log(`  repo: ${JSON.stringify(previous)}`);
+    console.log(`  Mac:  ${JSON.stringify(current)}  (${shownFile(file)})`);
     process.stdout.write("Promote this local value into the repo? [y/N] ");
     if (["y", "yes"].includes(answerLine())) set(next, keys, current);
   }

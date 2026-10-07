@@ -47,7 +47,10 @@ function at(value: Record<string, Json>, path: string[]): Json | undefined {
 }
 
 function dotted(path: string[]): string {
-  return path.join(".");
+  return path.map(keyText).join(".");
+}
+function shownFile(path: string): string {
+  return path.startsWith(homedir() + "/") ? "~" + path.slice(homedir().length) : path;
 }
 function safeImport(path: string[]): boolean {
   return !path.some((part) =>
@@ -176,7 +179,9 @@ function main(): void {
         continue;
       }
       if (!process.stdin.isTTY) throw new Error("Save requires an interactive terminal; no values were imported");
-      console.log(`  repo: ${JSON.stringify(item.value)}\n  Mac:  ${JSON.stringify(at(live, item.path))}`);
+      console.log(dotted(item.path));
+      console.log(`  repo: ${JSON.stringify(item.value)}`);
+      console.log(`  Mac:  ${JSON.stringify(at(live, item.path))}  (${shownFile(target)})`);
       process.stdout.write(`Promote local ${dotted(item.path)} into the repo? [y/N] `);
       const answer = answerLine();
       if (answer === "y" || answer === "yes") next = setLeaf(next, { path: item.path, value: at(live, item.path)! });

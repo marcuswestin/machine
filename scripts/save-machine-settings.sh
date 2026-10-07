@@ -16,11 +16,11 @@ fi
 printf 'Existing repo changes (left in place):\n'
 git status --short
 if [[ "$scope" == all || "$scope" == codex ]]; then
-  printf '\nReview Codex settings that changed in the app.\n'
+  printf '\nReview Codex settings that changed in the app (config/codex/config.toml):\n'
   bun scripts/codex-config-sync.ts save
 fi
 if [[ "$scope" == all || "$scope" == claude ]]; then
-  printf '\nReview declared Claude Desktop preferences.\n'
+  printf '\nReview declared Claude Desktop preferences (config/app-preferences.json):\n'
   bun scripts/app-preferences.ts save
 fi
 if [[ "$scope" == all || "$scope" == browser ]]; then
