@@ -54,8 +54,6 @@ alias oa="cd ~/code/agent-os && sleep 1 && aerospace move-node-to-workspace 2 &&
 alias et="cd ~/code/tao-lang"
 alias ot="cd ~/code/tao-lang && sleep 1 && aerospace move-node-to-workspace 3 && aerospace workspace 3 && sleep 1 && open -na Codex && sleep 1 && cursor --new-window . "
 
-alias e2="cd ~/code/tao-lang-2"
-
 eval "$(wt config shell init zsh)"
 
 # tao shell completion

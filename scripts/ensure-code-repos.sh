@@ -5,7 +5,7 @@ code_dir="$HOME/code"
 
 repos=(
   "marcuswestin/machine machine"
-  "marcuswestin/tao-lang tao-lang"
+  "tao-dev-org/tao-lang tao-lang"
   "marcuswestin/Legal Legal"
   "marcuswestin/agent-os agent-os"
   "marcuswestin/wordflower wordflower"
