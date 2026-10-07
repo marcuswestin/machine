@@ -481,7 +481,7 @@
           }
         },
         "confirmSpacingRelaunch": true,
-        "createdAt": "2026-09-29T13:59:55Z",
+        "createdAt": "2026-09-29T14:44:21Z",
         "displayConfigurations": {
           "37D8832A-2D66-02CA-B9F7-8F30A301B230": {
             "alwaysShowHiddenItems": false,
@@ -556,7 +556,7 @@
         "hotkeys": {
           "ShowSectionDividers": "bnVsbA=="
         },
-        "id": "DC915EDB-57E8-4C6D-8F50-C27447D8DCB2",
+        "id": "CFF02D9D-6551-49A6-A347-D8DB6C990CDA",
         "menuBarLayout": {
           "customNames": {},
           "itemGroups": {
@@ -568,18 +568,22 @@
           "itemOrder": {
             "hidden": [
               "org.pqrs.Karabiner-Console-User-Server:menu",
-              "com.pais.handy:Item-0"
+              "com.pais.handy:Item-0",
+              "com.openai.codex:ChatGPT"
             ],
             "visible": [
               "ChatGPTHelper:Item-0",
-              "eu.exelban.Stats:Item#",
               "com.electron.dockerdesktop:Item-0",
               "bobko.aerospace:Item",
+              "com.todesktop.230313mzl4w4u92:Item-0",
+              "eu.exelban.Stats:Item#",
               "com.apple.weather.menu:Weather",
               "com.steipete.codexbar:CodexBar.StatusItem",
               "com.stonerl.Thaw:Thaw.ControlItem.Visible",
+              "com.stonerl.Thaw:Thaw.Spacer.01EBFAF1-3EE3-4AA1-B408-E9157A932C47",
+              "com.apple.MenuBarAgent:com.apple.menuextra.display",
+              "com.apple.MenuBarAgent:com.apple.menuextra.battery",
               "com.apple.MenuBarAgent:com.apple.menuextra.sound",
-              "com.apple.MenuBarAgent:com.apple.menuextra.wifi",
               "com.apple.MenuBarAgent:com.apple.menuextra.controlcenter",
               "com.apple.MenuBarAgent:com.apple.menuextra.clock"
             ]
@@ -587,15 +591,19 @@
           "itemSectionMap": {
             "ChatGPTHelper:Item-0": "visible",
             "bobko.aerospace:Item": "visible",
+            "com.apple.MenuBarAgent:com.apple.menuextra.battery": "visible",
             "com.apple.MenuBarAgent:com.apple.menuextra.clock": "visible",
             "com.apple.MenuBarAgent:com.apple.menuextra.controlcenter": "visible",
+            "com.apple.MenuBarAgent:com.apple.menuextra.display": "visible",
             "com.apple.MenuBarAgent:com.apple.menuextra.sound": "visible",
-            "com.apple.MenuBarAgent:com.apple.menuextra.wifi": "visible",
             "com.apple.weather.menu:Weather": "visible",
             "com.electron.dockerdesktop:Item-0": "visible",
+            "com.openai.codex:ChatGPT": "hidden",
             "com.pais.handy:Item-0": "hidden",
             "com.steipete.codexbar:CodexBar.StatusItem": "visible",
             "com.stonerl.Thaw:Thaw.ControlItem.Visible": "visible",
+            "com.stonerl.Thaw:Thaw.Spacer.01EBFAF1-3EE3-4AA1-B408-E9157A932C47": "visible",
+            "com.todesktop.230313mzl4w4u92:Item-0": "visible",
             "eu.exelban.Stats:Item#": "visible",
             "org.pqrs.Karabiner-Console-User-Server:menu": "hidden"
           },
@@ -609,24 +617,28 @@
           "savedSectionOrder": {
             "hidden": [
               "org.pqrs.Karabiner-Console-User-Server:menu",
-              "com.pais.handy:Item-0"
+              "com.pais.handy:Item-0",
+              "com.openai.codex:ChatGPT"
             ],
             "visible": [
               "ChatGPTHelper:Item-0",
-              "eu.exelban.Stats:Item#",
               "com.electron.dockerdesktop:Item-0",
               "bobko.aerospace:Item",
+              "com.todesktop.230313mzl4w4u92:Item-0",
+              "eu.exelban.Stats:Item#",
               "com.apple.weather.menu:Weather",
               "com.steipete.codexbar:CodexBar.StatusItem",
               "com.stonerl.Thaw:Thaw.ControlItem.Visible",
+              "com.stonerl.Thaw:Thaw.Spacer.01EBFAF1-3EE3-4AA1-B408-E9157A932C47",
+              "com.apple.MenuBarAgent:com.apple.menuextra.display",
+              "com.apple.MenuBarAgent:com.apple.menuextra.battery",
               "com.apple.MenuBarAgent:com.apple.menuextra.sound",
-              "com.apple.MenuBarAgent:com.apple.menuextra.wifi",
               "com.apple.MenuBarAgent:com.apple.menuextra.controlcenter",
               "com.apple.MenuBarAgent:com.apple.menuextra.clock"
             ]
           }
         },
-        "modifiedAt": "2026-09-29T14:31:18Z",
+        "modifiedAt": "2026-10-07T18:38:16Z",
         "name": "Ro Machine Current",
         "unconfirmedSpacingProfileScope": "activeProfile"
       }
