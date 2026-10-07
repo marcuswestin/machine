@@ -44,7 +44,7 @@ if [[ "$scope" == all || "$scope" == raycast ]]; then
   printf '\n[PAUSED] Raycast export/import is disabled for the Spotlight trial.\n'
   printf 'Review Raycast hotkey drift with just diff settings; no Raycast export is requested.\n'
 fi
-if [[ "$scope" == files ]]; then
+if [[ "$scope" == all || "$scope" == files ]]; then
   printf 'Docker settings import, export, and apply are disabled for now.\n'
   printf '\nReview live app JSON/JSONC that does not already resolve to the repo.\n'
   printf 'Unknown machine-only keys can contain private data. Inspect each target before committing.\n'

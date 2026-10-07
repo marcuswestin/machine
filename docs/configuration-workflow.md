@@ -109,13 +109,13 @@ review each candidate before declaring it.
 
 Repo-backed symlinks already record edits directly in the repo. Review their
 `git diff`; no copy is needed. For other live JSON/JSONC, the hidden expert
-`merge-in-settings` recipe remains available for expert use. The explicit
-`just import-from-machine files` scope offers changed JSON/JSONC files
+`merge-in-settings` recipe remains available for expert use. The `files` step
+(part of the default `all` scope, or alone as `just import-from-machine files`) offers changed JSON/JSONC files
 individually, shows the machine-only keys, and
 asks for an explicit `yes` before writing each one. Repo values win for existing
 keys; importing JSONC strips comments, and importing keybindings replaces the
 whole array. Unreadable files and text-only configs remain for manual review.
-The default `all` scope does not import these unknown keys. Review their values
+Answering anything but `yes` leaves that file unimported. Review imported values
 for private data before committing. Custom macOS defaults and unknown app
 schemas require an explicit declaration edit.
 
