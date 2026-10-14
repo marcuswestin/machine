@@ -33,13 +33,6 @@ let
       args = [ ];
     }
     {
-      name = "Karabiner-Elements";
-      bundleIdentifier = "org.pqrs.Karabiner-Elements";
-      appPath = "/Applications/Karabiner-Elements.app";
-      executable = "/Applications/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements";
-      args = [ ];
-    }
-    {
       name = "CodexBar";
       bundleIdentifier = "com.steipete.codexbar";
       appPath = "/Applications/CodexBar.app";
@@ -119,6 +112,8 @@ let
   };
 
   legacyAgentFiles = (map (app: "org.nixos.open-${agentKeyFragment app}.plist") startupApps) ++ [
+    # Karabiner-Elements left startupApps; its retired per-app agent still needs cleanup.
+    "org.nixos.open-karabiner-elements.plist"
     "org.nixos.display-layout.plist"
   ];
 in
