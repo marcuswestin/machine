@@ -327,5 +327,6 @@
   "geminicodeassist.project": "fluent-lodge-bgn6m",
   "cursor.general.glassShowWarningNotifications": true,
   "cursor.composer.codeBlockWordWrap": true,
-  "cursor.composer.usageSummaryDisplay": "always"
+  "cursor.composer.usageSummaryDisplay": "always",
+  "gitlens.graph.details.location": "auto"
 }
