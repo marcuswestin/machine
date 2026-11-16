@@ -169,7 +169,7 @@ on-mode-changed = []
 [mode.main.binding]
 
   # --- General (non-workspace) ---
-  # Service mode (alt-;), Open iTerm, Fullscreen, Toggle focused-window floating, Toggle layout, Tab workspace, Toggle monitor move, Reload config
+  # Service mode (alt-;), Open iTerm, Fullscreen, Toggle focused-window floating, Toggle layout, Tab workspace, Move focused window to that workspace, Reload config
   alt-semicolon = ['mode service']
   # Ask iTerm to create a window in the existing app instance.
   alt-enter = '''exec-and-forget /usr/bin/osascript \
@@ -179,8 +179,11 @@ on-mode-changed = []
   alt-backtick = ['layout floating tiling']
   alt-slash = ['layout tiles horizontal vertical']
   alt-period = ['layout accordion horizontal vertical']
+  # alt-tab switches to the previous workspace. alt-shift-tab moves the focused
+  # window there and follows it. AeroSpace has no move-node back-and-forth, so
+  # the script reads the previous workspace by switching first.
   alt-tab = ['workspace-back-and-forth']
-  alt-shift-tab = ['move-workspace-to-monitor --wrap-around next']
+  alt-shift-tab = ['exec-and-forget ${HOME}/code/machine/scripts/aerospace-move-window-back-and-forth.sh']
   alt-shift-backtick = ['reload-config']
 
   # --- Tiling: focus / move / resize ---
