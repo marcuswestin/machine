@@ -78,6 +78,12 @@ check scope="all" *args:
       *) printf 'usage: just check [all|repo|machine [--json]]\n' >&2; exit 64 ;;
     esac
 
+# Inspect timing readiness or quit declared optional startup utilities without restoring them.
+[group('Inspect')]
+[positional-arguments]
+timing action="status" *args:
+    @bun "{{ REPO }}/scripts/timing-machine.ts" "$@"
+
 # Find unmanaged candidates, or capture an ignored local inventory snapshot.
 [group('Inspect')]
 discover scope="global" inventory="tracked":

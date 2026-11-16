@@ -13,6 +13,7 @@ let
   startupApps = [
     {
       name = "Handy";
+      timingOptional = true;
       bundleIdentifier = "com.pais.handy";
       appPath = "/Applications/Handy.app";
       executable = "/Applications/Handy.app/Contents/MacOS/handy";
@@ -20,6 +21,7 @@ let
     }
     {
       name = "AeroSpace";
+      timingOptional = true;
       bundleIdentifier = "bobko.aerospace";
       appPath = "/Applications/AeroSpace.app";
       executable = "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace";
@@ -27,6 +29,7 @@ let
     }
     {
       name = "Raycast";
+      timingOptional = true;
       bundleIdentifier = "com.raycast.macos";
       appPath = "/Applications/Raycast.app";
       executable = "/Applications/Raycast.app/Contents/MacOS/Raycast";
@@ -34,6 +37,7 @@ let
     }
     {
       name = "CodexBar";
+      timingOptional = true;
       bundleIdentifier = "com.steipete.codexbar";
       appPath = "/Applications/CodexBar.app";
       executable = "/Applications/CodexBar.app/Contents/MacOS/CodexBar";
@@ -41,6 +45,7 @@ let
     }
     {
       name = "Thaw";
+      timingOptional = true;
       bundleIdentifier = "com.stonerl.Thaw";
       appPath = "/Applications/Thaw.app";
       executable = "/Applications/Thaw.app/Contents/MacOS/Thaw";
@@ -48,6 +53,7 @@ let
     }
     {
       name = "Stats";
+      timingOptional = true;
       bundleIdentifier = "eu.exelban.Stats";
       appPath = "/Applications/Stats.app";
       executable = "/Applications/Stats.app/Contents/MacOS/Stats";
@@ -127,6 +133,11 @@ in
           bundleIdentifier = lib.mkOption { type = lib.types.str; };
           appPath = lib.mkOption { type = lib.types.str; };
           executable = lib.mkOption { type = lib.types.str; };
+          timingOptional = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "May be gracefully quit by just timing prepare; network and required services must stay false.";
+          };
           args = lib.mkOption {
             type = lib.types.listOf lib.types.str;
             default = [ ];

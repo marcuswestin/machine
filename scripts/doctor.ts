@@ -3,6 +3,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
+import { runTimingMachine } from "./timing-machine";
 
 type Status = "OK" | "WARN" | "FAIL" | "UNKNOWN";
 type Finding = { check: string; status: Status; detail: string; action?: string };
@@ -71,8 +72,17 @@ export function appArtifactPath(artifact: unknown[], appdir: string): string | u
 
 function main() {
   const args = process.argv.slice(2);
+  if (args.includes("--timing")) {
+    try {
+      runTimingMachine(["status", ...args.filter(arg => arg !== "--timing")]);
+    } catch (error) {
+      console.error("Timing readiness is unverified: " + String(error));
+      process.exitCode = 1;
+    }
+    return;
+  }
   if (args.some(a => a !== "--json")) {
-    console.error("Usage: just check machine [--json]");
+    console.error("Usage: just check machine [--timing] [--json]");
     process.exitCode = 64;
     return;
   }
