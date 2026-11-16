@@ -171,7 +171,10 @@ on-mode-changed = []
   # --- General (non-workspace) ---
   # Service mode (alt-;), Open iTerm, Fullscreen, Toggle focused-window floating, Toggle layout, Tab workspace, Toggle monitor move, Reload config
   alt-semicolon = ['mode service']
-  alt-enter = ['exec-and-forget open -na iTerm']
+  # Ask iTerm to create a window in the existing app instance.
+  alt-enter = '''exec-and-forget /usr/bin/osascript \
+    -e 'tell application id "com.googlecode.iterm2" to create window with default profile' \
+    -e 'tell application id "com.googlecode.iterm2" to activate' '''
   alt-shift-enter = ["fullscreen"]
   alt-backtick = ['layout floating tiling']
   alt-slash = ['layout tiles horizontal vertical']
